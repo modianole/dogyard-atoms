@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
-import { useRef, useCallback, useState, useEffect } from "react";
+import { useRef, useCallback, useState, useEffect, lazy, Suspense } from "react";
+
+const NearbyGardenMap = lazy(() => import("./NearbyGardenMap"));
 
 const VIDEOS = ["/hero-video.mp4", "/hero-video-2.mp4", "/hero-video-3.mp4"];
 
@@ -8,6 +10,7 @@ const HeroSection = () => {
   const videoARef = useRef<HTMLVideoElement>(null);
   const videoBRef = useRef<HTMLVideoElement>(null);
   const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
+  const [mapOpen, setMapOpen] = useState(false);
   const currentIndexRef = useRef(0);
 
   // Preload next video into the hidden slot
@@ -93,13 +96,19 @@ const HeroSection = () => {
               </span>
             </div>
 
-            <button className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-bold text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3">
+            <button
+              onClick={() => setMapOpen(true)}
+              className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-bold text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3"
+            >
               <MapPin className="w-5 h-5" />
               לגינה שלי
             </button>
           </motion.div>
         </div>
       </div>
+      <Suspense fallback={null}>
+        <NearbyGardenMap open={mapOpen} onClose={() => setMapOpen(false)} />
+      </Suspense>
     </section>
   );
 };
