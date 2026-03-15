@@ -20,6 +20,7 @@ const Index = () => {
       <PeakHoursChart />
       <HazardReport />
       <RestaurantMenu />
+      <AddGarden />
       <RestaurantAdmin />
       <CommunitySection />
       <Footer />

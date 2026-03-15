@@ -9,6 +9,7 @@ const menuSections = [
   { label: "שעות עומס", icon: BarChart3, href: "#peak-hours" },
   { label: "דיווח מפגע", icon: AlertTriangle, href: "#hazard" },
   { label: "הזמנה מהמסעדה", icon: UtensilsCrossed, href: "#restaurant" },
+  { label: "הוספת גינה", icon: MapPin, href: "#add-garden" },
   { label: "הקהילה שלנו", icon: Users, href: "#community" },
   { label: "ניהול מסעדה", icon: Store, href: "#restaurant-admin" },
 ];
