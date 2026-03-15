@@ -56,8 +56,9 @@ const Navbar = () => {
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
+      </div>
 
-      {/* Mobile menu */}
+      {/* Menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
