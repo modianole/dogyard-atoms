@@ -94,7 +94,7 @@ const Navbar = () => {
                 {menuLabels.map((label, i) => {
                   const Icon = icons[i];
                   return (
-                    <button key={i} onClick={() => scrollTo(menuHrefs[i])} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-card-foreground hover:bg-muted transition-colors mb-1">
+                    <button key={i} onClick={() => scrollTo(menuHrefs[i])} className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-base font-medium text-card-foreground hover:bg-muted transition-colors mb-1">
                       <Icon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       {label}
                     </button>
@@ -103,18 +103,18 @@ const Navbar = () => {
               </div>
 
               <div className="p-4 border-t border-border space-y-2">
-                <button onClick={() => scrollTo("#dog")} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                  <Dog className="w-4 h-4" />
+                <button onClick={() => scrollTo("#dog")} className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  <Dog className="w-5 h-5" />
                   {t.nav.myDog}
                 </button>
                 {user ? (
-                  <button onClick={handleAuthClick} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
-                    <LogOut className="w-4 h-4" />
+                  <button onClick={handleAuthClick} className="w-full flex items-center justify-center gap-2 px-4 py-4 rounded-xl text-base font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                    <LogOut className="w-5 h-5" />
                     {t.auth.logout}
                   </button>
                 ) : (
-                  <a href="/auth" className="relative z-[130] pointer-events-auto w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
-                    <LogIn className="w-4 h-4" />
+                  <a href="/auth" className="relative z-[130] pointer-events-auto w-full flex items-center justify-center gap-2 px-4 py-4 rounded-xl text-base font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                    <LogIn className="w-5 h-5" />
                     {t.nav.login}
                   </a>
                 )}

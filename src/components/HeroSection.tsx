@@ -78,7 +78,7 @@ const HeroSection = () => {
             <div className={`flex ${isRTL ? "justify-end" : "justify-start"}`}>
               <button
                 onClick={() => setMapOpen(true)}
-                className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-bold text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3"
+                className="h-14 px-10 rounded-lg bg-primary text-primary-foreground font-bold text-lg md:h-12 md:px-8 md:text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3"
               >
                 <MapPin className="w-5 h-5" />
                 {t.hero.cta}

@@ -132,7 +132,7 @@ const AddGarden = () => {
             </label>
           </div>
 
-          <button type="submit" disabled={submitting} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity disabled:opacity-50">
+          <button type="submit" disabled={submitting} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-base font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity disabled:opacity-50 md:py-3 md:text-sm">
             <Plus className="w-4 h-4" />
             {submitting ? (isRTL ? "שולח..." : "Submitting...") : t.addGarden.submit}
           </button>

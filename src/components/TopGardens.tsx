@@ -74,7 +74,7 @@ const TopGardens = () => {
         </motion.div>
 
         <div className="text-center mt-8">
-          <button className="px-6 py-2.5 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-secondary transition-colors btn-spring">
+          <button className="px-8 py-3.5 rounded-lg border border-border text-base font-medium text-foreground hover:bg-secondary transition-colors btn-spring md:px-6 md:py-2.5 md:text-sm">
             {t.gardens.allGardens}
           </button>
         </div>

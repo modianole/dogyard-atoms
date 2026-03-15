@@ -151,12 +151,12 @@ const RestaurantMenu = () => {
 
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           <button onClick={() => setActiveCategory(null)}
-            className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-all duration-200 ${!activeCategory ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
+            className={`px-6 py-3 rounded-2xl text-base font-bold transition-all duration-200 md:px-5 md:py-2.5 md:text-sm ${!activeCategory ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
             🍴 {t.restaurant.all}
           </button>
           {categories.map(cat => (
             <button key={cat} onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-all duration-200 ${activeCategory === cat ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
+              className={`px-6 py-3 rounded-2xl text-base font-bold transition-all duration-200 md:px-5 md:py-2.5 md:text-sm ${activeCategory === cat ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
               {categoryEmoji[cat] || "•"} {catTranslations[cat] || cat}
             </button>
           ))}
@@ -198,14 +198,14 @@ const RestaurantMenu = () => {
                     <div className="flex items-center justify-between">
                       <span className="font-display font-black text-lg text-foreground">₪{item.price}</span>
                       {qty === 0 ? (
-                        <button onClick={() => addToCart(item)} className="w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:scale-110 transition-transform btn-spring">
-                          <Plus className="w-4 h-4" />
+                        <button onClick={() => addToCart(item)} className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:scale-110 transition-transform btn-spring md:w-9 md:h-9">
+                          <Plus className="w-5 h-5 md:w-4 md:h-4" />
                         </button>
                       ) : (
                         <div className="flex items-center gap-2 bg-primary/10 rounded-xl px-1">
-                          <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-lg text-primary hover:bg-primary/20 flex items-center justify-center transition-colors"><Minus className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 rounded-lg text-primary hover:bg-primary/20 flex items-center justify-center transition-colors md:w-7 md:h-7"><Minus className="w-4 h-4 md:w-3.5 md:h-3.5" /></button>
                           <span className="text-sm font-bold text-primary min-w-[1ch] text-center">{qty}</span>
-                          <button onClick={() => addToCart(item)} className="w-7 h-7 rounded-lg text-primary hover:bg-primary/20 flex items-center justify-center transition-colors"><Plus className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => addToCart(item)} className="w-9 h-9 rounded-lg text-primary hover:bg-primary/20 flex items-center justify-center transition-colors md:w-7 md:h-7"><Plus className="w-4 h-4 md:w-3.5 md:h-3.5" /></button>
                         </div>
                       )}
                     </div>
@@ -229,7 +229,7 @@ const RestaurantMenu = () => {
                     <span className="text-background/60 text-xs ms-2">· ₪{cartTotal}</span>
                   </div>
                 </div>
-                <button className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl font-bold text-sm hover:opacity-90 transition-opacity btn-spring">
+                <button className="px-8 py-3.5 bg-primary text-primary-foreground rounded-xl font-bold text-base hover:opacity-90 transition-opacity btn-spring md:px-6 md:py-2.5 md:text-sm">
                   {t.restaurant.sendOrder}
                 </button>
               </div>

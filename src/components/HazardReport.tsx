@@ -21,12 +21,12 @@ const HazardReport = () => {
           </div>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">{t.hazard.subtitle}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button className="w-full sm:w-auto h-12 px-8 rounded-lg bg-destructive text-destructive-foreground font-bold text-sm btn-spring hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+            <button className="w-full sm:w-auto h-14 px-8 rounded-lg bg-destructive text-destructive-foreground font-bold text-base md:h-12 md:text-sm btn-spring hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
               <AlertTriangle className="w-5 h-5" />
               {t.hazard.reportBtn}
             </button>
-            <button className="w-full sm:w-auto h-12 px-8 rounded-lg border border-border text-foreground font-medium text-sm btn-spring hover:bg-secondary transition-colors flex items-center justify-center gap-2">
-              <Phone className="w-4 h-4" />
+            <button className="w-full sm:w-auto h-14 px-8 rounded-lg border border-border text-foreground font-medium text-base md:h-12 md:text-sm btn-spring hover:bg-secondary transition-colors flex items-center justify-center gap-2">
+              <Phone className="w-5 h-5" />
               {t.hazard.callBtn}
             </button>
           </div>
