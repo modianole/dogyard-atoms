@@ -52,10 +52,17 @@ const Navbar = () => {
             </button>
 
             <div className="hidden md:flex items-center gap-2">
-              <button onClick={handleAuthClick} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
-                {user ? <LogOut className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-                <span>{user ? t.auth.logout : t.nav.login}</span>
-              </button>
+              {user ? (
+                <button onClick={handleAuthClick} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                  <LogOut className="w-4 h-4" />
+                  <span>{t.auth.logout}</span>
+                </button>
+              ) : (
+                <a href="/auth" className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                  <LogIn className="w-4 h-4" />
+                  <span>{t.nav.login}</span>
+                </a>
+              )}
             </div>
 
             <button className="p-2 rounded-lg hover:bg-secondary transition-colors" onClick={() => setOpen(!open)}>
