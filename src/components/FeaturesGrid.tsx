@@ -1,56 +1,14 @@
 import { motion } from "framer-motion";
 import { MapPin, Star, UserCheck, Bell, Dog, MessageCircle } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
-const features = [
-  {
-    icon: MapPin,
-    title: "מפת גינות",
-    description: "מעל 100 גינות בתל אביב על המפה",
-    color: "text-accent",
-    bg: "bg-accent/10",
-  },
-  {
-    icon: Star,
-    title: "דירוג הגינות",
-    description: "דרגו ניקיון, תאורה ומים",
-    color: "text-warning",
-    bg: "bg-warning/10",
-  },
-  {
-    icon: UserCheck,
-    title: "צ׳ק-אין",
-    description: "בדקו מי בגינה עכשיו",
-    color: "text-info",
-    bg: "bg-info/10",
-  },
-  {
-    icon: Bell,
-    title: "התראות",
-    description: "פקח? מפגע? דווחו בזמן אמת",
-    color: "text-destructive",
-    bg: "bg-destructive/10",
-  },
-  {
-    icon: Dog,
-    title: "פרופיל כלב",
-    description: "הכירו את הכלבים בגינה",
-    color: "text-primary",
-    bg: "bg-primary/10",
-  },
-  {
-    icon: MessageCircle,
-    title: "צ׳אט קבוצתי",
-    description: "תיאמו מפגשים עם החבר׳ה",
-    color: "text-muted-foreground",
-    bg: "bg-secondary",
-  },
-];
+const icons = [MapPin, Star, UserCheck, Bell, Dog, MessageCircle];
+const colors = ["text-accent", "text-warning", "text-info", "text-destructive", "text-primary", "text-muted-foreground"];
+const bgs = ["bg-accent/10", "bg-warning/10", "bg-info/10", "bg-destructive/10", "bg-primary/10", "bg-secondary"];
 
 const container = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08 },
-  },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 
 const item = {
@@ -59,39 +17,37 @@ const item = {
 };
 
 const FeaturesGrid = () => {
+  const { t } = useLanguage();
+  const featureKeys = [
+    { title: t.features.gardenMap, desc: t.features.gardenMapDesc },
+    { title: t.features.gardenRating, desc: t.features.gardenRatingDesc },
+    { title: t.features.checkIn, desc: t.features.checkInDesc },
+    { title: t.features.alerts, desc: t.features.alertsDesc },
+    { title: t.features.dogProfile, desc: t.features.dogProfileDesc },
+    { title: t.features.groupChat, desc: t.features.groupChatDesc },
+  ];
+
   return (
     <section id="features" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-3">
-            🐾 מה תמצאו ב-DogYard?
-          </h2>
-          <p className="text-muted-foreground text-base max-w-md mx-auto">
-            כל מה שצריך כדי למצוא את הגינה הטובה ביותר ולהתחבר עם קהילת בעלי הכלבים
-          </p>
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-3">{t.features.title}</h2>
+          <p className="text-muted-foreground text-base max-w-md mx-auto">{t.features.subtitle}</p>
         </div>
 
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto"
-        >
-          {features.map((feature) => (
-            <motion.div
-              key={feature.title}
-              variants={item}
-              whileHover={{ y: -4 }}
-              className="bg-card rounded-[12px] shadow-soft p-6 flex flex-col items-center text-center gap-3 cursor-default transition-shadow hover:shadow-medium"
-            >
-              <div className={`w-12 h-12 rounded-xl ${feature.bg} flex items-center justify-center`}>
-                <feature.icon className={`w-6 h-6 ${feature.color}`} />
-              </div>
-              <h3 className="font-display font-bold text-foreground">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground">{feature.description}</p>
-            </motion.div>
-          ))}
+        <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-50px" }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+          {featureKeys.map((f, i) => {
+            const Icon = icons[i];
+            return (
+              <motion.div key={i} variants={item} whileHover={{ y: -4 }} className="bg-card rounded-[12px] shadow-soft p-6 flex flex-col items-center text-center gap-3 cursor-default transition-shadow hover:shadow-medium">
+                <div className={`w-12 h-12 rounded-xl ${bgs[i]} flex items-center justify-center`}>
+                  <Icon className={`w-6 h-6 ${colors[i]}`} />
+                </div>
+                <h3 className="font-display font-bold text-foreground">{f.title}</h3>
+                <p className="text-sm text-muted-foreground">{f.desc}</p>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </section>

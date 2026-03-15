@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import { useRef, useCallback, useState, useEffect, lazy, Suspense } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 const NearbyGardenMap = lazy(() => import("./NearbyGardenMap"));
 
@@ -12,8 +13,8 @@ const HeroSection = () => {
   const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
   const [mapOpen, setMapOpen] = useState(false);
   const currentIndexRef = useRef(0);
+  const { t, isRTL } = useLanguage();
 
-  // Preload next video into the hidden slot
   useEffect(() => {
     if (videoBRef.current) {
       videoBRef.current.src = VIDEOS[1];
@@ -29,7 +30,6 @@ const HeroSection = () => {
     if (activeSlot === "A") {
       videoBRef.current?.play();
       setActiveSlot("B");
-      // Preload next into A (now hidden)
       if (videoARef.current) {
         videoARef.current.src = VIDEOS[preloadIndex];
         videoARef.current.load();
@@ -46,63 +46,42 @@ const HeroSection = () => {
 
   return (
     <section className="relative overflow-hidden">
-      {/* Hero Video */}
       <div className="relative h-[520px] md:h-[600px]">
-        <video
-          ref={videoARef}
-          autoPlay
-          muted
-          playsInline
-          onEnded={activeSlot === "A" ? handleEnded : undefined}
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ zIndex: activeSlot === "A" ? 1 : 0 }}
-          src={VIDEOS[0]}
-        />
-        <video
-          ref={videoBRef}
-          muted
-          playsInline
-          onEnded={activeSlot === "B" ? handleEnded : undefined}
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ zIndex: activeSlot === "B" ? 1 : 0 }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-l from-foreground/70 via-foreground/40 to-transparent" style={{ zIndex: 2 }} />
+        <video ref={videoARef} autoPlay muted playsInline onEnded={activeSlot === "A" ? handleEnded : undefined} className="absolute inset-0 w-full h-full object-cover" style={{ zIndex: activeSlot === "A" ? 1 : 0 }} src={VIDEOS[0]} />
+        <video ref={videoBRef} muted playsInline onEnded={activeSlot === "B" ? handleEnded : undefined} className="absolute inset-0 w-full h-full object-cover" style={{ zIndex: activeSlot === "B" ? 1 : 0 }} />
+        <div className={`absolute inset-0 ${isRTL ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-foreground/70 via-foreground/40 to-transparent`} style={{ zIndex: 2 }} />
 
-        {/* Content overlay */}
-        <div className="relative container mx-auto h-full flex items-center justify-start px-4" style={{ zIndex: 3 }}>
+        <div className={`relative container mx-auto h-full flex items-center ${isRTL ? "justify-start" : "justify-end"} px-4`} style={{ zIndex: 3 }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="max-w-lg text-right"
+            className={`max-w-lg ${isRTL ? "text-right" : "text-left"}`}
           >
             <span className="inline-block px-3 py-1 mb-4 rounded-full text-xs font-medium bg-card/20 backdrop-blur-sm text-primary-foreground border border-primary-foreground/20">
-              הרשות החברתית לבעלי כלבים
+              {t.hero.badge}
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight text-primary-foreground mb-4">
-              מה קורה בגינה שלכם
+              {t.hero.title1}
               <br />
-              <span className="text-gradient-primary" style={{ WebkitTextFillColor: "unset", color: "hsl(var(--primary))" }}>עכשיו?</span>
+              <span style={{ color: "hsl(var(--primary))" }}>{t.hero.titleHighlight}</span>
             </h1>
             <p className="text-base md:text-lg text-primary-foreground/80 mb-6 leading-relaxed">
-              מעל 100 גינות כלבים בתל אביב-יפו. בדקו דירוגים, דווחו על פקחים ותיאמו
-              מפגשים עם החבר׳ה מהגינה
+              {t.hero.subtitle}
             </p>
 
-            <div className="flex items-center justify-end gap-3 mb-6">
+            <div className={`flex items-center ${isRTL ? "justify-end" : "justify-start"} gap-3 mb-6`}>
               <MapPin className="w-4 h-4 text-accent" />
-              <span className="text-sm text-primary-foreground/70 font-medium">
-                100+ גינות כלבים ממופות בתל אביב
-              </span>
+              <span className="text-sm text-primary-foreground/70 font-medium">{t.hero.mappedGardens}</span>
             </div>
 
-            <div className="flex justify-end">
+            <div className={`flex ${isRTL ? "justify-end" : "justify-start"}`}>
               <button
                 onClick={() => setMapOpen(true)}
                 className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-bold text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3"
               >
                 <MapPin className="w-5 h-5" />
-                לגינה שלי
+                {t.hero.cta}
               </button>
             </div>
           </motion.div>

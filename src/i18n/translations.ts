@@ -302,4 +302,7 @@ export const translations = {
   },
 } as const;
 
-export type Translations = typeof translations.he;
+// Use a loose type so both languages are assignable
+export type Translations = {
+  [K in keyof typeof translations.he]: any;
+};
