@@ -8,6 +8,7 @@ const HeroSection = () => {
   const videoARef = useRef<HTMLVideoElement>(null);
   const videoBRef = useRef<HTMLVideoElement>(null);
   const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
+  const [blinking, setBlinking] = useState(false);
   const currentIndexRef = useRef(0);
 
   const preloadNext = useCallback((nextIndex: number, targetRef: React.RefObject<HTMLVideoElement>) => {
@@ -18,28 +19,32 @@ const HeroSection = () => {
   }, []);
 
   useEffect(() => {
-    // Preload second video into slot B
     preloadNext(1, videoBRef);
   }, [preloadNext]);
 
   const handleEnded = useCallback(() => {
-    const nextIndex = (currentIndexRef.current + 1) % VIDEOS.length;
-    currentIndexRef.current = nextIndex;
+    // Start blink
+    setBlinking(true);
 
-    if (activeSlot === "A") {
-      // B is preloaded, switch to B
-      videoBRef.current?.play();
-      setActiveSlot("B");
-      // Preload next into A
-      const preloadIndex = (nextIndex + 1) % VIDEOS.length;
-      preloadNext(preloadIndex, videoARef);
-    } else {
-      // A is preloaded, switch to A
-      videoARef.current?.play();
-      setActiveSlot("A");
-      const preloadIndex = (nextIndex + 1) % VIDEOS.length;
-      preloadNext(preloadIndex, videoBRef);
-    }
+    setTimeout(() => {
+      const nextIndex = (currentIndexRef.current + 1) % VIDEOS.length;
+      currentIndexRef.current = nextIndex;
+
+      if (activeSlot === "A") {
+        videoBRef.current?.play();
+        setActiveSlot("B");
+        const preloadIndex = (nextIndex + 1) % VIDEOS.length;
+        preloadNext(preloadIndex, videoARef);
+      } else {
+        videoARef.current?.play();
+        setActiveSlot("A");
+        const preloadIndex = (nextIndex + 1) % VIDEOS.length;
+        preloadNext(preloadIndex, videoBRef);
+      }
+
+      // End blink
+      setTimeout(() => setBlinking(false), 150);
+    }, 150);
   }, [activeSlot, preloadNext]);
 
   return (
@@ -63,6 +68,11 @@ const HeroSection = () => {
           onEnded={activeSlot === "B" ? handleEnded : undefined}
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
           style={{ opacity: activeSlot === "B" ? 1 : 0 }}
+        />
+        {/* Blink overlay */}
+        <div
+          className="absolute inset-0 bg-foreground pointer-events-none transition-opacity duration-150 z-10"
+          style={{ opacity: blinking ? 1 : 0 }}
         />
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
 
