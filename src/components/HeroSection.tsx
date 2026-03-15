@@ -8,7 +8,7 @@ const HeroSection = () => {
   const videoARef = useRef<HTMLVideoElement>(null);
   const videoBRef = useRef<HTMLVideoElement>(null);
   const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
-  const [blinking, setBlinking] = useState(false);
+  const [blinkPhase, setBlinkPhase] = useState<"open" | "closing" | "closed" | "opening">("open");
   const currentIndexRef = useRef(0);
 
   const preloadNext = useCallback((nextIndex: number, targetRef: React.RefObject<HTMLVideoElement>) => {
