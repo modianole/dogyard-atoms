@@ -5,6 +5,7 @@ import TopGardens from "@/components/TopGardens";
 import PeakHoursChart from "@/components/PeakHoursChart";
 import HazardReport from "@/components/HazardReport";
 import RestaurantMenu from "@/components/RestaurantMenu";
+import AddGarden from "@/components/AddGarden";
 import RestaurantAdmin from "@/components/RestaurantAdmin";
 import CommunitySection from "@/components/CommunitySection";
 import Footer from "@/components/Footer";
@@ -19,6 +20,7 @@ const Index = () => {
       <PeakHoursChart />
       <HazardReport />
       <RestaurantMenu />
+      <AddGarden />
       <RestaurantAdmin />
       <CommunitySection />
       <Footer />
