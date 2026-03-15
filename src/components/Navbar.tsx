@@ -31,9 +31,7 @@ const Navbar = () => {
     setOpen(false);
     if (user) {
       await signOut();
-      return;
     }
-    window.location.assign("/auth");
   };
 
   return (
@@ -54,10 +52,17 @@ const Navbar = () => {
             </button>
 
             <div className="hidden md:flex items-center gap-2">
-              <button onClick={handleAuthClick} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
-                {user ? <LogOut className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-                <span>{user ? t.auth.logout : t.nav.login}</span>
-              </button>
+              {user ? (
+                <button onClick={handleAuthClick} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                  <LogOut className="w-4 h-4" />
+                  <span>{t.auth.logout}</span>
+                </button>
+              ) : (
+                <a href="/auth" className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                  <LogIn className="w-4 h-4" />
+                  <span>{t.nav.login}</span>
+                </a>
+              )}
             </div>
 
             <button className="p-2 rounded-lg hover:bg-secondary transition-colors" onClick={() => setOpen(!open)}>
@@ -102,10 +107,17 @@ const Navbar = () => {
                   <Dog className="w-4 h-4" />
                   {t.nav.myDog}
                 </button>
-                <button onClick={handleAuthClick} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
-                  {user ? <LogOut className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-                  {user ? t.auth.logout : t.nav.login}
-                </button>
+                {user ? (
+                  <button onClick={handleAuthClick} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                    <LogOut className="w-4 h-4" />
+                    {t.auth.logout}
+                  </button>
+                ) : (
+                  <a href="/auth" onClick={() => setOpen(false)} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                    <LogIn className="w-4 h-4" />
+                    {t.nav.login}
+                  </a>
+                )}
               </div>
             </motion.div>
           </>
