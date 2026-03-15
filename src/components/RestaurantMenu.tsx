@@ -6,7 +6,7 @@ import type { Restaurant, MenuItem } from "@/types/restaurant";
 
 const RestaurantMenu = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant>(MOCK_RESTAURANTS[0]);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>("שתייה");
   const [cart, setCart] = useState<{ item: MenuItem; qty: number }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
