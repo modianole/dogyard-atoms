@@ -29,7 +29,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
+      <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollTo("#top")}>
