@@ -27,13 +27,13 @@ const Navbar = () => {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleAuthClick = () => {
+  const handleAuthClick = async () => {
     setOpen(false);
     if (user) {
-      signOut();
-    } else {
-      navigate("/auth");
+      await signOut();
+      return;
     }
+    window.location.assign("/auth");
   };
 
   return (
