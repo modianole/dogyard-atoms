@@ -24,12 +24,12 @@ const HeroSection = () => {
   }, [preloadNext]);
 
   const handleEnded = useCallback(() => {
-    // Close eyelid
+    // Animate closing
     setBlinkPhase("closing");
 
     setTimeout(() => {
       setBlinkPhase("closed");
-      
+
       const nextIndex = (currentIndexRef.current + 1) % VIDEOS.length;
       currentIndexRef.current = nextIndex;
 
@@ -45,12 +45,12 @@ const HeroSection = () => {
         preloadNext(preloadIndex, videoBRef);
       }
 
-      // Open eyelid
+      // Small pause while "closed", then open
       setTimeout(() => {
         setBlinkPhase("opening");
-        setTimeout(() => setBlinkPhase("open"), 500);
-      }, 200);
-    }, 500);
+        setTimeout(() => setBlinkPhase("open"), 400);
+      }, 150);
+    }, 400);
   }, [activeSlot, preloadNext]);
 
   return (
