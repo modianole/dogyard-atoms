@@ -1,9 +1,7 @@
 import { motion } from "framer-motion";
 import { MapPin, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-
-const ratings = [4.7, 4.6, 4.6, 4.5, 4.4, 4.4];
-const reviews = [28, 92, 15, 85, 78, 62];
+import { useGardens } from "@/hooks/useGardens";
 
 const StarRating = ({ rating }: { rating: number }) => {
   const full = Math.floor(rating);
@@ -21,7 +19,24 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } 
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.2, 0.8, 0.2, 1] as const } } };
 
 const TopGardens = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { data: gardens, isLoading } = useGardens();
+  const isEn = language === "en";
+
+  if (isLoading) {
+    return (
+      <section id="gardens" className="py-20 bg-muted/50">
+        <div className="container mx-auto px-4 text-center">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 w-48 bg-muted rounded mx-auto" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+              {[1,2,3,4,5,6].map(i => <div key={i} className="h-32 bg-muted rounded-xl" />)}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="gardens" className="py-20 bg-muted/50">
@@ -32,22 +47,27 @@ const TopGardens = () => {
         </div>
 
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-50px" }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-          {t.gardens.items.map((garden: any, i: number) => (
-            <motion.div key={i} variants={item} whileHover={{ y: -4 }} className="bg-card rounded-[12px] shadow-soft p-5 flex flex-col gap-3 cursor-pointer transition-shadow hover:shadow-medium">
+          {(gardens ?? []).slice(0, 6).map((garden) => (
+            <motion.div key={garden.id} variants={item} whileHover={{ y: -4 }} className="bg-card rounded-[12px] shadow-soft p-5 flex flex-col gap-3 cursor-pointer transition-shadow hover:shadow-medium">
               <div className="flex items-start justify-between">
-                <span className="text-sm font-bold text-primary tabular-nums">{ratings[i]}</span>
+                <span className="text-sm font-bold text-primary tabular-nums">{Number(garden.rating ?? 0).toFixed(1)}</span>
                 <div className="flex-1 ms-3">
-                  <h3 className="font-display font-bold text-foreground text-sm">{garden.name}</h3>
+                  <h3 className="font-display font-bold text-foreground text-sm">{isEn ? (garden.name_en || garden.name) : garden.name}</h3>
                   <div className="flex items-center gap-1 mt-0.5">
                     <MapPin className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{garden.area}</span>
+                    <span className="text-xs text-muted-foreground">{isEn ? (garden.location_en || garden.location) : garden.location}</span>
                   </div>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">{garden.description}</p>
+              <div className="flex flex-wrap gap-1">
+                {garden.has_fence && <span className="px-2 py-0.5 text-[10px] bg-primary/10 text-primary rounded-full">🏗️ {isEn ? "Fenced" : "מגודר"}</span>}
+                {garden.has_water && <span className="px-2 py-0.5 text-[10px] bg-info/10 text-info rounded-full">💧 {isEn ? "Water" : "מים"}</span>}
+                {garden.has_shade && <span className="px-2 py-0.5 text-[10px] bg-accent/10 text-accent rounded-full">🌳 {isEn ? "Shade" : "צל"}</span>}
+                {garden.has_lighting && <span className="px-2 py-0.5 text-[10px] bg-warning/10 text-warning rounded-full">💡 {isEn ? "Lit" : "תאורה"}</span>}
+              </div>
               <div className="flex items-center justify-between mt-auto">
-                <StarRating rating={ratings[i]} />
-                <span className="text-xs text-muted-foreground">({reviews[i]})</span>
+                <StarRating rating={Number(garden.rating ?? 0)} />
+                <span className="text-xs text-muted-foreground">({garden.reviews_count ?? 0})</span>
               </div>
             </motion.div>
           ))}

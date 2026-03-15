@@ -4,32 +4,82 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AddGarden = () => {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const { t, isRTL } = useLanguage();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !location.trim()) {
       toast({ title: t.addGarden.errorTitle, description: t.addGarden.errorDesc, variant: "destructive" });
       return;
     }
-    toast({ title: t.addGarden.successTitle, description: `${name} — ${location}` });
-    setName("");
-    setLocation("");
-    setImagePreview(null);
+
+    if (!user) {
+      toast({ title: isRTL ? "יש להתחבר" : "Login required", description: isRTL ? "יש להתחבר כדי להוסיף גינה" : "Please log in to add a garden", variant: "destructive" });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      let image_url: string | null = null;
+
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from('garden-images')
+          .upload(filePath, imageFile);
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('garden-images')
+          .getPublicUrl(filePath);
+        image_url = publicUrl;
+      }
+
+      const { error } = await supabase.from('gardens').insert({
+        name: name.trim(),
+        location: location.trim(),
+        lat: 32.07 + Math.random() * 0.05,
+        lng: 34.77 + Math.random() * 0.05,
+        image_url,
+        created_by: user.id,
+      });
+
+      if (error) throw error;
+
+      toast({ title: t.addGarden.successTitle, description: `${name} — ${location}` });
+      queryClient.invalidateQueries({ queryKey: ["gardens"] });
+      setName("");
+      setLocation("");
+      setImagePreview(null);
+      setImageFile(null);
+    } catch (err: any) {
+      toast({ title: isRTL ? "שגיאה" : "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -82,9 +132,9 @@ const AddGarden = () => {
             </label>
           </div>
 
-          <button type="submit" className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+          <button type="submit" disabled={submitting} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity disabled:opacity-50">
             <Plus className="w-4 h-4" />
-            {t.addGarden.submit}
+            {submitting ? (isRTL ? "שולח..." : "Submitting...") : t.addGarden.submit}
           </button>
         </motion.form>
       </div>
