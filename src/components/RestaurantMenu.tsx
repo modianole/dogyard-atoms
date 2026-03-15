@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { UtensilsCrossed, Phone, Star, ShoppingBag, ChevronDown } from "lucide-react";
+import { UtensilsCrossed, Phone, Star, ShoppingBag, ChevronDown, Zap } from "lucide-react";
 import { MOCK_RESTAURANTS } from "@/data/mockRestaurants";
-import type { Restaurant, MenuItem } from "@/types/restaurant";
+import type { Restaurant, MenuItem, Deal } from "@/types/restaurant";
 
 const RestaurantMenu = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant>(MOCK_RESTAURANTS[0]);
