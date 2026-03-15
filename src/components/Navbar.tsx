@@ -58,7 +58,7 @@ const Navbar = () => {
                   <span>{t.auth.logout}</span>
                 </button>
               ) : (
-                <a href="/auth" className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                <a href="/auth" className="relative z-[130] pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
                   <LogIn className="w-4 h-4" />
                   <span>{t.nav.login}</span>
                 </a>
