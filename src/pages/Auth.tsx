@@ -39,7 +39,7 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success(t.auth.loginSuccess);
-        navigate("/");
+        window.location.assign("/");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
