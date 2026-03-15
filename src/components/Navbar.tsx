@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MapPin, Dog, Home, LogIn, User, Menu, X, UtensilsCrossed, BarChart3, AlertTriangle, Users, Star, Store } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
 const menuSections = [
   { label: "דף הבית", icon: Home, href: "#top" },
