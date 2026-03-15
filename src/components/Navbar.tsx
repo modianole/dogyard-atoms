@@ -107,10 +107,17 @@ const Navbar = () => {
                   <Dog className="w-4 h-4" />
                   {t.nav.myDog}
                 </button>
-                <button onClick={handleAuthClick} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
-                  {user ? <LogOut className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-                  {user ? t.auth.logout : t.nav.login}
-                </button>
+                {user ? (
+                  <button onClick={handleAuthClick} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                    <LogOut className="w-4 h-4" />
+                    {t.auth.logout}
+                  </button>
+                ) : (
+                  <a href="/auth" onClick={() => setOpen(false)} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                    <LogIn className="w-4 h-4" />
+                    {t.nav.login}
+                  </a>
+                )}
               </div>
             </motion.div>
           </>
