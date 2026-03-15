@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MapPin, Dog, Home, LogIn, User, Menu, X, UtensilsCrossed, BarChart3, AlertTriangle, Users, Star, Store } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
 const menuSections = [
   { label: "דף הבית", icon: Home, href: "#top" },
@@ -16,6 +17,7 @@ const menuSections = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { language, toggleLanguage } = useLanguage();
 
   const scrollTo = (href: string) => {
     setOpen(false);
@@ -39,6 +41,19 @@ const Navbar = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
+            {/* Language toggle */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
+              title={language === "he" ? "Switch to English" : "החלף לעברית"}
+            >
+              {language === "he" ? (
+                <>🇮🇱 HEB</>
+              ) : (
+                <>🇺🇸 ENG</>
+              )}
+            </button>
+
             <div className="hidden md:flex items-center gap-2">
               <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
                 <User className="w-4 h-4" />
