@@ -1,20 +1,37 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
+import { useRef, useCallback, useState } from "react";
+
+const VIDEOS = ["/hero-video.mp4", "/hero-video-2.mp4", "/hero-video-3.mp4"];
 
 const HeroSection = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleEnded = useCallback(() => {
+    setCurrentIndex((prev) => {
+      const next = (prev + 1) % VIDEOS.length;
+      if (videoRef.current) {
+        videoRef.current.src = VIDEOS[next];
+        videoRef.current.play();
+      }
+      return next;
+    });
+  }, []);
+
   return (
     <section className="relative overflow-hidden">
       {/* Hero Video */}
       <div className="relative h-[520px] md:h-[600px]">
         <video
+          ref={videoRef}
           autoPlay
-          loop
           muted
           playsInline
+          onEnded={handleEnded}
           className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="/hero-video.mp4" type="video/mp4" />
-        </video>
+          src={VIDEOS[0]}
+        />
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
 
         {/* Content overlay */}
