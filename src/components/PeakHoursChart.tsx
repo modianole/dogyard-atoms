@@ -1,8 +1,12 @@
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
 import { BarChart3 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { usePeakHours } from "@/hooks/usePeakHours";
+import { useGardens } from "@/hooks/useGardens";
+import { useMemo } from "react";
 
-const hours = [
+// Fallback static data when no DB data available
+const fallbackHours = [
   { hour: "06", normal: 2, peak: 0 }, { hour: "07", normal: 5, peak: 0 },
   { hour: "08", normal: 8, peak: 3 }, { hour: "09", normal: 6, peak: 0 },
   { hour: "10", normal: 4, peak: 0 }, { hour: "11", normal: 3, peak: 0 },
@@ -15,8 +19,20 @@ const hours = [
 ];
 
 const PeakHoursChart = () => {
-  const currentHour = 17;
+  const currentHour = new Date().getHours();
   const { t, isRTL } = useLanguage();
+  const { data: gardens } = useGardens();
+  const firstGardenId = gardens?.[0]?.id;
+  const { data: peakData } = usePeakHours(firstGardenId);
+
+  const hours = useMemo(() => {
+    if (!peakData || peakData.length === 0) return fallbackHours;
+    return peakData.map(ph => ({
+      hour: String(ph.hour).padStart(2, "0"),
+      normal: ph.visitor_count <= 7 ? ph.visitor_count : 0,
+      peak: ph.visitor_count > 7 ? ph.visitor_count : 0,
+    }));
+  }, [peakData]);
 
   return (
     <section id="peak-hours" className="py-20 bg-background">

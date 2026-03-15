@@ -1,42 +1,55 @@
 import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UtensilsCrossed, Phone, Star, ShoppingBag, Zap, ChevronLeft, ChevronRight, Plus, Minus } from "lucide-react";
-import { MOCK_RESTAURANTS } from "@/data/mockRestaurants";
-import type { MenuItem } from "@/types/restaurant";
 import { useLanguage } from "@/context/LanguageContext";
+import { useRestaurants, type DbMenuItem } from "@/hooks/useRestaurants";
 
 const RestaurantMenu = () => {
-  const [selectedRestaurant, setSelectedRestaurant] = useState(MOCK_RESTAURANTS[0]);
-  const [activeCategory, setActiveCategory] = useState<string | null>("שתייה");
-  const [cart, setCart] = useState<{ item: MenuItem; qty: number }[]>([]);
+  const { t, language } = useLanguage();
+  const isEn = language === "en";
+  const { data: restaurants, isLoading } = useRestaurants();
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [cart, setCart] = useState<{ item: DbMenuItem; qty: number }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { t, isRTL } = useLanguage();
 
-  const categories = useMemo(() => [...new Set(selectedRestaurant.menu.map((i) => i.category))], [selectedRestaurant]);
+  const selectedRestaurant = restaurants?.[selectedIdx];
+
+  const menuItems = useMemo(() => {
+    if (!selectedRestaurant) return [];
+    return selectedRestaurant.menu_items.filter(i => i.is_available !== false);
+  }, [selectedRestaurant]);
+
+  const categories = useMemo(() => [...new Set(menuItems.map(i => i.category))], [menuItems]);
 
   const filteredItems = useMemo(() => {
-    if (!activeCategory) return selectedRestaurant.menu;
-    return selectedRestaurant.menu.filter((i) => i.category === activeCategory);
-  }, [selectedRestaurant, activeCategory]);
+    if (!activeCategory) return menuItems;
+    return menuItems.filter(i => i.category === activeCategory);
+  }, [menuItems, activeCategory]);
 
-  const addToCart = (item: MenuItem) => {
-    setCart((prev) => {
-      const existing = prev.find((c) => c.item.id === item.id);
-      if (existing) return prev.map((c) => (c.item.id === item.id ? { ...c, qty: c.qty + 1 } : c));
+  const deals = useMemo(() => {
+    if (!selectedRestaurant) return [];
+    return selectedRestaurant.deals.filter(d => d.is_active !== false);
+  }, [selectedRestaurant]);
+
+  const addToCart = (item: DbMenuItem) => {
+    setCart(prev => {
+      const existing = prev.find(c => c.item.id === item.id);
+      if (existing) return prev.map(c => (c.item.id === item.id ? { ...c, qty: c.qty + 1 } : c));
       return [...prev, { item, qty: 1 }];
     });
   };
 
   const removeFromCart = (itemId: string) => {
-    setCart((prev) => {
-      const existing = prev.find((c) => c.item.id === itemId);
+    setCart(prev => {
+      const existing = prev.find(c => c.item.id === itemId);
       if (!existing) return prev;
-      if (existing.qty === 1) return prev.filter((c) => c.item.id !== itemId);
-      return prev.map((c) => (c.item.id === itemId ? { ...c, qty: c.qty - 1 } : c));
+      if (existing.qty === 1) return prev.filter(c => c.item.id !== itemId);
+      return prev.map(c => (c.item.id === itemId ? { ...c, qty: c.qty - 1 } : c));
     });
   };
 
-  const getCartQty = (itemId: string) => cart.find((c) => c.item.id === itemId)?.qty || 0;
+  const getCartQty = (itemId: string) => cart.find(c => c.item.id === itemId)?.qty || 0;
   const cartTotal = cart.reduce((sum, c) => sum + c.item.price * c.qty, 0);
   const cartCount = cart.reduce((sum, c) => sum + c.qty, 0);
 
@@ -46,6 +59,29 @@ const RestaurantMenu = () => {
 
   const categoryEmoji: Record<string, string> = { "מנות עיקריות": "🍽️", "סלטים": "🥗", "שתייה": "☕", "חטיפים": "🥨", "קינוחים": "🍰" };
   const catTranslations = t.restaurant.categories as Record<string, string>;
+
+  const getName = (item: { name?: string; name_en?: string | null; title?: string; title_en?: string | null }) => {
+    if (isEn) return item.name_en || item.title_en || item.name || item.title || "";
+    return item.name || item.title || "";
+  };
+  const getDesc = (item: { description?: string | null; description_en?: string | null }) => isEn ? (item.description_en || item.description) : item.description;
+
+  if (isLoading) {
+    return (
+      <section id="restaurant" className="py-20 bg-gradient-to-b from-background via-muted/20 to-background">
+        <div className="container mx-auto px-4 text-center">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 w-64 bg-muted rounded mx-auto" />
+            <div className="flex gap-4 justify-center">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 w-52 bg-muted rounded-2xl" />)}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!selectedRestaurant) return null;
 
   return (
     <section id="restaurant" className="py-20 bg-gradient-to-b from-background via-muted/20 to-background overflow-hidden">
@@ -59,13 +95,13 @@ const RestaurantMenu = () => {
           <p className="text-muted-foreground max-w-md mx-auto text-sm">{t.restaurant.subtitle}</p>
         </motion.div>
 
-        {MOCK_RESTAURANTS.length > 1 && (
+        {(restaurants?.length ?? 0) > 1 && (
           <div className="flex justify-center gap-2 mb-10">
-            {MOCK_RESTAURANTS.map((r) => (
-              <button key={r.id} onClick={() => { setSelectedRestaurant(r); setActiveCategory(null); setCart([]); }}
-                className={`relative px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-300 ${selectedRestaurant.id === r.id ? "bg-foreground text-background shadow-large scale-105" : "bg-card text-muted-foreground hover:text-foreground border border-border hover:border-foreground/20"}`}>
-                {r.name}
-                {r.deals && r.deals.length > 0 && selectedRestaurant.id !== r.id && (
+            {restaurants!.map((r, idx) => (
+              <button key={r.id} onClick={() => { setSelectedIdx(idx); setActiveCategory(null); setCart([]); }}
+                className={`relative px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-300 ${selectedIdx === idx ? "bg-foreground text-background shadow-large scale-105" : "bg-card text-muted-foreground hover:text-foreground border border-border hover:border-foreground/20"}`}>
+                {getName(r)}
+                {r.deals.length > 0 && selectedIdx !== idx && (
                   <span className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-primary text-primary-foreground rounded-full text-[9px] font-bold flex items-center justify-center">!</span>
                 )}
               </button>
@@ -73,9 +109,9 @@ const RestaurantMenu = () => {
           </div>
         )}
 
-        {selectedRestaurant.deals && selectedRestaurant.deals.length > 0 && (
+        {deals.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto mb-10">
-            {selectedRestaurant.deals.map((deal) => (
+            {deals.map(deal => (
               <div key={deal.id} className="relative rounded-2xl overflow-hidden bg-gradient-to-l from-accent via-accent to-accent/80 p-6 shadow-large">
                 <div className="absolute -top-8 -left-8 w-32 h-32 bg-accent-foreground/5 rounded-full" />
                 <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-accent-foreground/5 rounded-full" />
@@ -85,23 +121,19 @@ const RestaurantMenu = () => {
                       <Zap className="w-5 h-5 text-accent-foreground" />
                       <span className="text-accent-foreground/80 text-xs font-bold uppercase tracking-wider">{t.restaurant.specialDeal}</span>
                     </div>
-                    <h3 className="font-display font-bold text-xl text-accent-foreground mb-1">{deal.title}</h3>
-                    <p className="text-sm text-accent-foreground/70">{deal.description}</p>
+                    <h3 className="font-display font-bold text-xl text-accent-foreground mb-1">{getName(deal)}</h3>
+                    <p className="text-sm text-accent-foreground/70">{getDesc(deal)}</p>
                     <div className="flex items-center gap-2 mt-3">
-                      {deal.items.map((item, i) => (
+                      {(deal.items ?? []).map((item, i) => (
                         <span key={i} className="px-2.5 py-1 bg-accent-foreground/15 backdrop-blur-sm rounded-full text-xs text-accent-foreground font-medium">{item}</span>
                       ))}
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2 ms-6">
-                    <span className="text-accent-foreground/50 line-through text-sm">₪{deal.originalPrice}</span>
+                    <span className="text-accent-foreground/50 line-through text-sm">₪{deal.original_price}</span>
                     <div className="w-20 h-20 rounded-full bg-accent-foreground flex items-center justify-center">
-                      <span className="text-2xl font-display font-black text-accent">₪{deal.dealPrice}</span>
+                      <span className="text-2xl font-display font-black text-accent">₪{deal.deal_price}</span>
                     </div>
-                    <button onClick={() => addToCart({ id: deal.id, name: deal.title, description: deal.description, price: deal.dealPrice, category: "מבצעים" })}
-                      className="px-5 py-2 bg-accent-foreground text-accent rounded-xl text-sm font-bold hover:scale-105 transition-transform btn-spring">
-                      {t.restaurant.addToCart}
-                    </button>
                   </div>
                 </div>
               </div>
@@ -109,9 +141,11 @@ const RestaurantMenu = () => {
           </motion.div>
         )}
 
-        {selectedRestaurant.deliveryNote && (
+        {selectedRestaurant.delivery_note && (
           <div className="max-w-2xl mx-auto mb-8 text-center">
-            <span className="inline-block px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-medium border border-accent/20">🛵 {selectedRestaurant.deliveryNote}</span>
+            <span className="inline-block px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-medium border border-accent/20">
+              🛵 {isEn ? (selectedRestaurant.delivery_note_en || selectedRestaurant.delivery_note) : selectedRestaurant.delivery_note}
+            </span>
           </div>
         )}
 
@@ -120,7 +154,7 @@ const RestaurantMenu = () => {
             className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-all duration-200 ${!activeCategory ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
             🍴 {t.restaurant.all}
           </button>
-          {categories.map((cat) => (
+          {categories.map(cat => (
             <button key={cat} onClick={() => setActiveCategory(cat)}
               className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-all duration-200 ${activeCategory === cat ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
               {categoryEmoji[cat] || "•"} {catTranslations[cat] || cat}
@@ -145,22 +179,22 @@ const RestaurantMenu = () => {
                   <div className="h-2 bg-gradient-to-l from-primary/60 to-primary" />
                   <div className="p-4">
                     <div className="w-full h-28 rounded-xl overflow-hidden mb-3 bg-muted/50">
-                      {item.image ? (
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                      {item.image_url ? (
+                        <img src={item.image_url} alt={getName(item)} className="w-full h-full object-cover" loading="lazy" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-4xl">{categoryEmoji[item.category] || "🍽️"}</div>
                       )}
                     </div>
                     <div className="flex items-start justify-between mb-1">
-                      <h3 className="font-display font-bold text-card-foreground text-sm leading-tight">{item.name}</h3>
-                      {item.isPopular && (
+                      <h3 className="font-display font-bold text-card-foreground text-sm leading-tight">{getName(item)}</h3>
+                      {item.is_popular && (
                         <span className="flex-shrink-0 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-warning/15 text-warning">
                           <Star className="w-2.5 h-2.5 fill-warning" />
                           {t.restaurant.popular}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{item.description}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{getDesc(item)}</p>
                     <div className="flex items-center justify-between">
                       <span className="font-display font-black text-lg text-foreground">₪{item.price}</span>
                       {qty === 0 ? (
