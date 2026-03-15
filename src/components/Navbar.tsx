@@ -48,14 +48,14 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Hamburger toggle — all screens */}
+          {/* Hamburger toggle */}
           <button
             className="p-2 rounded-lg hover:bg-secondary transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
 
       {/* Mobile menu */}
       <AnimatePresence>
