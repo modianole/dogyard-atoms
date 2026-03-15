@@ -69,12 +69,12 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/70 via-foreground/40 to-transparent" style={{ zIndex: 2 }} />
 
         {/* Content overlay */}
-        <div className="relative container mx-auto h-full flex items-center justify-center px-4" style={{ zIndex: 3 }}>
+        <div className="relative container mx-auto h-full flex items-center justify-end px-4" style={{ zIndex: 3 }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="max-w-lg text-center"
+            className="max-w-lg text-right"
           >
             <span className="inline-block px-3 py-1 mb-4 rounded-full text-xs font-medium bg-card/20 backdrop-blur-sm text-primary-foreground border border-primary-foreground/20">
               הרשות החברתית לבעלי כלבים
@@ -89,14 +89,14 @@ const HeroSection = () => {
               מפגשים עם החבר׳ה מהגינה
             </p>
 
-            <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="flex items-center justify-end gap-3 mb-6">
               <MapPin className="w-4 h-4 text-accent" />
               <span className="text-sm text-primary-foreground/70 font-medium">
                 100+ גינות כלבים ממופות בתל אביב
               </span>
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-end">
               <button
                 onClick={() => setMapOpen(true)}
                 className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-bold text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3"
