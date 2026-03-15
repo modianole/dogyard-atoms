@@ -75,22 +75,21 @@ const HeroSection = () => {
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
           style={{ opacity: activeSlot === "B" ? 1 : 0 }}
         />
-        {/* Eyelid blink - top */}
+        {/* Blink overlay — scales vertically like a real eye blink */}
         <div
-          className="absolute inset-x-0 top-0 bg-foreground pointer-events-none z-10"
+          ref={blinkOverlayRef}
+          className="absolute inset-0 bg-foreground pointer-events-none z-10"
           style={{
-            height: "50%",
-            transform: blinkPhase === "closing" || blinkPhase === "closed" ? "translateY(0)" : "translateY(-100%)",
-            transition: blinkPhase === "closing" ? "transform 0.5s ease-in" : blinkPhase === "opening" ? "transform 0.5s ease-out" : "none",
-          }}
-        />
-        {/* Eyelid blink - bottom */}
-        <div
-          className="absolute inset-x-0 bottom-0 bg-foreground pointer-events-none z-10"
-          style={{
-            height: "50%",
-            transform: blinkPhase === "closing" || blinkPhase === "closed" ? "translateY(0)" : "translateY(100%)",
-            transition: blinkPhase === "closing" ? "transform 0.5s ease-in" : blinkPhase === "opening" ? "transform 0.5s ease-out" : "none",
+            transformOrigin: "center center",
+            transform:
+              blinkPhase === "closing" ? "scaleY(1)" :
+              blinkPhase === "closed" ? "scaleY(1)" :
+              blinkPhase === "opening" ? "scaleY(0)" :
+              "scaleY(0)",
+            transition:
+              blinkPhase === "closing" ? "transform 0.4s cubic-bezier(0.4, 0, 1, 1)" :
+              blinkPhase === "opening" ? "transform 0.4s cubic-bezier(0, 0, 0.2, 1)" :
+              "none",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
