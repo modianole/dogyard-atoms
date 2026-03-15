@@ -10,6 +10,7 @@ const HeroSection = () => {
   const videoARef = useRef<HTMLVideoElement>(null);
   const videoBRef = useRef<HTMLVideoElement>(null);
   const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
+  const [mapOpen, setMapOpen] = useState(false);
   const currentIndexRef = useRef(0);
 
   // Preload next video into the hidden slot
