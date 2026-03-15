@@ -229,7 +229,7 @@ const RestaurantMenu = () => {
                     <span className="text-background/60 text-xs ms-2">· ₪{cartTotal}</span>
                   </div>
                 </div>
-                <button className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl font-bold text-sm hover:opacity-90 transition-opacity btn-spring">
+                <button className="px-8 py-3.5 bg-primary text-primary-foreground rounded-xl font-bold text-base hover:opacity-90 transition-opacity btn-spring md:px-6 md:py-2.5 md:text-sm">
                   {t.restaurant.sendOrder}
                 </button>
               </div>

@@ -94,7 +94,7 @@ const Navbar = () => {
                 {menuLabels.map((label, i) => {
                   const Icon = icons[i];
                   return (
-                    <button key={i} onClick={() => scrollTo(menuHrefs[i])} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-card-foreground hover:bg-muted transition-colors mb-1">
+                    <button key={i} onClick={() => scrollTo(menuHrefs[i])} className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-base font-medium text-card-foreground hover:bg-muted transition-colors mb-1">
                       <Icon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       {label}
                     </button>
