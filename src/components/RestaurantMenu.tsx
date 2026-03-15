@@ -60,7 +60,10 @@ const RestaurantMenu = () => {
   const categoryEmoji: Record<string, string> = { "מנות עיקריות": "🍽️", "סלטים": "🥗", "שתייה": "☕", "חטיפים": "🥨", "קינוחים": "🍰" };
   const catTranslations = t.restaurant.categories as Record<string, string>;
 
-  const getName = (item: { name: string; name_en?: string | null }) => isEn ? (item.name_en || item.name) : item.name;
+  const getName = (item: { name?: string; name_en?: string | null; title?: string; title_en?: string | null }) => {
+    if (isEn) return item.name_en || item.title_en || item.name || item.title || "";
+    return item.name || item.title || "";
+  };
   const getDesc = (item: { description?: string | null; description_en?: string | null }) => isEn ? (item.description_en || item.description) : item.description;
 
   if (isLoading) {
