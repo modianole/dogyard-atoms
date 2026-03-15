@@ -1,96 +1,33 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
-import { useRef, useCallback, useState, useEffect } from "react";
+import { useRef, useCallback, useEffect } from "react";
 
 const VIDEOS = ["/hero-video.mp4", "/hero-video-2.mp4", "/hero-video-3.mp4"];
 
 const HeroSection = () => {
-  const videoARef = useRef<HTMLVideoElement>(null);
-  const videoBRef = useRef<HTMLVideoElement>(null);
-  const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
-  const [blinkPhase, setBlinkPhase] = useState<"open" | "closing" | "closed" | "opening">("open");
-  const currentIndexRef = useRef(0);
-  const blinkOverlayRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const indexRef = useRef(0);
 
-  const preloadNext = useCallback((nextIndex: number, targetRef: React.RefObject<HTMLVideoElement>) => {
-    if (targetRef.current) {
-      targetRef.current.src = VIDEOS[nextIndex];
-      targetRef.current.load();
+  const playNext = useCallback(() => {
+    indexRef.current = (indexRef.current + 1) % VIDEOS.length;
+    if (videoRef.current) {
+      videoRef.current.src = VIDEOS[indexRef.current];
+      videoRef.current.play();
     }
   }, []);
-
-  useEffect(() => {
-    preloadNext(1, videoBRef);
-  }, [preloadNext]);
-
-  const handleEnded = useCallback(() => {
-    // Animate closing
-    setBlinkPhase("closing");
-
-    setTimeout(() => {
-      setBlinkPhase("closed");
-
-      const nextIndex = (currentIndexRef.current + 1) % VIDEOS.length;
-      currentIndexRef.current = nextIndex;
-
-      if (activeSlot === "A") {
-        videoBRef.current?.play();
-        setActiveSlot("B");
-        const preloadIndex = (nextIndex + 1) % VIDEOS.length;
-        preloadNext(preloadIndex, videoARef);
-      } else {
-        videoARef.current?.play();
-        setActiveSlot("A");
-        const preloadIndex = (nextIndex + 1) % VIDEOS.length;
-        preloadNext(preloadIndex, videoBRef);
-      }
-
-      // Small pause while "closed", then open
-      setTimeout(() => {
-        setBlinkPhase("opening");
-        setTimeout(() => setBlinkPhase("open"), 400);
-      }, 150);
-    }, 400);
-  }, [activeSlot, preloadNext]);
 
   return (
     <section className="relative overflow-hidden">
       {/* Hero Video */}
       <div className="relative h-[520px] md:h-[600px]">
         <video
-          ref={videoARef}
+          ref={videoRef}
           autoPlay
           muted
           playsInline
-          onEnded={activeSlot === "A" ? handleEnded : undefined}
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-          style={{ opacity: activeSlot === "A" ? 1 : 0 }}
+          onEnded={playNext}
+          className="absolute inset-0 w-full h-full object-cover"
           src={VIDEOS[0]}
-        />
-        <video
-          ref={videoBRef}
-          muted
-          playsInline
-          onEnded={activeSlot === "B" ? handleEnded : undefined}
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-          style={{ opacity: activeSlot === "B" ? 1 : 0 }}
-        />
-        {/* Blink overlay — scales vertically like a real eye blink */}
-        <div
-          ref={blinkOverlayRef}
-          className="absolute inset-0 bg-foreground pointer-events-none z-10"
-          style={{
-            transformOrigin: "center center",
-            transform:
-              blinkPhase === "closing" ? "scaleY(1)" :
-              blinkPhase === "closed" ? "scaleY(1)" :
-              blinkPhase === "opening" ? "scaleY(0)" :
-              "scaleY(0)",
-            transition:
-              blinkPhase === "closing" ? "transform 0.4s cubic-bezier(0.4, 0, 1, 1)" :
-              blinkPhase === "opening" ? "transform 0.4s cubic-bezier(0, 0, 0.2, 1)" :
-              "none",
-          }}
         />
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
 
