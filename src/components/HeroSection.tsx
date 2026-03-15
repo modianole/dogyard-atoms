@@ -1,36 +1,68 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
-import { useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 
 const VIDEOS = ["/hero-video.mp4", "/hero-video-2.mp4", "/hero-video-3.mp4"];
 
 const HeroSection = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const videoARef = useRef<HTMLVideoElement>(null);
+  const videoBRef = useRef<HTMLVideoElement>(null);
+  const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
+  const currentIndexRef = useRef(0);
+
+  const preloadNext = useCallback((nextIndex: number, targetRef: React.RefObject<HTMLVideoElement>) => {
+    if (targetRef.current) {
+      targetRef.current.src = VIDEOS[nextIndex];
+      targetRef.current.load();
+    }
+  }, []);
+
+  useEffect(() => {
+    // Preload second video into slot B
+    preloadNext(1, videoBRef);
+  }, [preloadNext]);
 
   const handleEnded = useCallback(() => {
-    setCurrentIndex((prev) => {
-      const next = (prev + 1) % VIDEOS.length;
-      if (videoRef.current) {
-        videoRef.current.src = VIDEOS[next];
-        videoRef.current.play();
-      }
-      return next;
-    });
-  }, []);
+    const nextIndex = (currentIndexRef.current + 1) % VIDEOS.length;
+    currentIndexRef.current = nextIndex;
+
+    if (activeSlot === "A") {
+      // B is preloaded, switch to B
+      videoBRef.current?.play();
+      setActiveSlot("B");
+      // Preload next into A
+      const preloadIndex = (nextIndex + 1) % VIDEOS.length;
+      preloadNext(preloadIndex, videoARef);
+    } else {
+      // A is preloaded, switch to A
+      videoARef.current?.play();
+      setActiveSlot("A");
+      const preloadIndex = (nextIndex + 1) % VIDEOS.length;
+      preloadNext(preloadIndex, videoBRef);
+    }
+  }, [activeSlot, preloadNext]);
 
   return (
     <section className="relative overflow-hidden">
       {/* Hero Video */}
       <div className="relative h-[520px] md:h-[600px]">
         <video
-          ref={videoRef}
+          ref={videoARef}
           autoPlay
           muted
           playsInline
-          onEnded={handleEnded}
-          className="absolute inset-0 w-full h-full object-cover"
+          onEnded={activeSlot === "A" ? handleEnded : undefined}
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+          style={{ opacity: activeSlot === "A" ? 1 : 0 }}
           src={VIDEOS[0]}
+        />
+        <video
+          ref={videoBRef}
+          muted
+          playsInline
+          onEnded={activeSlot === "B" ? handleEnded : undefined}
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+          style={{ opacity: activeSlot === "B" ? 1 : 0 }}
         />
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
 
