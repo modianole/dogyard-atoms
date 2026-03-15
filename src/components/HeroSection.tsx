@@ -69,7 +69,7 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/70 via-foreground/40 to-transparent" style={{ zIndex: 2 }} />
 
         {/* Content overlay */}
-        <div className="relative container mx-auto h-full flex items-center justify-end px-4" style={{ zIndex: 3 }}>
+        <div className="relative container mx-auto h-full flex items-center justify-start px-4" style={{ zIndex: 3 }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
