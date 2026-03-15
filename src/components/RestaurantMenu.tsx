@@ -115,11 +115,11 @@ const RestaurantMenu = () => {
             {selectedRestaurant.deals.map((deal) => (
               <div
                 key={deal.id}
-                className="relative rounded-2xl overflow-hidden bg-gradient-to-l from-primary via-primary to-primary/80 p-6 shadow-large"
+                className="relative rounded-2xl overflow-hidden bg-gradient-to-l from-accent via-accent to-accent/80 p-6 shadow-large"
               >
                 {/* Decorative circles */}
-                <div className="absolute -top-8 -left-8 w-32 h-32 bg-primary-foreground/5 rounded-full" />
-                <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-primary-foreground/5 rounded-full" />
+                <div className="absolute -top-8 -left-8 w-32 h-32 bg-accent-foreground/5 rounded-full" />
+                <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-accent-foreground/5 rounded-full" />
 
                 <div className="relative flex items-center justify-between">
                   <div>
