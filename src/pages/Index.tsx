@@ -4,6 +4,7 @@ import FeaturesGrid from "@/components/FeaturesGrid";
 import TopGardens from "@/components/TopGardens";
 import PeakHoursChart from "@/components/PeakHoursChart";
 import HazardReport from "@/components/HazardReport";
+import RestaurantMenu from "@/components/RestaurantMenu";
 import CommunitySection from "@/components/CommunitySection";
 import Footer from "@/components/Footer";
 
@@ -16,6 +17,7 @@ const Index = () => {
       <TopGardens />
       <PeakHoursChart />
       <HazardReport />
+      <RestaurantMenu />
       <CommunitySection />
       <Footer />
     </div>
