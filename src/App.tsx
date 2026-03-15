@@ -7,6 +7,8 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import Index from "./pages/Index.tsx";
 import Install from "./pages/Install.tsx";
 import Download from "./pages/Download.tsx";
+import Auth from "./pages/Auth.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
