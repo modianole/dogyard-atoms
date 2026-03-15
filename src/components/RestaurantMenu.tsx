@@ -124,27 +124,27 @@ const RestaurantMenu = () => {
                 <div className="relative flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <Zap className="w-5 h-5 text-primary-foreground" />
-                      <span className="text-primary-foreground/80 text-xs font-bold uppercase tracking-wider">מבצע מיוחד</span>
+                      <Zap className="w-5 h-5 text-accent-foreground" />
+                      <span className="text-accent-foreground/80 text-xs font-bold uppercase tracking-wider">מבצע מיוחד</span>
                     </div>
-                    <h3 className="font-display font-bold text-xl text-primary-foreground mb-1">{deal.title}</h3>
-                    <p className="text-sm text-primary-foreground/70">{deal.description}</p>
+                    <h3 className="font-display font-bold text-xl text-accent-foreground mb-1">{deal.title}</h3>
+                    <p className="text-sm text-accent-foreground/70">{deal.description}</p>
                     <div className="flex items-center gap-2 mt-3">
                       {deal.items.map((item, i) => (
-                        <span key={i} className="px-2.5 py-1 bg-primary-foreground/15 backdrop-blur-sm rounded-full text-xs text-primary-foreground font-medium">
+                        <span key={i} className="px-2.5 py-1 bg-accent-foreground/15 backdrop-blur-sm rounded-full text-xs text-accent-foreground font-medium">
                           {item}
                         </span>
                       ))}
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2 mr-6">
-                    <span className="text-primary-foreground/50 line-through text-sm">₪{deal.originalPrice}</span>
-                    <div className="w-20 h-20 rounded-full bg-primary-foreground flex items-center justify-center">
-                      <span className="text-2xl font-display font-black text-primary">₪{deal.dealPrice}</span>
+                    <span className="text-accent-foreground/50 line-through text-sm">₪{deal.originalPrice}</span>
+                    <div className="w-20 h-20 rounded-full bg-accent-foreground flex items-center justify-center">
+                      <span className="text-2xl font-display font-black text-accent">₪{deal.dealPrice}</span>
                     </div>
                     <button
                       onClick={() => addToCart({ id: deal.id, name: deal.title, description: deal.description, price: deal.dealPrice, category: "מבצעים" })}
-                      className="px-5 py-2 bg-primary-foreground text-primary rounded-xl text-sm font-bold hover:scale-105 transition-transform btn-spring"
+                      className="px-5 py-2 bg-accent-foreground text-accent rounded-xl text-sm font-bold hover:scale-105 transition-transform btn-spring"
                     >
                       הוסף לסל
                     </button>
