@@ -63,10 +63,10 @@ const HeroSection = () => {
           className="absolute inset-0 w-full h-full object-cover"
           style={{ zIndex: activeSlot === "B" ? 1 : 0 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
+        <div className="absolute inset-0 bg-gradient-to-l from-foreground/70 via-foreground/40 to-transparent" style={{ zIndex: 2 }} />
 
         {/* Content overlay */}
-        <div className="relative container mx-auto h-full flex items-end pb-16 md:pb-20 px-4">
+        <div className="relative container mx-auto h-full flex items-center px-4" style={{ zIndex: 3 }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
