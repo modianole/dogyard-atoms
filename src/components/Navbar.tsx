@@ -31,9 +31,7 @@ const Navbar = () => {
     setOpen(false);
     if (user) {
       await signOut();
-      return;
     }
-    window.location.assign("/auth");
   };
 
   return (
