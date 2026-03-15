@@ -17,6 +17,7 @@ const menuSections = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { language, toggleLanguage } = useLanguage();
 
   const scrollTo = (href: string) => {
     setOpen(false);
