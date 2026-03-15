@@ -69,12 +69,12 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/70 via-foreground/40 to-transparent" style={{ zIndex: 2 }} />
 
         {/* Content overlay */}
-        <div className="relative container mx-auto h-full flex items-center justify-end px-4" style={{ zIndex: 3 }}>
+        <div className="relative container mx-auto h-full flex items-center justify-center px-4" style={{ zIndex: 3 }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="max-w-lg text-right"
+            className="max-w-lg text-center"
           >
             <span className="inline-block px-3 py-1 mb-4 rounded-full text-xs font-medium bg-card/20 backdrop-blur-sm text-primary-foreground border border-primary-foreground/20">
               הרשות החברתית לבעלי כלבים
