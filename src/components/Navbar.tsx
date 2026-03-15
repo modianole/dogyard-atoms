@@ -113,7 +113,7 @@ const Navbar = () => {
                     {t.auth.logout}
                   </button>
                 ) : (
-                  <a href="/auth" onClick={() => setOpen(false)} className="relative z-[130] pointer-events-auto w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                  <a href="/auth" className="relative z-[130] pointer-events-auto w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
                     <LogIn className="w-4 h-4" />
                     {t.nav.login}
                   </a>
