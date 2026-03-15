@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { MapPin, Dog, Home, LogIn, LogOut, User, Menu, X, UtensilsCrossed, BarChart3, AlertTriangle, Users, Star, Store } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
@@ -11,7 +10,6 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { language, toggleLanguage, t } = useLanguage();
   const { user, signOut } = useAuth();
-  const navigate = useNavigate();
 
   const menuLabels = [
     t.nav.home, t.nav.features, t.nav.topGardens, t.nav.peakHours,
@@ -29,13 +27,13 @@ const Navbar = () => {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleAuthClick = () => {
+  const handleAuthClick = async () => {
     setOpen(false);
     if (user) {
-      signOut();
-    } else {
-      navigate("/auth");
+      await signOut();
+      return;
     }
+    window.location.assign("/auth");
   };
 
   return (
