@@ -16,13 +16,14 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    if (user) {
+    // Only redirect when auth has fully loaded AND user is confirmed
+    if (!authLoading && user) {
       window.location.assign("/");
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,6 +66,15 @@ const Auth = () => {
     });
     if (error) toast.error(error.message);
   };
+
+  // Show nothing while auth is still loading to prevent flash
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Dog className="w-12 h-12 text-primary animate-pulse" />
+      </div>
+    );
+  }
 
   if (forgotPassword) {
     return (
