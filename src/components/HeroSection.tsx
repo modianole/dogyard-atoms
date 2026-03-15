@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
-import { useRef, useCallback, useState, useEffect } from "react";
+import { useRef, useCallback, useState, useEffect, lazy, Suspense } from "react";
+
+const NearbyGardenMap = lazy(() => import("./NearbyGardenMap"));
 
 const VIDEOS = ["/hero-video.mp4", "/hero-video-2.mp4", "/hero-video-3.mp4"];
 
