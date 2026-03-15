@@ -1,33 +1,67 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 
 const VIDEOS = ["/hero-video.mp4", "/hero-video-2.mp4", "/hero-video-3.mp4"];
 
 const HeroSection = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const indexRef = useRef(0);
+  const videoARef = useRef<HTMLVideoElement>(null);
+  const videoBRef = useRef<HTMLVideoElement>(null);
+  const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
+  const currentIndexRef = useRef(0);
 
-  const playNext = useCallback(() => {
-    indexRef.current = (indexRef.current + 1) % VIDEOS.length;
-    if (videoRef.current) {
-      videoRef.current.src = VIDEOS[indexRef.current];
-      videoRef.current.play();
+  // Preload next video into the hidden slot
+  useEffect(() => {
+    if (videoBRef.current) {
+      videoBRef.current.src = VIDEOS[1];
+      videoBRef.current.load();
     }
   }, []);
+
+  const handleEnded = useCallback(() => {
+    const nextIndex = (currentIndexRef.current + 1) % VIDEOS.length;
+    currentIndexRef.current = nextIndex;
+    const preloadIndex = (nextIndex + 1) % VIDEOS.length;
+
+    if (activeSlot === "A") {
+      videoBRef.current?.play();
+      setActiveSlot("B");
+      // Preload next into A (now hidden)
+      if (videoARef.current) {
+        videoARef.current.src = VIDEOS[preloadIndex];
+        videoARef.current.load();
+      }
+    } else {
+      videoARef.current?.play();
+      setActiveSlot("A");
+      if (videoBRef.current) {
+        videoBRef.current.src = VIDEOS[preloadIndex];
+        videoBRef.current.load();
+      }
+    }
+  }, [activeSlot]);
 
   return (
     <section className="relative overflow-hidden">
       {/* Hero Video */}
       <div className="relative h-[520px] md:h-[600px]">
         <video
-          ref={videoRef}
+          ref={videoARef}
           autoPlay
           muted
           playsInline
-          onEnded={playNext}
+          onEnded={activeSlot === "A" ? handleEnded : undefined}
           className="absolute inset-0 w-full h-full object-cover"
+          style={{ zIndex: activeSlot === "A" ? 1 : 0 }}
           src={VIDEOS[0]}
+        />
+        <video
+          ref={videoBRef}
+          muted
+          playsInline
+          onEnded={activeSlot === "B" ? handleEnded : undefined}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ zIndex: activeSlot === "B" ? 1 : 0 }}
         />
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
 
