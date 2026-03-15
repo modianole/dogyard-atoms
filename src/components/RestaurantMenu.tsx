@@ -56,7 +56,7 @@ const RestaurantMenu = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-background via-muted/20 to-background overflow-hidden">
+    <section id="restaurant" className="py-20 bg-gradient-to-b from-background via-muted/20 to-background overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div

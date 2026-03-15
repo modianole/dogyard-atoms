@@ -9,7 +9,7 @@ const stats = [
 
 const CommunitySection = () => {
   return (
-    <section className="relative py-24 overflow-hidden">
+    <section id="community" className="relative py-24 overflow-hidden">
       {/* Background image */}
       <img
         src={communityImage}
