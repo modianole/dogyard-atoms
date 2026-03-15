@@ -227,9 +227,15 @@ const RestaurantMenu = () => {
                   <div className="h-2 bg-gradient-to-l from-primary/60 to-primary" />
 
                   <div className="p-4">
-                    {/* Emoji placeholder for food image */}
-                    <div className="w-full h-28 rounded-xl bg-muted/50 flex items-center justify-center mb-3 text-4xl">
-                      {categoryEmoji[item.category] || "🍽️"}
+                    {/* Food image */}
+                    <div className="w-full h-28 rounded-xl overflow-hidden mb-3 bg-muted/50">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-4xl">
+                          {categoryEmoji[item.category] || "🍽️"}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-start justify-between mb-1">
