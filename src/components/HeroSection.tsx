@@ -1,21 +1,24 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
-import heroImage from "@/assets/hero-dogs.jpg";
 
 const HeroSection = () => {
   return (
     <section className="relative overflow-hidden">
-      {/* Hero Image */}
+      {/* Hero Video */}
       <div className="relative h-[520px] md:h-[600px]">
-        <img
-          src={heroImage}
-          alt="כלבים משחקים בגינה"
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
           className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-l from-foreground/70 via-foreground/40 to-transparent" />
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
 
         {/* Content overlay */}
-        <div className="relative container mx-auto h-full flex items-center px-4">
+        <div className="relative container mx-auto h-full flex items-end pb-16 md:pb-20 px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
