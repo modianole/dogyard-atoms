@@ -10,6 +10,7 @@ const HeroSection = () => {
   const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
   const [blinkPhase, setBlinkPhase] = useState<"open" | "closing" | "closed" | "opening">("open");
   const currentIndexRef = useRef(0);
+  const blinkOverlayRef = useRef<HTMLDivElement>(null);
 
   const preloadNext = useCallback((nextIndex: number, targetRef: React.RefObject<HTMLVideoElement>) => {
     if (targetRef.current) {
