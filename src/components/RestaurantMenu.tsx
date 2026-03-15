@@ -198,14 +198,14 @@ const RestaurantMenu = () => {
                     <div className="flex items-center justify-between">
                       <span className="font-display font-black text-lg text-foreground">₪{item.price}</span>
                       {qty === 0 ? (
-                        <button onClick={() => addToCart(item)} className="w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:scale-110 transition-transform btn-spring">
-                          <Plus className="w-4 h-4" />
+                        <button onClick={() => addToCart(item)} className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:scale-110 transition-transform btn-spring md:w-9 md:h-9">
+                          <Plus className="w-5 h-5 md:w-4 md:h-4" />
                         </button>
                       ) : (
                         <div className="flex items-center gap-2 bg-primary/10 rounded-xl px-1">
-                          <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-lg text-primary hover:bg-primary/20 flex items-center justify-center transition-colors"><Minus className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 rounded-lg text-primary hover:bg-primary/20 flex items-center justify-center transition-colors md:w-7 md:h-7"><Minus className="w-4 h-4 md:w-3.5 md:h-3.5" /></button>
                           <span className="text-sm font-bold text-primary min-w-[1ch] text-center">{qty}</span>
-                          <button onClick={() => addToCart(item)} className="w-7 h-7 rounded-lg text-primary hover:bg-primary/20 flex items-center justify-center transition-colors"><Plus className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => addToCart(item)} className="w-9 h-9 rounded-lg text-primary hover:bg-primary/20 flex items-center justify-center transition-colors md:w-7 md:h-7"><Plus className="w-4 h-4 md:w-3.5 md:h-3.5" /></button>
                         </div>
                       )}
                     </div>
