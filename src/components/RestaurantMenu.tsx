@@ -151,12 +151,12 @@ const RestaurantMenu = () => {
 
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           <button onClick={() => setActiveCategory(null)}
-            className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-all duration-200 ${!activeCategory ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
+            className={`px-6 py-3 rounded-2xl text-base font-bold transition-all duration-200 md:px-5 md:py-2.5 md:text-sm ${!activeCategory ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
             🍴 {t.restaurant.all}
           </button>
           {categories.map(cat => (
             <button key={cat} onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-all duration-200 ${activeCategory === cat ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
+              className={`px-6 py-3 rounded-2xl text-base font-bold transition-all duration-200 md:px-5 md:py-2.5 md:text-sm ${activeCategory === cat ? "bg-foreground text-background shadow-md" : "bg-card text-muted-foreground hover:bg-muted border border-border"}`}>
               {categoryEmoji[cat] || "•"} {catTranslations[cat] || cat}
             </button>
           ))}
