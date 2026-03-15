@@ -74,10 +74,23 @@ const HeroSection = () => {
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
           style={{ opacity: activeSlot === "B" ? 1 : 0 }}
         />
-        {/* Blink overlay */}
+        {/* Eyelid blink - top */}
         <div
-          className="absolute inset-0 bg-foreground pointer-events-none transition-opacity duration-150 z-10"
-          style={{ opacity: blinking ? 1 : 0 }}
+          className="absolute inset-x-0 top-0 bg-foreground pointer-events-none z-10"
+          style={{
+            height: "50%",
+            transform: blinkPhase === "closing" || blinkPhase === "closed" ? "translateY(0)" : "translateY(-100%)",
+            transition: blinkPhase === "closing" ? "transform 0.5s ease-in" : blinkPhase === "opening" ? "transform 0.5s ease-out" : "none",
+          }}
+        />
+        {/* Eyelid blink - bottom */}
+        <div
+          className="absolute inset-x-0 bottom-0 bg-foreground pointer-events-none z-10"
+          style={{
+            height: "50%",
+            transform: blinkPhase === "closing" || blinkPhase === "closed" ? "translateY(0)" : "translateY(100%)",
+            transition: blinkPhase === "closing" ? "transform 0.5s ease-in" : blinkPhase === "opening" ? "transform 0.5s ease-out" : "none",
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
 
