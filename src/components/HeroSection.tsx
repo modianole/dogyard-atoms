@@ -89,20 +89,22 @@ const HeroSection = () => {
               מפגשים עם החבר׳ה מהגינה
             </p>
 
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center gap-3 mb-6">
               <MapPin className="w-4 h-4 text-accent" />
               <span className="text-sm text-primary-foreground/70 font-medium">
                 100+ גינות כלבים ממופות בתל אביב
               </span>
             </div>
 
-            <button
-              onClick={() => setMapOpen(true)}
-              className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-bold text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3"
-            >
-              <MapPin className="w-5 h-5" />
-              לגינה שלי
-            </button>
+            <div className="flex justify-center">
+              <button
+                onClick={() => setMapOpen(true)}
+                className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-bold text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3"
+              >
+                <MapPin className="w-5 h-5" />
+                לגינה שלי
+              </button>
+            </div>
           </motion.div>
         </div>
       </div>
