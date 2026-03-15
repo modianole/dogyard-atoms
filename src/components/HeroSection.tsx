@@ -96,13 +96,19 @@ const HeroSection = () => {
               </span>
             </div>
 
-            <button className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-bold text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3">
+            <button
+              onClick={() => setMapOpen(true)}
+              className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-bold text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3"
+            >
               <MapPin className="w-5 h-5" />
               לגינה שלי
             </button>
           </motion.div>
         </div>
       </div>
+      <Suspense fallback={null}>
+        <NearbyGardenMap open={mapOpen} onClose={() => setMapOpen(false)} />
+      </Suspense>
     </section>
   );
 };
