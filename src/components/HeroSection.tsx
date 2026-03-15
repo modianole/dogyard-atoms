@@ -69,6 +69,11 @@ const HeroSection = () => {
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
           style={{ opacity: activeSlot === "B" ? 1 : 0 }}
         />
+        {/* Blink overlay */}
+        <div
+          className="absolute inset-0 bg-foreground pointer-events-none transition-opacity duration-150 z-10"
+          style={{ opacity: blinking ? 1 : 0 }}
+        />
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/50 to-foreground/20" />
 
         {/* Content overlay */}
