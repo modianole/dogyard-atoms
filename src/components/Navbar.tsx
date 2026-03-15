@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { MapPin, Dog, Home, LogIn, User, Menu, X, UtensilsCrossed, BarChart3, AlertTriangle, Users, Star, Store } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { MapPin, Dog, Home, LogIn, LogOut, User, Menu, X, UtensilsCrossed, BarChart3, AlertTriangle, Users, Star, Store } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
 
 const icons = [Home, Star, MapPin, BarChart3, AlertTriangle, UtensilsCrossed, MapPin, Users, Store];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { language, toggleLanguage, t } = useLanguage();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const menuLabels = [
     t.nav.home, t.nav.features, t.nav.topGardens, t.nav.peakHours,
@@ -23,6 +27,15 @@ const Navbar = () => {
     }
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleAuthClick = () => {
+    setOpen(false);
+    if (user) {
+      signOut();
+    } else {
+      navigate("/auth");
+    }
   };
 
   return (
@@ -43,12 +56,9 @@ const Navbar = () => {
             </button>
 
             <div className="hidden md:flex items-center gap-2">
-              <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
-                <User className="w-4 h-4" />
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
-                <LogIn className="w-4 h-4" />
-                <span>{t.nav.login}</span>
+              <button onClick={handleAuthClick} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                {user ? <LogOut className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
+                <span>{user ? t.auth.logout : t.nav.login}</span>
               </button>
             </div>
 
@@ -94,9 +104,9 @@ const Navbar = () => {
                   <Dog className="w-4 h-4" />
                   {t.nav.myDog}
                 </button>
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
-                  <LogIn className="w-4 h-4" />
-                  {t.nav.login}
+                <button onClick={handleAuthClick} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity">
+                  {user ? <LogOut className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
+                  {user ? t.auth.logout : t.nav.login}
                 </button>
               </div>
             </motion.div>

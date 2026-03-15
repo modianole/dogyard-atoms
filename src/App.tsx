@@ -7,6 +7,8 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import Index from "./pages/Index.tsx";
 import Install from "./pages/Install.tsx";
 import Download from "./pages/Download.tsx";
+import Auth from "./pages/Auth.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -22,6 +24,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/install" element={<Install />} />
           <Route path="/download" element={<Download />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
