@@ -8,6 +8,15 @@ export interface MenuItem {
   isPopular?: boolean;
 }
 
+export interface Deal {
+  id: string;
+  title: string;
+  description: string;
+  originalPrice: number;
+  dealPrice: number;
+  items: string[];
+}
+
 export interface Restaurant {
   id: string;
   name: string;
@@ -16,4 +25,5 @@ export interface Restaurant {
   phone?: string;
   deliveryNote?: string;
   menu: MenuItem[];
+  deals?: Deal[];
 }

@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { UtensilsCrossed, Phone, Star, ShoppingBag, ChevronDown } from "lucide-react";
+import { UtensilsCrossed, Phone, Star, ShoppingBag, ChevronDown, Zap } from "lucide-react";
 import { MOCK_RESTAURANTS } from "@/data/mockRestaurants";
-import type { Restaurant, MenuItem } from "@/types/restaurant";
+import type { Restaurant, MenuItem, Deal } from "@/types/restaurant";
 
 const RestaurantMenu = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant>(MOCK_RESTAURANTS[0]);
@@ -84,6 +84,46 @@ const RestaurantMenu = () => {
         )}
 
         <div className="max-w-3xl mx-auto">
+          {/* Deals */}
+          {selectedRestaurant.deals && selectedRestaurant.deals.length > 0 && (
+            <div className="mb-8">
+              {selectedRestaurant.deals.map((deal) => (
+                <motion.div
+                  key={deal.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="relative p-5 bg-gradient-to-l from-primary/15 via-primary/5 to-card rounded-xl border-2 border-primary/30 overflow-hidden"
+                >
+                  <div className="absolute top-0 left-0 bg-primary text-primary-foreground px-3 py-1 rounded-br-lg text-xs font-bold flex items-center gap-1">
+                    <Zap className="w-3 h-3" />
+                    מבצע!
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <div>
+                      <h3 className="font-display font-bold text-lg text-card-foreground">{deal.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">{deal.description}</p>
+                      <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                        {deal.items.map((item, i) => (
+                          <span key={i} className="px-2 py-0.5 bg-muted rounded-full">{item}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center gap-1 mr-4">
+                      <span className="text-sm text-muted-foreground line-through">₪{deal.originalPrice}</span>
+                      <span className="text-2xl font-display font-bold text-primary">₪{deal.dealPrice}</span>
+                      <button
+                        onClick={() => addToCart({ id: deal.id, name: deal.title, description: deal.description, price: deal.dealPrice, category: "מבצעים" })}
+                        className="mt-1 px-4 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity"
+                      >
+                        הוסף לסל
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
           {/* Category filters */}
           <div className="flex flex-wrap justify-center gap-2 mb-8">
             <button
