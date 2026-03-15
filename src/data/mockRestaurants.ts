@@ -2,6 +2,33 @@ import type { Restaurant } from "@/types/restaurant";
 
 export const MOCK_RESTAURANTS: Restaurant[] = [
   {
+    id: "r2",
+    name: "קפה דוג",
+    gardenId: 4,
+    phone: "03-555-5678",
+    deliveryNote: "מגיעים תוך 15 דקות!",
+    deals: [
+      {
+        id: "d1",
+        title: "☕ מבצע קפה + סנדוויץ׳",
+        description: "קפה הפוך + סנדוויץ׳ טונה או גבינה לבחירה",
+        originalPrice: 46,
+        dealPrice: 29,
+        items: ["קפה הפוך", "סנדוויץ׳ לבחירה"],
+      },
+    ],
+    menu: [
+      { id: "m9", name: "טוסט גבינות", description: "שלוש גבינות על לחם מחמצת", price: 36, category: "מנות עיקריות", isPopular: true },
+      { id: "m10", name: "שקשוקה", description: "רוטב עגבניות ביתי עם ביצים", price: 42, category: "מנות עיקריות" },
+      { id: "m14", name: "סנדוויץ׳ טונה", description: "טונה, ביצה קשה, ירקות ומיונז", price: 32, category: "מנות עיקריות" },
+      { id: "m11", name: "קפה הפוך", description: "קפה עם חלב מוקצף", price: 14, category: "שתייה", isPopular: true },
+      { id: "m15", name: "אספרסו", description: "אספרסו כפול", price: 12, category: "שתייה" },
+      { id: "m16", name: "קפוצ׳ינו", description: "קפוצ׳ינו עם קצף חלב", price: 16, category: "שתייה" },
+      { id: "m13", name: "סמוזי פירות", description: "מנגו, בננה, תות", price: 24, category: "שתייה", isPopular: true },
+      { id: "m12", name: "מאפה בוקר", description: "קרואסון חמאה טרי", price: 16, category: "חטיפים" },
+    ],
+  },
+  {
     id: "r1",
     name: "ביסטרו הגינה",
     gardenId: 1,
@@ -16,20 +43,6 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
       { id: "m6", name: "נקניקייה במאפה", description: "נקניקייה ביתית בלחמנייה עם חרדל", price: 32, category: "חטיפים" },
       { id: "m7", name: "צ׳יפס ביתי", description: "צ׳יפס קריספי עם מלח גס", price: 22, category: "חטיפים" },
       { id: "m8", name: "עוגת שוקולד", description: "עוגת שוקולד חמה עם גלידה", price: 34, category: "קינוחים" },
-    ],
-  },
-  {
-    id: "r2",
-    name: "קפה דוג",
-    gardenId: 4,
-    phone: "03-555-5678",
-    deliveryNote: "מגיעים תוך 15 דקות!",
-    menu: [
-      { id: "m9", name: "טוסט גבינות", description: "שלוש גבינות על לחם מחמצת", price: 36, category: "מנות עיקריות", isPopular: true },
-      { id: "m10", name: "שקשוקה", description: "רוטב עגבניות ביתי עם ביצים", price: 42, category: "מנות עיקריות" },
-      { id: "m11", name: "קפה הפוך", description: "קפה עם חלב מוקצף", price: 14, category: "שתייה" },
-      { id: "m12", name: "מאפה בוקר", description: "קרואסון חמאה טרי", price: 16, category: "חטיפים" },
-      { id: "m13", name: "סמוזי פירות", description: "מנגו, בננה, תות", price: 24, category: "שתייה", isPopular: true },
     ],
   },
 ];
