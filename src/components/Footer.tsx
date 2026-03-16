@@ -4,13 +4,15 @@ const Footer = () => {
   const { t } = useLanguage();
 
   return (
-    <footer className="bg-foreground py-8">
-      <div className="container mx-auto px-4 text-center">
+    <footer className="relative bg-background border-t border-border/50 py-10 overflow-hidden">
+      <div className="absolute w-[200px] h-[100px] rounded-full opacity-[0.06] blur-[80px] bottom-0 left-1/2 -translate-x-1/2" style={{ background: 'hsl(24, 95%, 53%)' }} />
+      
+      <div className="container mx-auto px-4 text-center relative">
         <div className="flex items-center justify-center gap-2 mb-3">
-          <span className="text-xl font-display font-bold text-primary-foreground">DogYard</span>
-          <span className="text-lg">🐾</span>
+          <span className="text-xl font-display font-black text-gradient-primary">DogYard</span>
+          <span className="text-lg animate-float">🐾</span>
         </div>
-        <p className="text-sm text-primary-foreground/50">{t.footer.rights}</p>
+        <p className="text-sm text-muted-foreground">{t.footer.rights}</p>
       </div>
     </footer>
   );
