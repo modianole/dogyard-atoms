@@ -49,41 +49,63 @@ const HeroSection = () => {
       <div className="relative h-[520px] md:h-[600px]">
         <video ref={videoARef} autoPlay muted playsInline onEnded={activeSlot === "A" ? handleEnded : undefined} className="absolute inset-0 w-full h-full object-cover" style={{ zIndex: activeSlot === "A" ? 1 : 0 }} src={VIDEOS[0]} />
         <video ref={videoBRef} muted playsInline onEnded={activeSlot === "B" ? handleEnded : undefined} className="absolute inset-0 w-full h-full object-cover" style={{ zIndex: activeSlot === "B" ? 1 : 0 }} />
-        <div className={`absolute inset-0 ${isRTL ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-foreground/70 via-foreground/40 to-transparent`} style={{ zIndex: 2 }} />
+        
+        {/* Futuristic overlay with gradient mesh */}
+        <div className="absolute inset-0" style={{ zIndex: 2, background: `linear-gradient(${isRTL ? '270deg' : '90deg'}, hsla(220,20%,4%,0.85) 0%, hsla(220,20%,4%,0.5) 40%, transparent 70%)` }} />
+        <div className="absolute inset-0" style={{ zIndex: 2, background: 'linear-gradient(180deg, transparent 60%, hsla(220,20%,4%,0.9) 100%)' }} />
+        
+        {/* Glow orbs */}
+        <div className="absolute w-[300px] h-[300px] rounded-full opacity-20 blur-[100px]" style={{ zIndex: 2, background: 'hsl(24, 95%, 53%)', bottom: '-100px', right: '20%' }} />
+        <div className="absolute w-[200px] h-[200px] rounded-full opacity-10 blur-[80px]" style={{ zIndex: 2, background: 'hsl(142, 70%, 45%)', top: '20%', left: '10%' }} />
 
         <div className={`relative container mx-auto h-full flex items-center ${isRTL ? "justify-start" : "justify-end"} px-4`} style={{ zIndex: 3 }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
             className={`max-w-lg ${isRTL ? "text-right" : "text-left"}`}
           >
-            <span className="inline-block px-3 py-1 mb-4 rounded-full text-xs font-medium bg-card/20 backdrop-blur-sm text-primary-foreground border border-primary-foreground/20">
+            <motion.span
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-block px-4 py-1.5 mb-4 rounded-full text-xs font-bold glass text-foreground border-none animate-pulse-glow"
+            >
               {t.hero.badge}
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight text-primary-foreground mb-4">
+            </motion.span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black leading-tight text-foreground mb-4">
               {t.hero.title1}
               <br />
-              <span style={{ color: "hsl(var(--primary))" }}>{t.hero.titleHighlight}</span>
+              <span className="text-gradient-primary">{t.hero.titleHighlight}</span>
             </h1>
-            <p className="text-base md:text-lg text-primary-foreground/80 mb-6 leading-relaxed">
+            <p className="text-base md:text-lg text-muted-foreground mb-6 leading-relaxed">
               {t.hero.subtitle}
             </p>
 
-            <div className={`flex items-center ${isRTL ? "justify-end" : "justify-start"} gap-3 mb-6`}>
-              <MapPin className="w-4 h-4 text-accent" />
-              <span className="text-sm text-primary-foreground/70 font-medium">{t.hero.mappedGardens}</span>
-            </div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className={`flex items-center ${isRTL ? "justify-end" : "justify-start"} gap-3 mb-6`}
+            >
+              <div className="w-2 h-2 rounded-full bg-accent animate-glow-pulse" />
+              <span className="text-sm text-muted-foreground font-medium">{t.hero.mappedGardens}</span>
+            </motion.div>
 
-            <div className={`flex ${isRTL ? "justify-end" : "justify-start"}`}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className={`flex ${isRTL ? "justify-end" : "justify-start"}`}
+            >
               <button
                 onClick={() => setMapOpen(true)}
-                className="h-14 px-10 rounded-lg bg-primary text-primary-foreground font-bold text-lg md:h-12 md:px-8 md:text-base btn-spring hover:opacity-90 transition-opacity flex items-center gap-3"
+                className="h-14 px-10 rounded-2xl bg-primary text-primary-foreground font-bold text-lg md:h-12 md:px-8 md:text-base btn-futuristic glow-primary flex items-center gap-3"
               >
                 <MapPin className="w-5 h-5" />
                 {t.hero.cta}
               </button>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>

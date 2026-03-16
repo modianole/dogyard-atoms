@@ -83,12 +83,14 @@ const AddGarden = () => {
   };
 
   return (
-    <section id="add-garden" className="py-20 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-2">{t.addGarden.title}</h2>
+    <section id="add-garden" className="py-24 bg-background relative overflow-hidden">
+      <div className="absolute w-[250px] h-[250px] rounded-full opacity-[0.05] blur-[100px] top-10 left-10" style={{ background: 'hsl(142, 70%, 45%)' }} />
+
+      <div className="container mx-auto px-4 relative">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-display font-black text-foreground mb-2">{t.addGarden.title}</h2>
           <p className="text-muted-foreground">{t.addGarden.subtitle}</p>
-        </div>
+        </motion.div>
 
         <motion.form
           initial={{ opacity: 0, y: 20 }}
@@ -96,30 +98,30 @@ const AddGarden = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
           onSubmit={handleSubmit}
-          className="max-w-lg mx-auto bg-card rounded-2xl shadow-soft p-6 space-y-5"
+          className="max-w-lg mx-auto glass rounded-2xl border-gradient p-6 space-y-5"
         >
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground flex items-center gap-2">
+            <label className="text-sm font-bold text-foreground flex items-center gap-2">
               <Trees className="w-4 h-4 text-primary" />
               {t.addGarden.gardenName}
             </label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t.addGarden.gardenNamePlaceholder} dir={isRTL ? "rtl" : "ltr"} />
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t.addGarden.gardenNamePlaceholder} dir={isRTL ? "rtl" : "ltr"} className="glass rounded-xl border-border/50 focus:glow-primary" />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground flex items-center gap-2">
+            <label className="text-sm font-bold text-foreground flex items-center gap-2">
               <MapPin className="w-4 h-4 text-primary" />
               {t.addGarden.location}
             </label>
-            <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t.addGarden.locationPlaceholder} dir={isRTL ? "rtl" : "ltr"} />
+            <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t.addGarden.locationPlaceholder} dir={isRTL ? "rtl" : "ltr"} className="glass rounded-xl border-border/50 focus:glow-primary" />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground flex items-center gap-2">
+            <label className="text-sm font-bold text-foreground flex items-center gap-2">
               <ImagePlus className="w-4 h-4 text-primary" />
               {t.addGarden.photo}
             </label>
-            <label className="flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-border hover:border-primary/50 bg-muted/30 cursor-pointer transition-colors overflow-hidden">
+            <label className="flex flex-col items-center justify-center w-full h-40 rounded-2xl border-2 border-dashed border-border/50 hover:border-primary/50 bg-muted/20 cursor-pointer transition-all duration-300 overflow-hidden hover:glow-primary">
               {imagePreview ? (
                 <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
               ) : (
@@ -132,7 +134,7 @@ const AddGarden = () => {
             </label>
           </div>
 
-          <button type="submit" disabled={submitting} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-base font-bold bg-primary text-primary-foreground btn-spring hover:opacity-90 transition-opacity disabled:opacity-50 md:py-3 md:text-sm">
+          <button type="submit" disabled={submitting} className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-base font-bold bg-primary text-primary-foreground btn-futuristic glow-primary disabled:opacity-50 md:py-3 md:text-sm">
             <Plus className="w-4 h-4" />
             {submitting ? (isRTL ? "שולח..." : "Submitting...") : t.addGarden.submit}
           </button>
