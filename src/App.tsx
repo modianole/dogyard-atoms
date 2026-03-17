@@ -24,11 +24,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/install" element={<Install />} />
-          <Route path="/download" element={<Download />} />
+          <Route path="/install" element={<ProtectedRoute><Install /></ProtectedRoute>} />
+          <Route path="/download" element={<ProtectedRoute><Download /></ProtectedRoute>} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/privacy" element={<ProtectedRoute><Privacy /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
