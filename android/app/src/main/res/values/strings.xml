@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">דוג פארק - Dog Park</string>
+    <string name="title_activity_main">דוג פארק - Dog Park</string>
+    <string name="package_name">com.dogyard.app</string>
+    <string name="custom_url_scheme">com.dogyard.app</string>
+</resources>
