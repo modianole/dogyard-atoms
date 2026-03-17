@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import { X, Navigation, Star } from "lucide-react";
+import { X, Navigation, Star, MapPin } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -22,7 +22,7 @@ const userIcon = new L.Icon({
 });
 
 interface Garden {
-  id: number;
+  id: string | number;
   name: string;
   lat: number;
   lng: number;
@@ -80,7 +80,7 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
         const withDist = GARDENS.map((g) => ({
           ...g,
           distance: getDistance(coords[0], coords[1], g.lat, g.lng),
-        })).sort((a, b) => a.distance - b.distance);
+        })).sort((a, b) => (a.distance || 0) - (b.distance || 0));
 
         setGardens(withDist);
         setNearest(withDist[0]);
@@ -99,12 +99,9 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-foreground/60 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal */}
       <div className="relative w-full max-w-2xl bg-card rounded-xl shadow-large overflow-hidden animate-fade-in-up" style={{ animationDuration: "0.3s" }}>
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-lg font-display font-bold text-card-foreground">הגינה הקרובה אליך</h2>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-muted transition-colors">
@@ -112,7 +109,6 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
           </button>
         </div>
 
-        {/* Nearest banner */}
         {nearest && (
           <div className="px-4 py-3 bg-primary/10 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -135,7 +131,6 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
           </div>
         )}
 
-        {/* Map */}
         <div className="h-[400px]">
           <MapContainer
             center={userPos || [32.0735, 34.7745]}
@@ -171,7 +166,6 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
           </MapContainer>
         </div>
 
-        {/* Garden list */}
         {gardens[0]?.distance && (
           <div className="max-h-[200px] overflow-y-auto border-t border-border">
             {gardens.slice(0, 5).map((g) => (
@@ -203,8 +197,5 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
     </div>
   );
 };
-
-// Need to import MapPin from lucide
-import { MapPin } from "lucide-react";
 
 export default NearbyGardenMap;

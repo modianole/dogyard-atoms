@@ -1,73 +1,43 @@
-# Welcome to your Lovable project
+# דוג פארק - DogYard 🐾
 
-## Project info
+אפליקציה חברתית לבעלי כלבים בישראל. מציאת גינות כלבים, דיווח על מפגעים והזמנת אוכל ישירות לגינה.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## פיתוח מקומי
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# התקנת תלויות
+npm install --legacy-peer-deps
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# הרצה במצב פיתוח (דפדפן)
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## בנייה לאנדרואיד (Production)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+כדי לייצר גרסת אנדרואיד native, יש להריץ את הפקודות הבאות בטרמינל:
 
-**Use GitHub Codespaces**
+```sh
+# 1. בניית קבצי ה-Web
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# 2. סנכרון הקוד לתוך פרויקט האנדרואיד
+npx cap sync
 
-## What technologies are used for this project?
+# 3. פתיחת הפרויקט באנדרואיד סטודיו
+npx cap open android
+```
 
-This project is built with:
+### דגשים להפצה בחנות (Google Play):
+- **הרשאות מיקום**: וודאו שקובץ ה-`AndroidManifest.xml` כולל הרשאות GPS.
+- **מדיניות פרטיות**: הדף זמין בכתובת `/privacy` בתוך האפליקציה.
+- **חתימה**: יש לייצר Signed Bundle דרך Android Studio.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## טכנולוגיות
+- **Frontend**: React + TypeScript + Vite
+- **UI**: Tailwind CSS + Shadcn UI
+- **Backend**: Supabase
+- **Mobile**: Capacitor
+- **PWA**: vite-plugin-pwa
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+נבנה באהבה לכלבים. 🐕

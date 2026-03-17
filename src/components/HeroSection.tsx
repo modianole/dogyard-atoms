@@ -45,70 +45,81 @@ const HeroSection = () => {
   }, [activeSlot]);
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="relative h-[520px] md:h-[600px]">
+    <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px]">
+      <div className="absolute inset-0">
         <video ref={videoARef} autoPlay muted playsInline onEnded={activeSlot === "A" ? handleEnded : undefined} className="absolute inset-0 w-full h-full object-cover" style={{ zIndex: activeSlot === "A" ? 1 : 0 }} src={VIDEOS[0]} />
         <video ref={videoBRef} muted playsInline onEnded={activeSlot === "B" ? handleEnded : undefined} className="absolute inset-0 w-full h-full object-cover" style={{ zIndex: activeSlot === "B" ? 1 : 0 }} />
         
         {/* Futuristic overlay with gradient mesh */}
-        <div className="absolute inset-0" style={{ zIndex: 2, background: `linear-gradient(${isRTL ? '270deg' : '90deg'}, hsla(220,20%,4%,0.85) 0%, hsla(220,20%,4%,0.5) 40%, transparent 70%)` }} />
-        <div className="absolute inset-0" style={{ zIndex: 2, background: 'linear-gradient(180deg, transparent 60%, hsla(220,20%,4%,0.9) 100%)' }} />
+        <div className="absolute inset-0 z-[2] bg-black/30" />
+        <div className="absolute inset-0 z-[2]" style={{ background: `linear-gradient(${isRTL ? '270deg' : '90deg'}, hsla(220,20%,4%,0.8) 0%, hsla(220,20%,4%,0.2) 50%, transparent 100%)` }} />
+        <div className="absolute inset-0 z-[2]" style={{ background: 'linear-gradient(180deg, transparent 50%, hsla(220,20%,4%,0.9) 100%)' }} />
         
-        {/* Glow orbs */}
-        <div className="absolute w-[300px] h-[300px] rounded-full opacity-20 blur-[100px]" style={{ zIndex: 2, background: 'hsl(24, 95%, 53%)', bottom: '-100px', right: '20%' }} />
-        <div className="absolute w-[200px] h-[200px] rounded-full opacity-10 blur-[80px]" style={{ zIndex: 2, background: 'hsl(142, 70%, 45%)', top: '20%', left: '10%' }} />
-
-        <div className={`relative container mx-auto h-full flex items-center ${isRTL ? "justify-start" : "justify-end"} px-4`} style={{ zIndex: 3 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-            className={`max-w-lg ${isRTL ? "text-right" : "text-left"}`}
-          >
-            <motion.span
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-block px-4 py-1.5 mb-4 rounded-full text-xs font-bold glass text-foreground border-none animate-pulse-glow"
-            >
-              {t.hero.badge}
-            </motion.span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black leading-tight text-foreground mb-4">
-              {t.hero.title1}
-              <br />
-              <span className="text-gradient-primary">{t.hero.titleHighlight}</span>
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground mb-6 leading-relaxed">
-              {t.hero.subtitle}
-            </p>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className={`flex items-center ${isRTL ? "justify-end" : "justify-start"} gap-3 mb-6`}
-            >
-              <div className="w-2 h-2 rounded-full bg-accent animate-glow-pulse" />
-              <span className="text-sm text-muted-foreground font-medium">{t.hero.mappedGardens}</span>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className={`flex ${isRTL ? "justify-end" : "justify-start"}`}
-            >
-              <button
-                onClick={() => setMapOpen(true)}
-                className="h-14 px-10 rounded-2xl bg-primary text-primary-foreground font-bold text-lg md:h-12 md:px-8 md:text-base btn-futuristic glow-primary flex items-center gap-3"
-              >
-                <MapPin className="w-5 h-5" />
-                {t.hero.cta}
-              </button>
-            </motion.div>
-          </motion.div>
-        </div>
+        {/* Animated Glow orbs */}
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute w-[500px] h-[500px] rounded-full blur-[120px] z-[2]"
+          style={{ background: 'hsl(142, 45%, 40%)', bottom: '-100px', [isRTL ? 'left' : 'right']: '-100px' }}
+        />
       </div>
+
+      <div className={`relative container mx-auto min-h-[600px] md:min-h-[700px] flex items-center ${isRTL ? "justify-start" : "justify-end"} px-6 z-[10]`}>
+        <motion.div
+          initial={{ opacity: 0, x: isRTL ? 50 : -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
+          className={`max-w-[95%] md:max-w-2xl ${isRTL ? "text-right" : "text-left"}`}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full text-xs font-black bg-black/40 backdrop-blur-md text-primary border border-primary/20"
+          >
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="uppercase tracking-widest">{t.hero.badge}</span>
+          </motion.div>
+
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-black leading-[1.1] text-white mb-6 tracking-tighter drop-shadow-2xl">
+            {t.hero.title1}
+            <br />
+            <span className="text-gradient-primary">
+              {t.hero.titleHighlight}
+            </span>
+          </h1>
+
+          <p className="text-lg md:text-2xl text-white/90 font-medium mb-10 leading-relaxed max-w-lg drop-shadow-lg">
+            {t.hero.subtitle}
+          </p>
+
+          <div className={`flex flex-wrap items-center gap-6 ${isRTL ? "flex-row" : "flex-row-reverse"} mb-10`}>
+            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/20 backdrop-blur-sm border border-white/5">
+              <div className="w-2 h-2 rounded-full bg-accent animate-glow-pulse" />
+              <span className="text-sm text-white font-bold tracking-widest uppercase">{t.hero.mappedGardens}</span>
+            </div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className={`flex ${isRTL ? "justify-start" : "justify-end"}`}
+          >
+            <button
+              onClick={() => setMapOpen(true)}
+              className="group relative h-16 md:h-20 px-10 md:px-14 rounded-2xl bg-primary text-primary-foreground font-black text-xl md:text-2xl btn-futuristic glow-primary flex items-center gap-4 shadow-2xl transition-all duration-500 hover:scale-105 active:scale-95"
+            >
+              <MapPin className="w-7 h-7" />
+              {t.hero.cta}
+            </button>
+          </motion.div>
+        </motion.div>
+      </div>
+
       <Suspense fallback={null}>
         <NearbyGardenMap open={mapOpen} onClose={() => setMapOpen(false)} />
       </Suspense>
