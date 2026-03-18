@@ -92,6 +92,7 @@ export type Database = {
           name_en: string | null
           rating: number | null
           reviews_count: number | null
+          status: string
           updated_at: string
         }
         Insert: {
@@ -112,6 +113,7 @@ export type Database = {
           name_en?: string | null
           rating?: number | null
           reviews_count?: number | null
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -132,6 +134,7 @@ export type Database = {
           name_en?: string | null
           rating?: number | null
           reviews_count?: number | null
+          status?: string
           updated_at?: string
         }
         Relationships: []
