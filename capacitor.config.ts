@@ -5,18 +5,19 @@ const config: CapacitorConfig = {
   appName: "דוג פארק - Dog Park",
   webDir: "dist",
   server: {
-    // בגרסת אנדרואיד סופית אנחנו מסירים את ה-url ומשתמשים בקבצים המקומיים
-    androidScheme: "https"
+    androidScheme: "https",
+    allowMixedContent: true,
+    cleartext: true
   },
   android: {
     buildOptions: {
-      keystorePath: undefined, // יוגדר ב-Android Studio
+      keystorePath: undefined,
       keystorePassword: undefined,
     }
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 2000,
+      launchShowDuration: 3000,
       backgroundColor: "#f97316",
       showSpinner: true,
       androidSpinnerStyle: "large",

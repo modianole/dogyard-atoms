@@ -17,7 +17,7 @@ export const translations = {
     },
     // Hero
     hero: {
-      badge: "רשת חברתית לכלבים",
+      badge: "רשת חברתית לכלבים • LIVE RELOAD פעיל! 🚀",
       title1: "מה קורה בגינה שלכם",
       titleHighlight: "עכשיו?",
       subtitle: "מעל 100 גינות כלבים בתל אביב-יפו. בדקו דירוגים, דווחו על פקחים ותיאמו מפגשים עם החבר׳ה מהגינה",
@@ -202,7 +202,7 @@ export const translations = {
       myDog: "My Dog",
     },
     hero: {
-      badge: "The Social Network for Dog Owners",
+      badge: "The Social Network for Dog Owners • LIVE RELOAD ON! 🚀",
       title1: "What's happening in your garden",
       titleHighlight: "right now?",
       subtitle: "Over 100 dog gardens in Tel Aviv-Jaffa. Check ratings, report inspectors and schedule meetups with your garden crew",

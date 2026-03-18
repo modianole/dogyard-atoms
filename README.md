@@ -36,8 +36,7 @@ npx cap open android
 - **Frontend**: React + TypeScript + Vite
 - **UI**: Tailwind CSS + Shadcn UI
 - **Backend**: Supabase
-- **Mobile**: Capacitor
-- **PWA**: vite-plugin-pwa
-
+7
 ---
 נבנה באהבה לכלבים. 🐕
+        
