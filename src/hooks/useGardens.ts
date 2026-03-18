@@ -17,6 +17,7 @@ export interface Garden {
   has_shade: boolean | null;
   has_lighting: boolean | null;
   has_parking: boolean | null;
+  status: string;
 }
 
 export const useGardens = () => {
