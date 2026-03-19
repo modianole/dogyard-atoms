@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useLanguage } from "@/context/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { Mail, Lock, User, ArrowRight, Dog } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { Capacitor } from "@capacitor/core";
+import { Browser } from "@capacitor/browser";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,7 +20,6 @@ const Auth = () => {
   const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // Only redirect when auth has fully loaded AND user is confirmed
     if (!authLoading && user) {
       window.location.assign("/");
     }
@@ -62,20 +61,35 @@ const Auth = () => {
   };
 
   const handleGoogleLogin = async () => {
-    const isApp = Capacitor.isNativePlatform();
-    // In Android app, we use a custom scheme to redirect back
-    const redirectUri = isApp
-      ? "com.dogyard.app://auth-callback"
-      : window.location.origin;
+    try {
+      const isApp = Capacitor.isNativePlatform();
+      // Use the custom scheme for mobile, or the web origin for browser
+      const redirectUri = isApp
+        ? "com.dogyard.app://auth-callback"
+        : window.location.origin;
 
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: redirectUri,
-    });
+      console.log("Starting Google Login with redirect:", redirectUri);
 
-    if (error) toast.error(error.message);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: redirectUri,
+          skipBrowserRedirect: isApp,
+        },
+      });
+
+      if (error) throw error;
+
+      if (isApp && data?.url) {
+        console.log("Opening auth URL in browser:", data.url);
+        await Browser.open({ url: data.url });
+      }
+    } catch (error: any) {
+      toast.error(error.message || "שגיאה בהתחברות עם גוגל");
+      console.error("Google login error:", error);
+    }
   };
 
-  // Show nothing while auth is still loading to prevent flash
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
