@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import { X, Navigation, Star, MapPin } from "lucide-react";
+import { X, Navigation, Star, MapPin, ChevronLeft } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNearbyGardens } from "@/hooks/useGardens";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 // Fix default marker icons
 // @ts-ignore
@@ -39,6 +41,7 @@ interface Props {
 const NearbyGardenMap = ({ open, onClose }: Props) => {
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [locating, setLocating] = useState(false);
+  const navigate = useNavigate();
 
   const { data: gardens = [], isLoading: loadingGardens } = useNearbyGardens(
     userPos?.[0],
@@ -66,6 +69,11 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
 
   const nearest = gardens[0];
 
+  const handleGardenClick = (id: string) => {
+    onClose();
+    navigate(`/garden/${id}`);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-foreground/60 backdrop-blur-sm" onClick={onClose} />
@@ -79,7 +87,10 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
         </div>
 
         {nearest && (
-          <div className="px-4 py-3 bg-primary/10 border-b border-border flex items-center justify-between">
+          <div
+            className="px-4 py-3 bg-primary/10 border-b border-border flex items-center justify-between cursor-pointer hover:bg-primary/20 transition-colors"
+            onClick={() => handleGardenClick(nearest.id)}
+          >
             <div className="flex items-center gap-2">
               <Navigation className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-card-foreground">
@@ -90,9 +101,10 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
                 <span className="text-xs text-muted-foreground">{nearest.rating || 0}</span>
               </div>
             </div>
-            <span className="text-sm font-bold text-primary">
-              גינה פעילה
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-primary">צפה בפרטים</span>
+              <ChevronLeft className="w-4 h-4 text-primary" />
+            </div>
           </div>
         )}
 
@@ -112,11 +124,18 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
             {gardens.map((g) => (
               <Marker key={g.id} position={[g.lat, g.lng]}>
                 <Popup>
-                  <div className="text-right" dir="rtl">
-                    <strong>{g.name}</strong>
-                    <div className="flex items-center gap-1 mt-1">
+                  <div className="text-right p-1 flex flex-col items-center" dir="rtl">
+                    <strong className="mb-1">{g.name}</strong>
+                    <div className="flex items-center gap-1 mb-2">
                       <span>⭐ {g.rating || 0}</span>
                     </div>
+                    <Button
+                      size="sm"
+                      className="h-7 text-xs px-2"
+                      onClick={() => handleGardenClick(g.id)}
+                    >
+                      לדף הגינה
+                    </Button>
                   </div>
                 </Popup>
               </Marker>
@@ -127,15 +146,22 @@ const NearbyGardenMap = ({ open, onClose }: Props) => {
         {gardens.length > 0 && (
           <div className="max-h-[200px] overflow-y-auto border-t border-border">
             {gardens.slice(0, 5).map((g) => (
-              <div key={g.id} className="flex items-center justify-between px-4 py-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
+              <div
+                key={g.id}
+                className="flex items-center justify-between px-4 py-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors cursor-pointer"
+                onClick={() => handleGardenClick(g.id)}
+              >
                 <div className="flex items-center gap-3">
                   <MapPin className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-card-foreground">{g.name}</span>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3 h-3 text-warning fill-warning" />
-                    <span className="text-xs text-muted-foreground">{g.rating || 0}</span>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-card-foreground">{g.name}</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 text-warning fill-warning" />
+                      <span className="text-[10px] text-muted-foreground">{g.rating || 0}</span>
+                    </div>
                   </div>
                 </div>
+                <ChevronLeft className="w-4 h-4 text-muted-foreground" />
               </div>
             ))}
           </div>

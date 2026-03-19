@@ -17,6 +17,7 @@ export interface Garden {
   has_shade: boolean | null;
   has_lighting: boolean | null;
   has_parking: boolean | null;
+  distance_meters?: number;
 }
 
 export const useGardens = () => {
@@ -30,5 +31,24 @@ export const useGardens = () => {
       if (error) throw error;
       return data as Garden[];
     },
+  });
+};
+
+export const useNearbyGardens = (lat?: number, lng?: number, radius = 5000) => {
+  return useQuery({
+    queryKey: ["nearby-gardens", lat, lng, radius],
+    queryFn: async () => {
+      if (!lat || !lng) return [];
+
+      const { data, error } = await supabase.rpc("get_nearby_gardens", {
+        user_lat: lat,
+        user_lng: lng,
+        radius_meters: radius,
+      });
+
+      if (error) throw error;
+      return data as Garden[];
+    },
+    enabled: !!lat && !!lng,
   });
 };

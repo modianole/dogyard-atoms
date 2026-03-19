@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Lock, User, ArrowRight, Dog } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { Capacitor } from "@capacitor/core";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -61,9 +62,16 @@ const Auth = () => {
   };
 
   const handleGoogleLogin = async () => {
+    const isApp = Capacitor.isNativePlatform();
+    // In Android app, we use a custom scheme to redirect back
+    const redirectUri = isApp
+      ? "com.dogyard.app://auth-callback"
+      : window.location.origin;
+
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: redirectUri,
     });
+
     if (error) toast.error(error.message);
   };
 

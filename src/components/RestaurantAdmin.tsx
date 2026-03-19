@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Store, Plus, Trash2, Zap, Save, UtensilsCrossed } from "lucide-react";
+import { Store, Plus, Trash2, Zap, Save, UtensilsCrossed, Lock } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface NewItem { name: string; description: string; price: string; category: string; }
 interface NewDeal { title: string; description: string; originalPrice: string; dealPrice: string; items: string; }
@@ -11,13 +15,64 @@ const emptyDeal: NewDeal = { title: "", description: "", originalPrice: "", deal
 const CATEGORIES = ["מנות עיקריות", "שתייה", "חטיפים", "סלטים", "קינוחים"];
 
 const RestaurantAdmin = () => {
+  const { user, loading: authLoading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [restaurantName, setRestaurantName] = useState("");
   const [phone, setPhone] = useState("");
   const [deliveryNote, setDeliveryNote] = useState("");
   const [menuItems, setMenuItems] = useState<NewItem[]>([{ ...emptyItem }]);
   const [deals, setDeals] = useState<NewDeal[]>([]);
   const [saved, setSaved] = useState(false);
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (error || !data || data.role !== 'admin') {
+        setIsAdmin(false);
+      } else {
+        setIsAdmin(true);
+      }
+    };
+
+    if (!authLoading) checkAdminStatus();
+  }, [user, authLoading]);
+
+  if (authLoading || isAdmin === null) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user || !isAdmin) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-4 text-center">
+        <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+          <Lock className="w-8 h-8 text-destructive" />
+        </div>
+        <h2 className="text-2xl font-bold mb-2">{isRTL ? "גישה חסומה" : "Access Denied"}</h2>
+        <p className="text-muted-foreground mb-6 max-w-md">
+          {isRTL
+            ? "רק מנהלי מערכת מורשים לערוך תפריטים ומבצעים. אם אתה בעל עסק, אנא צור קשר עם התמיכה."
+            : "Only administrators are authorized to edit menus and deals. If you are a business owner, please contact support."}
+        </p>
+        <Button onClick={() => navigate("/")}>{isRTL ? "חזרה לדף הבית" : "Back Home"}</Button>
+      </div>
+    );
+  }
 
   const catTranslations = t.restaurant.categories as Record<string, string>;
 
@@ -157,10 +212,10 @@ const RestaurantAdmin = () => {
 
           <motion.button onClick={handleSave} whileTap={{ scale: 0.97 }}
             className={`w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-300 ${saved ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground hover:opacity-90"}`}>
-            <Save className="w-5 h-5" />
+            <Lock className="w-5 h-5" />
             {saved ? t.admin.saved : t.admin.save}
           </motion.button>
-          <p className="text-center text-xs text-muted-foreground">{t.admin.comingSoon}</p>
+          <p className="text-center text-xs text-muted-foreground">{isRTL ? "רק מנהלי מערכת יכולים לשמור שינויים." : "Only admins can save changes."}</p>
         </div>
       </div>
     </section>

@@ -12,6 +12,22 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 import Privacy from "./pages/Privacy.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
+// Components to be used as pages
+import FeaturesGrid from "./components/FeaturesGrid";
+import HazardReport from "./components/HazardReport";
+import AddGarden from "./components/AddGarden";
+import RestaurantAdmin from "./components/RestaurantAdmin";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
+const PageWrapper = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen bg-background">
+    <Navbar />
+    <div className="pt-4">{children}</div>
+    <Footer />
+  </div>
+);
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -28,7 +44,13 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy" element={<Privacy />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+          {/* New dedicated routes for Menu items */}
+          <Route path="/features" element={<PageWrapper><FeaturesGrid /></PageWrapper>} />
+          <Route path="/hazard" element={<PageWrapper><HazardReport /></PageWrapper>} />
+          <Route path="/add-garden" element={<PageWrapper><AddGarden /></PageWrapper>} />
+          <Route path="/admin" element={<PageWrapper><RestaurantAdmin /></PageWrapper>} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
