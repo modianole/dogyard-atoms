@@ -2,16 +2,126 @@ import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UtensilsCrossed, Phone, Star, ShoppingBag, Zap, ChevronLeft, ChevronRight, Plus, Minus } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { useRestaurants, type DbMenuItem } from "@/hooks/useRestaurants";
+import { useRestaurants, type DbMenuItem, type DbRestaurant } from "@/hooks/useRestaurants";
+
+// Mock data to show when DB is empty
+const MOCK_RESTAURANT: DbRestaurant = {
+  id: "mock-1",
+  name: "קפה הגן",
+  name_en: "Garden Coffee",
+  garden_id: null,
+  phone: "03-1234567",
+  delivery_note: "משלוחים ישירות לספסל בגינה!",
+  delivery_note_en: "Delivery straight to your bench!",
+  logo_url: null,
+  is_active: true,
+  deals: [
+    {
+      id: "deal-1",
+      restaurant_id: "mock-1",
+      title: "דיל בוקר מפנק",
+      title_en: "Morning Special",
+      description: "קפה ומאפה טרי להתחלה מתוקה של היום",
+      description_en: "Coffee & Fresh Pastry to start your day",
+      original_price: 35,
+      deal_price: 28,
+      items: ["קפה", "קרואסון"],
+      is_active: true
+    }
+  ],
+  menu_items: [
+    {
+      id: "m1",
+      restaurant_id: "mock-1",
+      name: "קפוצ'ינו גדול",
+      name_en: "Large Cappuccino",
+      description: "קפה עשיר עם חלב מוקצף בדיוק במידה",
+      description_en: "Rich coffee with perfectly frothed milk",
+      price: 16,
+      category: "שתייה",
+      category_en: "Drinks",
+      image_url: "/src/assets/food/cappuccino.jpg",
+      is_popular: true,
+      is_available: true,
+      sort_order: 1
+    },
+    {
+      id: "m2",
+      restaurant_id: "mock-1",
+      name: "לאטה",
+      name_en: "Latte",
+      description: "חלב חם עם מנת אספרסו משובחת",
+      description_en: "Hot milk with a premium espresso shot",
+      price: 15,
+      category: "שתייה",
+      category_en: "Drinks",
+      image_url: "/src/assets/food/latte.jpg",
+      is_popular: false,
+      is_available: true,
+      sort_order: 2
+    },
+    {
+      id: "m3",
+      restaurant_id: "mock-1",
+      name: "אספרסו כפול",
+      name_en: "Double Espresso",
+      description: "חזק, מעורר ומלא בטעם",
+      description_en: "Strong, waking and full of flavor",
+      price: 12,
+      category: "שתייה",
+      category_en: "Drinks",
+      image_url: "/src/assets/food/espresso.jpg",
+      is_popular: true,
+      is_available: true,
+      sort_order: 3
+    },
+    {
+      id: "m4",
+      restaurant_id: "mock-1",
+      name: "קרואסון חמאה",
+      name_en: "Butter Croissant",
+      description: "פריך מבחוץ ונימוח מבפנים",
+      description_en: "Crispy outside, soft inside",
+      price: 14,
+      category: "קינוחים",
+      category_en: "Pastries",
+      image_url: "/src/assets/food/croissant.jpg",
+      is_popular: true,
+      is_available: true,
+      sort_order: 4
+    },
+    {
+      id: "m5",
+      restaurant_id: "mock-1",
+      name: "עוגת שוקולד חמה",
+      name_en: "Hot Chocolate Cake",
+      description: "עשירה בשוקולד בלגי איכותי",
+      description_en: "Rich with premium Belgian chocolate",
+      price: 22,
+      category: "קינוחים",
+      category_en: "Desserts",
+      image_url: "/src/assets/food/chocolate-cake.jpg",
+      is_popular: false,
+      is_available: true,
+      sort_order: 5
+    }
+  ]
+};
 
 const RestaurantMenu = () => {
   const { t, language } = useLanguage();
   const isEn = language === "en";
-  const { data: restaurants, isLoading } = useRestaurants();
+  const { data: dbRestaurants, isLoading } = useRestaurants();
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [cart, setCart] = useState<{ item: DbMenuItem; qty: number }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Combine DB data with Mock data if DB is empty
+  const restaurants = useMemo(() => {
+    if (!dbRestaurants || dbRestaurants.length === 0) return [MOCK_RESTAURANT];
+    return dbRestaurants;
+  }, [dbRestaurants]);
 
   const selectedRestaurant = restaurants?.[selectedIdx];
 
@@ -57,7 +167,7 @@ const RestaurantMenu = () => {
     if (scrollRef.current) scrollRef.current.scrollBy({ left: dir === "left" ? -300 : 300, behavior: "smooth" });
   };
 
-  const categoryEmoji: Record<string, string> = { "מנות עיקריות": "🍽️", "סלטים": "🥗", "שתייה": "☕", "חטיפים": "🥨", "קינוחים": "🍰" };
+  const categoryEmoji: Record<string, string> = { "מנות עיקריות": "🍽️", "סלטים": "🥗", "שתייה": "☕", "חטיפים": "🥨", "קינוחים": "🍰", "Pastries": "🥐" };
   const catTranslations = t.restaurant.categories as Record<string, string>;
 
   const getName = (item: { name?: string; name_en?: string | null; title?: string; title_en?: string | null }) => {
@@ -66,7 +176,7 @@ const RestaurantMenu = () => {
   };
   const getDesc = (item: { description?: string | null; description_en?: string | null }) => isEn ? (item.description_en || item.description) : item.description;
 
-  if (isLoading) {
+  if (isLoading && (!dbRestaurants || dbRestaurants.length === 0)) {
     return (
       <section id="restaurant" className="py-24 bg-background">
         <div className="container mx-auto px-4 text-center">

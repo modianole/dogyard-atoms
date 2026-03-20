@@ -1,5 +1,4 @@
 import { useLanguage } from "@/context/LanguageContext";
-import { Dog } from "lucide-react";
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -10,10 +9,7 @@ const Footer = () => {
       
       <div className="container mx-auto px-4 text-center relative">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="p-2 rounded-xl bg-accent/5 border border-accent/10">
-            <Dog className="w-6 h-6 text-[#f97316] drop-shadow-[0_0_5px_rgba(249,115,22,0.4)]" />
-          </div>
-          <span className="text-xl font-display font-black text-gradient-primary tracking-tighter">DogYard</span>
+          <img src="/logo.png" alt="DogYard Logo" className="h-8 md:h-10 w-auto object-contain" />
         </div>
         <p className="text-sm text-muted-foreground opacity-70 font-medium tracking-wide italic">{t.footer.rights}</p>
       </div>

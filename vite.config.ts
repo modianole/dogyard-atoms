@@ -6,10 +6,11 @@ import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: true, // יציב יותר מ-0.0.0.0 בחלק ממערכות ווינדוס
     port: 8080,
+    strictPort: false, // ינסה פורט אחר אם 8080 תפוס במקום לקרוס
     hmr: {
-      overlay: false,
+      overlay: true, // יציג שגיאות על המסך במקום לקרוס בשקט
     },
   },
   plugins: [

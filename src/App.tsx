@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { App as CapacitorApp } from "@capacitor/app";
+import { Browser } from "@capacitor/browser";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index.tsx";
 import Install from "./pages/Install.tsx";
@@ -23,6 +24,7 @@ import AddGarden from "./components/AddGarden";
 import RestaurantAdmin from "./components/RestaurantAdmin";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { toast } from "sonner";
 
 const PageWrapper = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen bg-background flex flex-col">
@@ -39,25 +41,44 @@ const queryClient = new QueryClient();
 const App = () => {
   useEffect(() => {
     // Handle deep links for Google Auth and password reset
-    CapacitorApp.addListener('appUrlOpen', async (event) => {
-      const url = new URL(event.url);
+    const setupDeepLinks = async () => {
+      CapacitorApp.addListener('appUrlOpen', async (event) => {
+        console.log('App opened with URL:', event.url);
+        const url = new URL(event.url);
 
-      // If it's an auth callback (from Google or reset password)
-      if (url.host === 'auth-callback' || url.pathname.includes('reset-password')) {
-        const hash = url.hash.substring(1); // remove '#'
-        if (hash) {
-          const { data, error } = await supabase.auth.setSession({
-            access_token: new URLSearchParams(hash).get('access_token') || '',
-            refresh_token: new URLSearchParams(hash).get('refresh_token') || '',
-          });
+        // If it's an auth callback (from Google or reset password)
+        if (url.host === 'auth-callback' || url.pathname.includes('reset-password')) {
+          // Close the external browser if it's still open
+          await Browser.close();
 
-          if (!error && data.session) {
-            console.log("Session set successfully from deep link");
-            window.location.assign("/");
+          // Supabase tokens are usually in the hash (#access_token=...)
+          // but sometimes they might be in the query params (?access_token=...)
+          const hash = url.hash.substring(1);
+          const params = new URLSearchParams(hash || url.search);
+
+          const access_token = params.get('access_token');
+          const refresh_token = params.get('refresh_token');
+
+          if (access_token && refresh_token) {
+            const { data, error } = await supabase.auth.setSession({
+              access_token,
+              refresh_token,
+            });
+
+            if (!error && data.session) {
+              console.log("Session set successfully from deep link");
+              toast.success("התחברת בהצלחה!");
+              window.location.assign("/");
+            } else if (error) {
+              console.error("Error setting session:", error.message);
+              toast.error("שגיאה בתהליך ההתחברות");
+            }
           }
         }
-      }
-    });
+      });
+    };
+
+    setupDeepLinks();
 
     return () => {
       CapacitorApp.removeAllListeners();

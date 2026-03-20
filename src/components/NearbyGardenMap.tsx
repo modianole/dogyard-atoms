@@ -1,182 +1,199 @@
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import { X, Navigation, Star, MapPin, ChevronLeft } from "lucide-react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { useNearbyGardens } from "@/hooks/useGardens";
+import { useEffect, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  InfoWindow,
+  useApiIsLoaded,
+  useMapsLibrary
+} from "@vis.gl/react-google-maps";
+import { X, MapPin, Star, ChevronLeft, LocateFixed, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-// Fix default marker icons
-// @ts-ignore
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const TEL_AVIV_CENTER = { lat: 32.0735, lng: 34.7745 };
 
-const userIcon = new L.Icon({
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  className: "hue-rotate-[200deg] saturate-150",
-});
-
-function FlyToUser({ position }: { position: [number, number] | null }) {
-  const map = useMap();
-  useEffect(() => {
-    if (position) map.flyTo(position, 15, { duration: 1.5 });
-  }, [position, map]);
-  return null;
+interface Garden {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  rating?: number;
+  address?: string;
+  placeId: string;
 }
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-}
-
-const NearbyGardenMap = ({ open, onClose }: Props) => {
-  const [userPos, setUserPos] = useState<[number, number] | null>(null);
+const NearbyGardenMapContent = ({ onClose }: { onClose: () => void }) => {
+  const [userPos, setUserPos] = useState<google.maps.LatLngLiteral | null>(null);
+  const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>(TEL_AVIV_CENTER);
+  const [gardens, setGardens] = useState<Garden[]>([]);
+  const [selectedGarden, setSelectedGarden] = useState<Garden | null>(null);
   const [locating, setLocating] = useState(false);
   const navigate = useNavigate();
 
-  const { data: gardens = [], isLoading: loadingGardens } = useNearbyGardens(
-    userPos?.[0],
-    userPos?.[1],
-    5000 // 5km radius
-  );
+  const apiIsLoaded = useApiIsLoaded();
+  const placesLibrary = useMapsLibrary("places");
+  const [placesService, setPlacesService] = useState<google.maps.places.PlacesService | null>(null);
 
-  const handleLocate = () => {
+  const handleLocate = useCallback(async () => {
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserPos([pos.coords.latitude, pos.coords.longitude]);
-        setLocating(false);
-      },
-      () => setLocating(false),
-      { enableHighAccuracy: true }
-    );
-  };
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const newPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setUserPos(newPos);
+          setMapCenter(newPos);
+          setLocating(false);
+        },
+        () => {
+          toast.info("משתמש במיקום ברירת מחדל (GPS כבוי)");
+          setLocating(false);
+        },
+        { enableHighAccuracy: true }
+      );
+    }
+  }, []);
 
   useEffect(() => {
-    if (open && !userPos) handleLocate();
-  }, [open, userPos]);
+    if (!userPos) handleLocate();
+  }, [handleLocate, userPos]);
+
+  useEffect(() => {
+    if (apiIsLoaded && placesLibrary && !placesService) {
+      const mapElement = document.createElement('div');
+      const service = new google.maps.places.PlacesService(mapElement);
+      setPlacesService(service);
+    }
+
+    if (placesService && mapCenter) {
+      const request: google.maps.places.PlaceSearchRequest = {
+        location: mapCenter,
+        radius: 5000,
+        keyword: 'dog park גינת כלבים',
+      };
+
+      placesService.nearbySearch(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+          const formattedGardens = results.map(place => ({
+            id: place.place_id!,
+            name: place.name!,
+            lat: place.geometry!.location!.lat(),
+            lng: place.geometry!.location!.lng(),
+            rating: place.rating,
+            address: place.vicinity,
+            placeId: place.place_id!
+          }));
+          setGardens(formattedGardens);
+        }
+      });
+    }
+  }, [apiIsLoaded, placesLibrary, mapCenter, placesService]);
+
+  const handleGardenClick = (placeId: string) => {
+    onClose();
+    navigate(`/garden/${placeId}`);
+  };
+
+  if (!GOOGLE_MAPS_API_KEY) {
+    return (
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-background/95 backdrop-blur-md" onClick={onClose} />
+        <div className="relative bg-card p-8 rounded-3xl border border-destructive/20 shadow-2xl max-w-sm text-center">
+          <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-4" />
+          <h2 className="text-xl font-black mb-2">חסר API Key של גוגל</h2>
+          <Button onClick={onClose} variant="outline" className="w-full">סגור</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-0 md:p-4">
+      <div className="absolute inset-0 bg-background/95 backdrop-blur-md" onClick={onClose} />
+      <div className="relative w-full h-full md:h-auto md:max-w-4xl md:max-h-[90vh] bg-card md:rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-border bg-card shrink-0" dir="rtl">
+          <h2 className="text-xl md:text-2xl font-display font-black text-card-foreground text-right">מפת גינות הכלבים</h2>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="icon" onClick={handleLocate} disabled={locating} className="h-10 w-10 rounded-full">
+              <LocateFixed className={`w-5 h-5 ${locating ? 'animate-spin' : ''}`} />
+            </Button>
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-muted bg-muted/30">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+        <div className="flex-1 relative min-h-[300px]">
+          <Map
+            defaultCenter={TEL_AVIV_CENTER}
+            center={mapCenter}
+            defaultZoom={14}
+            mapId="DOGYARD_MAP_ID"
+            disableDefaultUI={true}
+            zoomControl={true}
+            className="w-full h-full"
+            onCameraChanged={(ev) => setMapCenter(ev.detail.center)}
+          >
+            {userPos && (
+              <AdvancedMarker position={userPos}>
+                <div className="bg-blue-500 w-5 h-5 rounded-full border-4 border-white shadow-lg animate-pulse" />
+              </AdvancedMarker>
+            )}
+            {gardens.map((garden) => (
+              <AdvancedMarker
+                key={garden.id}
+                position={{ lat: garden.lat, lng: garden.lng }}
+                onClick={() => setSelectedGarden(garden)}
+              >
+                <div className={`p-2 rounded-2xl shadow-xl border-2 ${selectedGarden?.id === garden.id ? 'bg-primary border-white text-white' : 'bg-white border-primary/20 text-primary'}`}>
+                  <MapPin className="w-5 h-5" />
+                </div>
+              </AdvancedMarker>
+            ))}
+            {selectedGarden && (
+              <InfoWindow
+                position={{ lat: selectedGarden.lat, lng: selectedGarden.lng }}
+                onCloseClick={() => setSelectedGarden(null)}
+              >
+                <div className="text-right p-1 min-w-[150px]" dir="rtl">
+                  <strong className="text-lg font-black mb-1 text-primary">{selectedGarden.name}</strong>
+                  <div className="flex items-center gap-1 mb-3 bg-warning/20 text-warning-foreground px-2 py-0.5 rounded-full text-xs font-black w-fit">
+                    <Star className="w-3.5 h-3.5 fill-warning" />
+                    <span>{selectedGarden.rating || '---'}</span>
+                  </div>
+                  <Button className="w-full h-9 font-black bg-primary rounded-xl text-xs" onClick={() => handleGardenClick(selectedGarden.placeId)}>לפרופיל הגינה</Button>
+                </div>
+              </InfoWindow>
+            )}
+          </Map>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+};
+
+const NearbyGardenMap = ({ open, onClose }: { open: boolean, onClose: () => void }) => {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      const navbar = document.querySelector('nav');
+      if (navbar) navbar.style.display = 'none';
+    } else {
+      document.body.style.overflow = 'unset';
+      const navbar = document.querySelector('nav');
+      if (navbar) navbar.style.display = 'flex';
+    }
+  }, [open]);
 
   if (!open) return null;
 
-  const nearest = gardens[0];
-
-  const handleGardenClick = (id: string) => {
-    onClose();
-    navigate(`/garden/${id}`);
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-foreground/60 backdrop-blur-sm" onClick={onClose} />
-
-      <div className="relative w-full max-w-2xl bg-card rounded-xl shadow-large overflow-hidden animate-fade-in-up" style={{ animationDuration: "0.3s" }}>
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-display font-bold text-card-foreground">הגינה הקרובה אליך</h2>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-muted transition-colors">
-            <X className="w-5 h-5 text-muted-foreground" />
-          </button>
-        </div>
-
-        {nearest && (
-          <div
-            className="px-4 py-3 bg-primary/10 border-b border-border flex items-center justify-between cursor-pointer hover:bg-primary/20 transition-colors"
-            onClick={() => handleGardenClick(nearest.id)}
-          >
-            <div className="flex items-center gap-2">
-              <Navigation className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-card-foreground">
-                {nearest.name}
-              </span>
-              <div className="flex items-center gap-1">
-                <Star className="w-3 h-3 text-warning fill-warning" />
-                <span className="text-xs text-muted-foreground">{nearest.rating || 0}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-primary">צפה בפרטים</span>
-              <ChevronLeft className="w-4 h-4 text-primary" />
-            </div>
-          </div>
-        )}
-
-        <div className="h-[400px]">
-          <MapContainer
-            center={userPos || [32.0735, 34.7745]}
-            zoom={13}
-            className="h-full w-full"
-            zoomControl={false}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <FlyToUser position={userPos} />
-            {userPos && <Marker position={userPos} icon={userIcon}><Popup>אתה כאן</Popup></Marker>}
-            {gardens.map((g) => (
-              <Marker key={g.id} position={[g.lat, g.lng]}>
-                <Popup>
-                  <div className="text-right p-1 flex flex-col items-center" dir="rtl">
-                    <strong className="mb-1">{g.name}</strong>
-                    <div className="flex items-center gap-1 mb-2">
-                      <span>⭐ {g.rating || 0}</span>
-                    </div>
-                    <Button
-                      size="sm"
-                      className="h-7 text-xs px-2"
-                      onClick={() => handleGardenClick(g.id)}
-                    >
-                      לדף הגינה
-                    </Button>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-          </MapContainer>
-        </div>
-
-        {gardens.length > 0 && (
-          <div className="max-h-[200px] overflow-y-auto border-t border-border">
-            {gardens.slice(0, 5).map((g) => (
-              <div
-                key={g.id}
-                className="flex items-center justify-between px-4 py-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors cursor-pointer"
-                onClick={() => handleGardenClick(g.id)}
-              >
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-card-foreground">{g.name}</span>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3 text-warning fill-warning" />
-                      <span className="text-[10px] text-muted-foreground">{g.rating || 0}</span>
-                    </div>
-                  </div>
-                </div>
-                <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {(locating || loadingGardens) && (
-          <div className="absolute inset-0 bg-card/80 flex items-center justify-center z-[1000]">
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-              <span className="text-muted-foreground font-medium">מנתח גינות קרובות...</span>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    <APIProvider apiKey={GOOGLE_MAPS_API_KEY || ""}>
+      <NearbyGardenMapContent onClose={onClose} />
+    </APIProvider>
   );
 };
 

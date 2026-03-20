@@ -1,17 +1,18 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
-import { useRef, useCallback, useState, useEffect, lazy, Suspense } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 
-const NearbyGardenMap = lazy(() => import("./NearbyGardenMap"));
+interface HeroSectionProps {
+  onOpenMap: () => void;
+}
 
 const VIDEOS = ["/hero-video.mp4", "/hero-video-2.mp4", "/hero-video-3.mp4"];
 
-const HeroSection = () => {
+const HeroSection = ({ onOpenMap }: HeroSectionProps) => {
   const videoARef = useRef<HTMLVideoElement>(null);
   const videoBRef = useRef<HTMLVideoElement>(null);
   const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
-  const [mapOpen, setMapOpen] = useState(false);
   const currentIndexRef = useRef(0);
   const { t, isRTL } = useLanguage();
 
@@ -45,26 +46,14 @@ const HeroSection = () => {
   }, [activeSlot]);
 
   return (
-    <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px]">
+    <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px]" id="top">
       <div className="absolute inset-0">
         <video ref={videoARef} autoPlay muted playsInline onEnded={activeSlot === "A" ? handleEnded : undefined} className="absolute inset-0 w-full h-full object-cover" style={{ zIndex: activeSlot === "A" ? 1 : 0 }} src={VIDEOS[0]} />
         <video ref={videoBRef} muted playsInline onEnded={activeSlot === "B" ? handleEnded : undefined} className="absolute inset-0 w-full h-full object-cover" style={{ zIndex: activeSlot === "B" ? 1 : 0 }} />
         
-        {/* Futuristic overlay with gradient mesh */}
         <div className="absolute inset-0 z-[2] bg-black/30" />
         <div className="absolute inset-0 z-[2]" style={{ background: `linear-gradient(${isRTL ? '270deg' : '90deg'}, hsla(220,20%,4%,0.8) 0%, hsla(220,20%,4%,0.2) 50%, transparent 100%)` }} />
         <div className="absolute inset-0 z-[2]" style={{ background: 'linear-gradient(180deg, transparent 50%, hsla(220,20%,4%,0.9) 100%)' }} />
-        
-        {/* Animated Glow orbs */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ duration: 8, repeat: Infinity }}
-          className="absolute w-[500px] h-[500px] rounded-full blur-[120px] z-[2]"
-          style={{ background: 'hsl(142, 45%, 40%)', bottom: '-100px', [isRTL ? 'left' : 'right']: '-100px' }}
-        />
       </div>
 
       <div className={`relative container mx-auto min-h-[600px] md:min-h-[700px] flex items-center ${isRTL ? "justify-start" : "justify-end"} px-6 z-[10]`}>
@@ -84,7 +73,7 @@ const HeroSection = () => {
             <span className="uppercase tracking-widest">{t.hero.badge}</span>
           </motion.div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-black leading-[1.1] text-white mb-6 tracking-tighter drop-shadow-2xl">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-black leading-[1.1] text-white mb-6 tracking-tighter drop-shadow-2xl text-balance">
             {t.hero.title1}
             <br />
             <span className="text-gradient-primary">
@@ -96,13 +85,6 @@ const HeroSection = () => {
             {t.hero.subtitle}
           </p>
 
-          <div className={`flex flex-wrap items-center gap-6 ${isRTL ? "flex-row" : "flex-row-reverse"} mb-10`}>
-            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/20 backdrop-blur-sm border border-white/5">
-              <div className="w-2 h-2 rounded-full bg-accent animate-glow-pulse" />
-              <span className="text-sm text-white font-bold tracking-widest uppercase">{t.hero.mappedGardens}</span>
-            </div>
-          </div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -110,7 +92,7 @@ const HeroSection = () => {
             className={`flex ${isRTL ? "justify-start" : "justify-end"}`}
           >
             <button
-              onClick={() => setMapOpen(true)}
+              onClick={onOpenMap}
               className="group relative h-16 md:h-20 px-10 md:px-14 rounded-2xl bg-primary text-primary-foreground font-black text-xl md:text-2xl btn-futuristic glow-primary flex items-center gap-4 shadow-2xl transition-all duration-500 hover:scale-105 active:scale-95"
             >
               <MapPin className="w-7 h-7" />
@@ -119,10 +101,6 @@ const HeroSection = () => {
           </motion.div>
         </motion.div>
       </div>
-
-      <Suspense fallback={null}>
-        <NearbyGardenMap open={mapOpen} onClose={() => setMapOpen(false)} />
-      </Suspense>
     </section>
   );
 };
