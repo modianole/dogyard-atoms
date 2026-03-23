@@ -14,12 +14,13 @@ const Navbar = () => {
 
   const isMapPage = location.pathname === "/map";
 
-  // בדיקה רחבה וחסינה ל-Capacitor
+  // בדיקה רחבה וחסינה לכל סוגי הנתיבים בדף הבית (כולל index.html של Capacitor)
+  const path = location.pathname.toLowerCase();
   const isHomePage =
-    location.pathname === "/" ||
-    location.pathname === "" ||
-    location.pathname.includes("index.html") ||
-    location.pathname.length <= 1;
+    path === "/" ||
+    path === "" ||
+    path.includes("index.html") ||
+    path.length <= 1;
 
   const menuItems = [
     { label: isRTL ? "דף הבית" : "Home", icon: Home, path: "/" },
@@ -37,7 +38,7 @@ const Navbar = () => {
     navigate(path);
   };
 
-  // התיקון הקריטי: בדף הבית הוא relative (זורם עם הדף), בשאר הוא fixed (תקוע למעלה)
+  // בדף הבית נשתמש ב-relative כדי שיופיע מתחת להאדר. בשאר הדפים הוא יישאר fixed בראש המסך.
   const navClasses = `${
     isHomePage
       ? "relative"
