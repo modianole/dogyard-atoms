@@ -14,4 +14,9 @@ ext {
     androidxJunitVersion = '1.2.1'
     androidxEspressoCoreVersion = '3.6.1'
     cordovaAndroidVersion = '13.0.0'
+
+    // Jetpack Compose Versions
+    kotlin_version = '1.9.20'
+    compose_ui_version = '1.7.0'
+    compose_compiler_version = '1.5.4'
 }
