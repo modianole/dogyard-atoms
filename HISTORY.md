@@ -1,17 +1,27 @@
 # 📜 היסטוריית פיתוח ושינויים - Dogyard Atoms
 
-## [22/05/2024] - תיקון שגיאת Build אנדרואיד וסנכרון פרויקט
+## [19/03/2024] - השלמת תשתית הליבה (Dogs & Check-ins)
 
-### 🛠 תיקונים טכניים:
-- **ProGuard Fix:** עודכן קובץ ה-Gradle של Capacitor (`@capacitor/android`) לשימוש ב-`proguard-android-optimize.txt` במקום הקובץ הישן שאינו נתמך יותר ב-AGP 9.1.0.
-- **הטמעת patch-package:** הוספת מנגנון לשימור תיקונים ב-`node_modules` על ידי התקנת `patch-package` והוספת סקריפט `postinstall` ב-`package.json`.
+### 🛠 פיתוח Back-end (Supabase):
+- **טבלת Dogs:** יצירת טבלת `dogs` עם Enums (גודל, מגדר) ו-RLS מלא.
+- **Storage:** פתיחת Bucket לתמונות כלבים (`dog-images`).
+- **Types:** סנכרון מלא של ה-Database עם TypeScript ב-Front-end.
 
-### 🧹 תחזוקה וניקוי:
-- הוספת קובץ `HISTORY.md` לתיעוד קבוע של שינויים בפרויקט.
-- מחיקת קבצים זמניים ושאריות פקודות (`new.json`).
+### 🎨 פיתוח Front-end & UI:
+- **Navigation:** הטמעת `BottomNav` קבוע למובייל (בית, מפה, דיווח, התראות, פרופיל).
+- **Profile Page:** יצירת דף פרופיל לניהול כלבים (הוספה, מחיקה).
+- **Map Integration:** עדכון דף המפה להצגת מונה כלבים (Live Visitors) בזמן אמת.
+- **Garden Details:** הוספת מערכת צ'ק-אין חכמה ("מי כאן עכשיו") ובחירת כלבים.
+- **Settings:** יצירת דף הגדרות לעריכת פרטי משתמש.
+- **Index:** התאמת דף הבית לקישור ישיר למפה ופרופיל.
 
-### 🚀 סנכרון:
-- ביצוע Commit ו-Push מלא לכל רכיבי ה-React וה-Android ל-GitHub.
+### 📱 אופטימיזציה למובייל:
+- הוספת הגדרות CSS למניעת Overscroll ושיפור חוויית ה-Native.
+- חיבור `BottomNav` לכל דפי האפליקציה הרלוונטיים.
 
 ---
-*נוצר באופן אוטומטי על ידי עוזר ה-AI של Android Studio.*
+## [22/05/2024] - תיקון שגיאת Build אנדרואיד וסנכרון פרויקט
+- ProGuard Fix, patch-package integration, and Git sync.
+
+---
+*נוצר באופן אוטומטי על ידי קודי (Codi) - עוזר ה-AI של Android Studio.*

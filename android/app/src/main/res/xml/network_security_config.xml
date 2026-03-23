@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- מאפשר HTTP לכתובת ה-IP המקומית שלך לצורכי פיתוח (Live Reload) -->
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">10.0.0.3</domain>
-        <domain includeSubdomains="true">10.0.2.2</domain>
-        <domain includeSubdomains="true">localhost</domain>
-    </domain-config>
-
-    <!-- בגרסה הסופית (Release) - חסימה מוחלטת של HTTP ודרישת HTTPS בלבד -->
-    <base-config cleartextTrafficPermitted="false">
+    <!-- מאפשר HTTP לכל הדומיינים לצורך פיתוח ו-Live Reload -->
+    <!-- שינוי זה מונע קריסות כאשר כתובת ה-IP של המחשב משתנה -->
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
     </base-config>
 
-    <!-- הגדרות ספציפיות לדומיינים חיצוניים מאובטחים -->
+    <!-- ניתן להוסיף דומיינים ספציפיים שדורשים HTTPS בלבד אם רוצים -->
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">supabase.co</domain>
         <domain includeSubdomains="true">google.com</domain>

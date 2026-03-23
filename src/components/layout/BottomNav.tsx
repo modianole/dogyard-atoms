@@ -2,20 +2,22 @@
 import { Home, Map, User, Bell, PlusCircle } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
 const BottomNav = () => {
   const location = useLocation();
+  const { isRTL } = useLanguage();
 
   const navItems = [
-    { label: "בית", icon: Home, path: "/" },
-    { label: "מפה", icon: Map, path: "/map" },
-    { label: "דיווח", icon: PlusCircle, path: "/hazard" },
-    { label: "התראות", icon: Bell, path: "/notifications" },
-    { label: "פרופיל", icon: User, path: "/profile" },
+    { label: isRTL ? "בית" : "Home", icon: Home, path: "/" },
+    { label: isRTL ? "מפה" : "Map", icon: Map, path: "/map" },
+    { label: isRTL ? "דיווח" : "Report", icon: PlusCircle, path: "/hazard" },
+    { label: isRTL ? "התראות" : "Alerts", icon: Bell, path: "/notifications" },
+    { label: isRTL ? "פרופיל" : "Profile", icon: User, path: "/profile" },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t border-border md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t border-border md:hidden pb-[env(safe-area-inset-bottom)]">
       <div className="flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;

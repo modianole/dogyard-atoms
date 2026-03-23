@@ -73,6 +73,54 @@ export type Database = {
           },
         ]
       }
+      dogs: {
+        Row: {
+          id: string
+          owner_id: string
+          name: string
+          breed: string | null
+          birthday: string | null
+          gender: Database["public"]["Enums"]["dog_gender"] | null
+          size: Database["public"]["Enums"]["dog_size"] | null
+          temperament: string[] | null
+          bio: string | null
+          image_url: string | null
+          is_neutered: boolean | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          name: string
+          breed?: string | null
+          birthday?: string | null
+          gender?: Database["public"]["Enums"]["dog_gender"] | null
+          size?: Database["public"]["Enums"]["dog_size"] | null
+          temperament?: string[] | null
+          bio?: string | null
+          image_url?: string | null
+          is_neutered?: boolean | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          name?: string
+          breed?: string | null
+          birthday?: string | null
+          gender?: Database["public"]["Enums"]["dog_gender"] | null
+          size?: Database["public"]["Enums"]["dog_size"] | null
+          temperament?: string[] | null
+          bio?: string | null
+          image_url?: string | null
+          is_neutered?: boolean | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gardens: {
         Row: {
           created_at: string
@@ -92,7 +140,6 @@ export type Database = {
           name_en: string | null
           rating: number | null
           reviews_count: number | null
-          status: string
           updated_at: string
         }
         Insert: {
@@ -113,7 +160,6 @@ export type Database = {
           name_en?: string | null
           rating?: number | null
           reviews_count?: number | null
-          status?: string
           updated_at?: string
         }
         Update: {
@@ -134,7 +180,6 @@ export type Database = {
           name_en?: string | null
           rating?: number | null
           reviews_count?: number | null
-          status?: string
           updated_at?: string
         }
         Relationships: []
@@ -346,22 +391,22 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
-          created_at?: string
+          created_at?: string | null
           display_name?: string | null
           favorite_garden_id?: string | null
           id?: string
           phone?: string | null
-          updated_at?: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
           avatar_url?: string | null
-          created_at?: string
+          created_at?: string | null
           display_name?: string | null
           favorite_garden_id?: string | null
           id?: string
           phone?: string | null
-          updated_at?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -496,6 +541,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "restaurant_owner" | "user"
+      dog_size: "small" | "medium" | "large" | "giant"
+      dog_gender: "male" | "female"
       hazard_status: "open" | "in_progress" | "resolved"
       order_status:
         | "pending"
@@ -632,6 +679,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "restaurant_owner", "user"],
+      dog_size: ["small", "medium", "large", "giant"],
+      dog_gender: ["male", "female"],
       hazard_status: ["open", "in_progress", "resolved"],
       order_status: [
         "pending",

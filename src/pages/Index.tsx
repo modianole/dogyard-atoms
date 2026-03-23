@@ -1,22 +1,21 @@
-import { useState } from "react";
-import Navbar from "@/components/Navbar";
+
 import HeroSection from "@/components/HeroSection";
+import Navbar from "@/components/Navbar";
 import TopGardens from "@/components/TopGardens";
 import PeakHoursChart from "@/components/PeakHoursChart";
 import RestaurantMenu from "@/components/RestaurantMenu";
 import CommunitySection from "@/components/CommunitySection";
-import Footer from "@/components/Footer";
-import NearbyGardenMap from "@/components/NearbyGardenMap";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const [mapOpen, setMapOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="relative">
       {/* HeroSection handles its own background video and layout */}
-      <HeroSection onOpenMap={() => setMapOpen(true)} />
+      <HeroSection onOpenMap={() => navigate("/map")} />
 
-      {/* Navbar follows Hero and is sticky */}
+      {/* Navbar is now placed after the HeroSection */}
       <Navbar />
 
       <main>
@@ -25,11 +24,6 @@ const Index = () => {
         <RestaurantMenu />
         <CommunitySection />
       </main>
-
-      <Footer />
-
-      {/* Map Modal - Placed at the very end to ensure it covers everything including Navbar */}
-      <NearbyGardenMap open={mapOpen} onClose={() => setMapOpen(false)} />
     </div>
   );
 };
