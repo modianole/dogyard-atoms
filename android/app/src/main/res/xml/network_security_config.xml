@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <!-- מאפשר HTTP לכל הדומיינים לצורך פיתוח ו-Live Reload -->
-    <!-- שינוי זה מונע קריסות כאשר כתובת ה-IP של המחשב משתנה -->
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
+            <certificates src="user" />
         </trust-anchors>
     </base-config>
 
-    <!-- ניתן להוסיף דומיינים ספציפיים שדורשים HTTPS בלבד אם רוצים -->
-    <domain-config cleartextTrafficPermitted="false">
+    <!-- בזמן פיתוח, אנחנו מאפשרים גם ל-Supabase לעבוד ב-HTTP אם צריך, כדי למנוע קריסות של ה-WebView -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.0.3</domain>
+        <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">supabase.co</domain>
-        <domain includeSubdomains="true">google.com</domain>
     </domain-config>
 </network-security-config>

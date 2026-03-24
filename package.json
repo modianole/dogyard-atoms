@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "play": "npx cap sync android && npx cap run android",
     "test": "vitest run",
     "test:watch": "vitest",
     "postinstall": "patch-package"
