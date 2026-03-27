@@ -1,5 +1,4 @@
 import { useLanguage } from "@/context/LanguageContext";
-import { motion } from "framer-motion";
 import { Shield, ArrowRight } from "lucide-react";
 
 const Privacy = () => {
@@ -7,11 +6,7 @@ const Privacy = () => {
 
   return (
     <div className="min-h-screen bg-background py-12 px-4" dir={isRTL ? "rtl" : "ltr"}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto glass p-8 rounded-2xl border-gradient"
-      >
+      <div className="max-w-3xl mx-auto glass p-8 rounded-2xl border-gradient">
         <div className="flex items-center gap-3 mb-8">
           <Shield className="w-8 h-8 text-primary" />
           <h1 className="text-3xl font-display font-black text-foreground">
@@ -71,7 +66,7 @@ const Privacy = () => {
             <ArrowRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
           </a>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

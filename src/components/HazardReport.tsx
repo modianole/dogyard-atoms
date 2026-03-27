@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { AlertTriangle, Phone } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -8,14 +7,8 @@ const HazardReport = () => {
   return (
     <section id="hazard" className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-          className="max-w-3xl mx-auto glass rounded-2xl border-gradient p-8 md:p-10 text-center relative overflow-hidden"
-        >
-          {/* Animated glow background */}
+        <div className="max-w-3xl mx-auto glass rounded-2xl border-gradient p-8 md:p-10 text-center relative overflow-hidden">
+          {/* Static background accents */}
           <div className="absolute w-[200px] h-[200px] rounded-full opacity-[0.08] blur-[80px] -top-20 -right-20" style={{ background: 'hsl(0, 84%, 60%)' }} />
           <div className="absolute w-[150px] h-[150px] rounded-full opacity-[0.06] blur-[60px] -bottom-10 -left-10" style={{ background: 'hsl(24, 95%, 53%)' }} />
 
@@ -38,7 +31,7 @@ const HazardReport = () => {
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

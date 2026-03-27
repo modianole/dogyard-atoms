@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { MapPin, Plus, ImagePlus, Trees, AlertCircle, LogIn } from "lucide-react";
-import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
@@ -95,7 +94,7 @@ const AddGarden = () => {
   if (submitted) {
     return (
       <section className="py-24 bg-background flex flex-col items-center justify-center p-4">
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center max-w-md">
+        <div className="text-center max-w-md">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <Trees className="w-10 h-10 text-primary" />
           </div>
@@ -111,7 +110,7 @@ const AddGarden = () => {
           >
             {isRTL ? "הוספת גינה נוספת" : "Add another garden"}
           </button>
-        </motion.div>
+        </div>
       </section>
     );
   }
@@ -121,10 +120,10 @@ const AddGarden = () => {
       <div className="absolute w-[250px] h-[250px] rounded-full opacity-[0.05] blur-[100px] top-10 left-10" style={{ background: 'hsl(142, 70%, 45%)' }} />
 
       <div className="container mx-auto px-4 relative">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+        <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-display font-black text-foreground mb-2">{t.addGarden.title}</h2>
           <p className="text-muted-foreground">{t.addGarden.subtitle}</p>
-        </motion.div>
+        </div>
 
         {!user && (
           <div className="max-w-lg mx-auto mb-8">
@@ -149,11 +148,7 @@ const AddGarden = () => {
           </div>
         )}
 
-        <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
+        <form
           onSubmit={handleSubmit}
           className={`max-w-lg mx-auto glass rounded-2xl border-gradient p-6 space-y-5 ${!user ? 'opacity-50 pointer-events-none grayscale-[0.5]' : ''}`}
         >
@@ -231,7 +226,7 @@ const AddGarden = () => {
               </>
             )}
           </button>
-        </motion.form>
+        </form>
       </div>
     </section>
   );

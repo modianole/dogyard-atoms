@@ -1,5 +1,4 @@
 import { useState, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { UtensilsCrossed, Phone, Star, ShoppingBag, Zap, ChevronLeft, ChevronRight, Plus, Minus } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useRestaurants, type DbMenuItem, type DbRestaurant } from "@/hooks/useRestaurants";
@@ -109,7 +108,7 @@ const MOCK_RESTAURANT: DbRestaurant = {
 };
 
 const RestaurantMenu = () => {
-  const { t, language } = useLanguage();
+  const { t, language, isRTL } = useLanguage();
   const isEn = language === "en";
   const { data: dbRestaurants, isLoading } = useRestaurants();
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -198,20 +197,20 @@ const RestaurantMenu = () => {
       <div className="absolute w-[400px] h-[400px] rounded-full opacity-[0.04] blur-[120px] top-0 right-0" style={{ background: 'hsl(24, 95%, 53%)' }} />
 
       <div className="container mx-auto px-4 relative">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
+        <div className="text-center mb-14 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 rounded-full text-xs font-bold glass text-primary animate-pulse-glow">
             <UtensilsCrossed className="w-3.5 h-3.5" />
             {t.restaurant.badge}
           </span>
           <h2 className="text-3xl md:text-4xl font-display font-black text-foreground mb-3">{t.restaurant.title}</h2>
           <p className="text-muted-foreground max-w-md mx-auto text-sm">{t.restaurant.subtitle}</p>
-        </motion.div>
+        </div>
 
         {(restaurants?.length ?? 0) > 1 && (
-          <div className="flex justify-center gap-2 mb-10">
+          <div className="flex justify-center gap-2 mb-10 overflow-x-auto pb-2 scrollbar-hide">
             {restaurants!.map((r, idx) => (
               <button key={r.id} onClick={() => { setSelectedIdx(idx); setActiveCategory(null); setCart([]); }}
-                className={`relative px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-300 ${selectedIdx === idx ? "bg-primary text-primary-foreground glow-primary" : "glass hover:bg-card/80 text-muted-foreground hover:text-foreground"}`}>
+                className={`relative px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-300 active:scale-95 flex-shrink-0 ${selectedIdx === idx ? "bg-primary text-primary-foreground glow-primary" : "glass hover:bg-card/80 text-muted-foreground hover:text-foreground"}`}>
                 {getName(r)}
                 {r.deals.length > 0 && selectedIdx !== idx && (
                   <span className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-accent text-accent-foreground rounded-full text-[9px] font-bold flex items-center justify-center animate-glow-pulse">!</span>
@@ -222,7 +221,7 @@ const RestaurantMenu = () => {
         )}
 
         {deals.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto mb-10">
+          <div className="max-w-2xl mx-auto mb-10 animate-in fade-in zoom-in-95 duration-500">
             {deals.map(deal => (
               <div key={deal.id} className="relative rounded-2xl overflow-hidden p-6 border-gradient" style={{ background: 'linear-gradient(135deg, hsla(142, 70%, 45%, 0.15), hsla(142, 70%, 45%, 0.05))' }}>
                 <div className="absolute -top-8 -left-8 w-32 h-32 rounded-full opacity-20 blur-[40px]" style={{ background: 'hsl(142, 70%, 45%)' }} />
@@ -235,7 +234,7 @@ const RestaurantMenu = () => {
                     </div>
                     <h3 className="font-display font-black text-xl text-foreground mb-1">{getName(deal)}</h3>
                     <p className="text-sm text-muted-foreground">{getDesc(deal)}</p>
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex flex-wrap items-center gap-2 mt-3">
                       {(deal.items ?? []).map((item, i) => (
                         <span key={i} className="px-2.5 py-1 glass rounded-lg text-xs text-foreground font-medium">{item}</span>
                       ))}
@@ -250,12 +249,12 @@ const RestaurantMenu = () => {
                 </div>
               </div>
             ))}
-          </motion.div>
+          </div>
         )}
 
         {selectedRestaurant.delivery_note && (
           <div className="max-w-2xl mx-auto mb-8 text-center">
-            <span className="inline-block px-4 py-2 rounded-2xl glass text-accent text-sm font-bold border-gradient">
+            <span className="inline-block px-4 py-2 rounded-2xl glass text-accent text-sm font-bold border-gradient animate-in fade-in duration-1000">
               🛵 {isEn ? (selectedRestaurant.delivery_note_en || selectedRestaurant.delivery_note) : selectedRestaurant.delivery_note}
             </span>
           </div>
@@ -263,22 +262,22 @@ const RestaurantMenu = () => {
 
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           <button onClick={() => setActiveCategory(null)}
-            className={`px-6 py-3 rounded-2xl text-base font-bold transition-all duration-300 md:px-5 md:py-2.5 md:text-sm ${!activeCategory ? "bg-primary text-primary-foreground glow-primary" : "glass hover:bg-card/80 text-muted-foreground"}`}>
+            className={`px-6 py-3 rounded-2xl text-base font-bold transition-all duration-300 md:px-5 md:py-2.5 md:text-sm active:scale-95 ${!activeCategory ? "bg-primary text-primary-foreground glow-primary" : "glass hover:bg-card/80 text-muted-foreground"}`}>
             🍴 {t.restaurant.all}
           </button>
           {categories.map(cat => (
             <button key={cat} onClick={() => setActiveCategory(cat)}
-              className={`px-6 py-3 rounded-2xl text-base font-bold transition-all duration-300 md:px-5 md:py-2.5 md:text-sm ${activeCategory === cat ? "bg-primary text-primary-foreground glow-primary" : "glass hover:bg-card/80 text-muted-foreground"}`}>
+              className={`px-6 py-3 rounded-2xl text-base font-bold transition-all duration-300 md:px-5 md:py-2.5 md:text-sm active:scale-95 ${activeCategory === cat ? "bg-primary text-primary-foreground glow-primary" : "glass hover:bg-card/80 text-muted-foreground"}`}>
               {categoryEmoji[cat] || "•"} {catTranslations[cat] || cat}
             </button>
           ))}
         </div>
 
         <div className="relative max-w-5xl mx-auto">
-          <button onClick={() => scroll("right")} className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-2xl glass flex items-center justify-center hover:bg-card/80 transition-all duration-200 hover:glow-primary">
+          <button onClick={() => scroll("right")} className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-2xl glass flex items-center justify-center hover:bg-card/80 transition-all duration-200 hover:glow-primary active:scale-90">
             <ChevronRight className="w-5 h-5 text-foreground" />
           </button>
-          <button onClick={() => scroll("left")} className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-2xl glass flex items-center justify-center hover:bg-card/80 transition-all duration-200 hover:glow-primary">
+          <button onClick={() => scroll("left")} className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-2xl glass flex items-center justify-center hover:bg-card/80 transition-all duration-200 hover:glow-primary active:scale-90">
             <ChevronLeft className="w-5 h-5 text-foreground" />
           </button>
 
@@ -286,8 +285,9 @@ const RestaurantMenu = () => {
             {filteredItems.map((item, i) => {
               const qty = getCartQty(item.id);
               return (
-                <motion.div key={item.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
-                  className="flex-shrink-0 w-[220px] snap-start glass rounded-2xl hover:glow-primary transition-all duration-300 group overflow-hidden border-gradient">
+                <div key={item.id}
+                  className="flex-shrink-0 w-[220px] snap-start glass rounded-2xl hover:glow-primary transition-all duration-300 group overflow-hidden border-gradient animate-in fade-in zoom-in-95"
+                  style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'both' }}>
                   <div className="h-1.5 bg-gradient-to-l from-primary/60 to-primary" />
                   <div className="p-4">
                     <div className="w-full h-28 rounded-xl overflow-hidden mb-3 bg-muted/30">
@@ -310,44 +310,42 @@ const RestaurantMenu = () => {
                     <div className="flex items-center justify-between">
                       <span className="font-display font-black text-lg text-gradient-primary">₪{item.price}</span>
                       {qty === 0 ? (
-                        <button onClick={() => addToCart(item)} className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:scale-110 transition-all duration-200 btn-futuristic glow-primary md:w-9 md:h-9">
+                        <button onClick={() => addToCart(item)} className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:scale-110 transition-all duration-200 btn-futuristic glow-primary md:w-9 md:h-9 active:scale-90">
                           <Plus className="w-5 h-5 md:w-4 md:h-4" />
                         </button>
                       ) : (
                         <div className="flex items-center gap-2 glass rounded-xl px-1">
-                          <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 rounded-lg text-primary hover:bg-primary/15 flex items-center justify-center transition-colors md:w-7 md:h-7"><Minus className="w-4 h-4 md:w-3.5 md:h-3.5" /></button>
+                          <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 rounded-lg text-primary hover:bg-primary/15 flex items-center justify-center transition-colors md:w-7 md:h-7 active:scale-90"><Minus className="w-4 h-4 md:w-3.5 md:h-3.5" /></button>
                           <span className="text-sm font-bold text-primary min-w-[1ch] text-center">{qty}</span>
-                          <button onClick={() => addToCart(item)} className="w-9 h-9 rounded-lg text-primary hover:bg-primary/15 flex items-center justify-center transition-colors md:w-7 md:h-7"><Plus className="w-4 h-4 md:w-3.5 md:h-3.5" /></button>
+                          <button onClick={() => addToCart(item)} className="w-9 h-9 rounded-lg text-primary hover:bg-primary/15 flex items-center justify-center transition-colors md:w-7 md:h-7 active:scale-90"><Plus className="w-4 h-4 md:w-3.5 md:h-3.5" /></button>
                         </div>
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
         </div>
 
-        <AnimatePresence>
-          {cartCount > 0 && (
-            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-lg">
-              <div className="p-4 glass-strong rounded-2xl shadow-large flex items-center justify-between glow-primary">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-                    <ShoppingBag className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-foreground text-sm">{cartCount} {t.restaurant.items}</span>
-                    <span className="text-muted-foreground text-xs ms-2">· ₪{cartTotal}</span>
-                  </div>
+        {cartCount > 0 && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-lg animate-in slide-in-from-bottom-10 duration-500">
+            <div className="p-4 glass-strong rounded-2xl shadow-large flex items-center justify-between glow-primary">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                  <ShoppingBag className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <button className="px-8 py-3.5 bg-primary text-primary-foreground rounded-xl font-bold text-base btn-futuristic glow-primary md:px-6 md:py-2.5 md:text-sm">
-                  {t.restaurant.sendOrder}
-                </button>
+                <div>
+                  <span className="font-bold text-foreground text-sm">{cartCount} {t.restaurant.items}</span>
+                  <span className="text-muted-foreground text-xs ms-2">· ₪{cartTotal}</span>
+                </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <button className="px-8 py-3.5 bg-primary text-primary-foreground rounded-xl font-bold text-base btn-futuristic glow-primary md:px-6 md:py-2.5 md:text-sm active:scale-95">
+                {t.restaurant.sendOrder}
+              </button>
+            </div>
+          </div>
+        )}
 
         {selectedRestaurant.phone && (
           <div className="text-center mt-8">

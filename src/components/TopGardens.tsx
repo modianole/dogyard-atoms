@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { MapPin, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useGardens } from "@/hooks/useGardens";
@@ -15,11 +14,8 @@ const StarRating = ({ rating }: { rating: number }) => {
   );
 };
 
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
-const item = { hidden: { opacity: 0, y: 20, scale: 0.95 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.2, 0.8, 0.2, 1] as const } } };
-
 const TopGardens = () => {
-  const { t, language } = useLanguage();
+  const { t, language, isRTL } = useLanguage();
   const { data: gardens, isLoading } = useGardens();
   const isEn = language === "en";
 
@@ -43,14 +39,16 @@ const TopGardens = () => {
       <div className="absolute w-[300px] h-[300px] rounded-full opacity-[0.05] blur-[100px] top-20 right-0" style={{ background: 'hsl(142, 70%, 45%)' }} />
 
       <div className="container mx-auto px-4 relative">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
+        <div className="text-center mb-14 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <h2 className="text-3xl md:text-4xl font-display font-black text-foreground mb-2">{t.gardens.title}</h2>
           <p className="text-muted-foreground">{t.gardens.subtitle}</p>
-        </motion.div>
+        </div>
 
-        <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-50px" }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-          {(gardens ?? []).slice(0, 6).map((garden) => (
-            <motion.div key={garden.id} variants={item} whileHover={{ y: -6, scale: 1.02 }} className="glass rounded-2xl p-5 flex flex-col gap-3 cursor-pointer transition-all duration-300 group border-gradient hover:glow-accent">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+          {(gardens ?? []).slice(0, 6).map((garden, i) => (
+            <div key={garden.id}
+              className="glass rounded-2xl p-5 flex flex-col gap-3 cursor-pointer transition-all duration-300 group border-gradient hover:glow-accent hover:-translate-y-1.5 hover:scale-[1.02] animate-in fade-in zoom-in-95"
+              style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'both' }}>
               <div className="flex items-start justify-between">
                 <span className="text-sm font-black text-primary tabular-nums px-2.5 py-1 rounded-lg bg-primary/15">{Number(garden.rating ?? 0).toFixed(1)}</span>
                 <div className="flex-1 ms-3">
@@ -71,12 +69,12 @@ const TopGardens = () => {
                 <StarRating rating={Number(garden.rating ?? 0)} />
                 <span className="text-xs text-muted-foreground">({garden.reviews_count ?? 0})</span>
               </div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         <div className="text-center mt-10">
-          <button className="px-8 py-3.5 rounded-2xl glass text-base font-bold text-foreground hover:bg-card/80 transition-all duration-300 btn-futuristic border-gradient md:px-6 md:py-2.5 md:text-sm">
+          <button className="px-8 py-3.5 rounded-2xl glass text-base font-bold text-foreground hover:bg-card/80 transition-all duration-300 btn-futuristic border-gradient md:px-6 md:py-2.5 md:text-sm active:scale-95">
             {t.gardens.allGardens}
           </button>
         </div>

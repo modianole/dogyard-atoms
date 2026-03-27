@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import { useRef, useCallback, useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -57,21 +56,11 @@ const HeroSection = ({ onOpenMap }: HeroSectionProps) => {
       </div>
 
       <div className={`relative container mx-auto min-h-[600px] md:min-h-[700px] flex items-center ${isRTL ? "justify-start" : "justify-end"} px-6 z-[10]`}>
-        <motion.div
-          initial={{ opacity: 0, x: isRTL ? 50 : -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-          className={`max-w-[95%] md:max-w-2xl ${isRTL ? "text-right" : "text-left"}`}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full text-xs font-black bg-black/40 backdrop-blur-md text-primary border border-primary/20"
-          >
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+        <div className={`max-w-[95%] md:max-w-2xl ${isRTL ? "text-right" : "text-left"}`}>
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full text-xs font-black bg-black/40 backdrop-blur-md text-primary border border-primary/20">
+            <div className="w-2 h-2 rounded-full bg-primary" />
             <span className="uppercase tracking-widest">{t.hero.badge}</span>
-          </motion.div>
+          </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-black leading-[1.1] text-white mb-6 tracking-tighter drop-shadow-2xl text-balance">
             {t.hero.title1}
@@ -85,12 +74,7 @@ const HeroSection = ({ onOpenMap }: HeroSectionProps) => {
             {t.hero.subtitle}
           </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className={`flex ${isRTL ? "justify-start" : "justify-end"}`}
-          >
+          <div className={`flex ${isRTL ? "justify-start" : "justify-end"}`}>
             <button
               onClick={onOpenMap}
               className="group relative h-16 md:h-20 px-10 md:px-14 rounded-2xl bg-primary text-primary-foreground font-black text-xl md:text-2xl btn-futuristic glow-primary flex items-center gap-4 shadow-2xl transition-all duration-500 hover:scale-105 active:scale-95"
@@ -98,8 +82,8 @@ const HeroSection = ({ onOpenMap }: HeroSectionProps) => {
               <MapPin className="w-7 h-7" />
               {t.hero.cta}
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

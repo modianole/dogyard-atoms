@@ -1,28 +1,9 @@
-import { motion } from "framer-motion";
 import { MapPin, Star, UserCheck, Bell, Dog, MessageCircle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 const icons = [MapPin, Star, UserCheck, Bell, Dog, MessageCircle];
-const glowColors = [
-  "group-hover:glow-accent",
-  "group-hover:glow-primary",
-  "group-hover:glow-info",
-  "group-hover:glow-primary",
-  "group-hover:glow-primary",
-  "group-hover:glow-info",
-];
 const iconColors = ["text-accent", "text-warning", "text-info", "text-destructive", "text-primary", "text-muted-foreground"];
 const iconBgs = ["bg-accent/15", "bg-warning/15", "bg-info/15", "bg-destructive/15", "bg-primary/15", "bg-secondary"];
-
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 24, scale: 0.95 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.2, 0.8, 0.2, 1] as const } },
-};
 
 const FeaturesGrid = () => {
   const { t } = useLanguage();
@@ -41,35 +22,28 @@ const FeaturesGrid = () => {
       <div className="absolute w-[400px] h-[400px] rounded-full opacity-[0.07] blur-[120px] -top-40 left-1/2 -translate-x-1/2" style={{ background: 'hsl(24, 95%, 53%)' }} />
 
       <div className="container mx-auto px-4 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-14"
-        >
+        <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-display font-black text-foreground mb-3">{t.features.title}</h2>
           <p className="text-muted-foreground text-base max-w-md mx-auto">{t.features.subtitle}</p>
-        </motion.div>
+        </div>
 
-        <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-50px" }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
           {featureKeys.map((f, i) => {
             const Icon = icons[i];
             return (
-              <motion.div
+              <div
                 key={i}
-                variants={item}
-                whileHover={{ y: -6, scale: 1.02 }}
-                className={`glass rounded-2xl p-6 flex flex-col items-center text-center gap-3 cursor-default transition-all duration-300 group border-gradient ${glowColors[i]}`}
+                className="glass rounded-2xl p-6 flex flex-col items-center text-center gap-3 cursor-default transition-all duration-300 group border-gradient hover:scale-[1.02]"
               >
                 <div className={`w-14 h-14 rounded-2xl ${iconBgs[i]} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
                   <Icon className={`w-7 h-7 ${iconColors[i]}`} />
                 </div>
                 <h3 className="font-display font-bold text-foreground">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

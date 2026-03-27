@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, X, Menu, Map as MapIcon, ShieldCheck, PlusCircle, LayoutDashboard, User, Bell, Settings as SettingsIcon } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -88,70 +87,61 @@ const Navbar = () => {
         </div>
       </nav>
 
-      <AnimatePresence>
-        {open && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
-              onClick={() => setOpen(false)}
-            />
-            <motion.div
-              initial={{ x: isRTL ? "100%" : "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: isRTL ? "100%" : "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className={`fixed top-0 ${isRTL ? "right-0" : "left-0"} h-full w-80 bg-card border-x border-white/10 z-[300] shadow-2xl flex flex-col`}
-            >
-              <div className="p-8 border-b border-white/10 flex justify-between items-center bg-muted/30">
-                <div className="flex items-center gap-3">
-                  <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
-                  <span className="text-white font-black text-lg">DOGYARD</span>
-                </div>
-                <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5">
-                  <X />
-                </button>
+      {open && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] animate-in fade-in duration-200"
+            onClick={() => setOpen(false)}
+          />
+          <div
+            className={`fixed top-0 ${isRTL ? "right-0 animate-in slide-in-from-right" : "left-0 animate-in slide-in-from-left"} h-full w-80 bg-card border-x border-white/10 z-[300] shadow-2xl flex flex-col duration-300`}
+          >
+            <div className="p-8 border-b border-white/10 flex justify-between items-center bg-muted/30">
+              <div className="flex items-center gap-3">
+                <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
+                <span className="text-white font-black text-lg">DOGYARD</span>
               </div>
+              <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5">
+                <X />
+              </button>
+            </div>
 
-              <div className="flex-1 py-6 px-4 space-y-1 overflow-y-auto custom-scrollbar">
-                {menuItems.map((item, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleNavigate(item.path)}
-                    className={`w-full flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all ${location.pathname === item.path ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-white/70 hover:bg-white/5 hover:text-white"}`}
-                  >
-                    <item.icon className={`w-6 h-6 ${location.pathname === item.path ? "text-white" : "text-primary"}`} />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="p-8 border-t border-white/10 bg-black/40 space-y-4">
-                {user ? (
-                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 mb-2">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                      {user.email?.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-white truncate">{user.email}</p>
-                      <p className="text-xs text-white/40">מחובר למערכת</p>
-                    </div>
-                  </div>
-                ) : null}
-
+            <div className="flex-1 py-6 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+              {menuItems.map((item, i) => (
                 <button
-                  onClick={async () => { if (user) await signOut(); else navigate("/auth"); setOpen(false); }}
-                  className={`w-full py-4 rounded-2xl text-white font-black text-lg shadow-lg transition-all active:scale-95 ${user ? "bg-white/10 hover:bg-destructive hover:shadow-destructive/20" : "bg-primary hover:bg-primary/90 shadow-primary/20"}`}
+                  key={i}
+                  onClick={() => handleNavigate(item.path)}
+                  className={`w-full flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all ${location.pathname === item.path ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-white/70 hover:bg-white/5 hover:text-white"}`}
                 >
-                  {user ? (isRTL ? "התנתק" : "Logout") : (isRTL ? "התחברות" : "Login")}
+                  <item.icon className={`w-6 h-6 ${location.pathname === item.path ? "text-white" : "text-primary"}`} />
+                  {item.label}
                 </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+              ))}
+            </div>
+
+            <div className="p-8 border-t border-white/10 bg-black/40 space-y-4">
+              {user ? (
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 mb-2">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-white truncate">{user.email}</p>
+                    <p className="text-xs text-white/40">מחובר למערכת</p>
+                  </div>
+                </div>
+              ) : null}
+
+              <button
+                onClick={async () => { if (user) await signOut(); else navigate("/auth"); setOpen(false); }}
+                className={`w-full py-4 rounded-2xl text-white font-black text-lg shadow-lg transition-all active:scale-95 ${user ? "bg-white/10 hover:bg-destructive hover:shadow-destructive/20" : "bg-primary hover:bg-primary/90 shadow-primary/20"}`}
+              >
+                {user ? (isRTL ? "התנתק" : "Logout") : (isRTL ? "התחברות" : "Login")}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };

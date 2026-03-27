@@ -27,9 +27,7 @@ import GardenDetails from "./pages/GardenDetails.tsx";
 
 // Components
 import FeaturesGrid from "./components/FeaturesGrid";
-import HazardReport from "./components/HazardReport";
 import AddGarden from "./components/AddGarden";
-import RestaurantAdmin from "./components/RestaurantAdmin";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import BottomNav from "./components/layout/BottomNav";
@@ -116,9 +114,7 @@ const AppContent = () => {
 
           {/* Feature Routes */}
           <Route path="/features" element={<FeaturesGrid />} />
-          <Route path="/hazard" element={<HazardReport />} />
           <Route path="/add-garden" element={<AddGarden />} />
-          <Route path="/admin" element={<RestaurantAdmin />} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>

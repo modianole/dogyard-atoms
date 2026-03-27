@@ -2,16 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// Self-heal: unregister stale Service Workers and clear old caches
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    registrations.forEach((reg) => reg.unregister());
-  });
-  if ("caches" in window) {
-    caches.keys().then((names) => {
-      names.forEach((name) => caches.delete(name));
-    });
-  }
-}
+// In Capacitor environments, we let the native bridge handle initialization.
+// Removed service worker clearing logic that caused 'triggerEvent' runtime errors.
 
 createRoot(document.getElementById("root")!).render(<App />);

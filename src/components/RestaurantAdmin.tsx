@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Store, Plus, Trash2, Zap, Save, UtensilsCrossed, Lock } from "lucide-react";
+import { Store, Plus, Trash2, Zap, UtensilsCrossed, Lock } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,23 +85,23 @@ const RestaurantAdmin = () => {
 
   const handleSave = () => { setSaved(true); setTimeout(() => setSaved(false), 3000); };
 
-  const inputClass = "w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring";
-  const inputSmClass = "w-full px-3 py-2 rounded-lg border border-input bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring";
+  const inputClass = "w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all";
+  const inputSmClass = "w-full px-3 py-2 rounded-lg border border-input bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all";
 
   return (
     <section id="restaurant-admin" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+        <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 rounded-full text-xs font-bold bg-accent/10 text-accent border border-accent/20">
             <Store className="w-3.5 h-3.5" />
             {t.admin.badge}
           </span>
           <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-3">{t.admin.title}</h2>
           <p className="text-muted-foreground max-w-lg mx-auto text-sm">{t.admin.subtitle}</p>
-        </motion.div>
+        </div>
 
         <div className="max-w-3xl mx-auto space-y-8">
-          <div className="bg-card rounded-2xl border border-border p-6 shadow-soft">
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-soft transition-all hover:border-primary/20">
             <h3 className="font-display font-bold text-foreground mb-4 flex items-center gap-2">
               <Store className="w-5 h-5 text-primary" />
               {t.admin.restaurantDetails}
@@ -123,20 +122,20 @@ const RestaurantAdmin = () => {
             </div>
           </div>
 
-          <div className="bg-card rounded-2xl border border-border p-6 shadow-soft">
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-soft transition-all hover:border-primary/20">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display font-bold text-foreground flex items-center gap-2">
                 <UtensilsCrossed className="w-5 h-5 text-primary" />
                 {t.admin.menuItems}
               </h3>
-              <button onClick={addItem} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors">
+              <button onClick={addItem} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-all active:scale-95">
                 <Plus className="w-3.5 h-3.5" />
                 {t.admin.addItem}
               </button>
             </div>
             <div className="space-y-4">
               {menuItems.map((item, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="relative p-4 rounded-xl border border-border bg-background">
+                <div key={i} className="relative p-4 rounded-xl border border-border bg-background transition-all hover:shadow-md animate-in fade-in zoom-in-95 duration-200">
                   <button onClick={() => removeItem(i)} className="absolute top-3 start-3 p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -160,18 +159,18 @@ const RestaurantAdmin = () => {
                       <input type="text" value={item.description} onChange={(e) => updateItem(i, "description", e.target.value)} placeholder={t.admin.descriptionPlaceholder} className={inputSmClass} />
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-card rounded-2xl border border-border p-6 shadow-soft">
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-soft transition-all hover:border-accent/20">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display font-bold text-foreground flex items-center gap-2">
                 <Zap className="w-5 h-5 text-accent" />
                 {t.admin.deals}
               </h3>
-              <button onClick={addDeal} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-xs font-bold hover:bg-accent/20 transition-colors">
+              <button onClick={addDeal} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-xs font-bold hover:bg-accent/20 transition-all active:scale-95">
                 <Plus className="w-3.5 h-3.5" />
                 {t.admin.addDeal}
               </button>
@@ -179,7 +178,7 @@ const RestaurantAdmin = () => {
             {deals.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">{t.admin.noDeals}</p>}
             <div className="space-y-4">
               {deals.map((deal, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="relative p-4 rounded-xl border-2 border-accent/20 bg-accent/5">
+                <div key={i} className="relative p-4 rounded-xl border-2 border-accent/20 bg-accent/5 transition-all hover:bg-accent/10 animate-in fade-in zoom-in-95 duration-200">
                   <button onClick={() => removeDeal(i)} className="absolute top-3 start-3 p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -205,16 +204,16 @@ const RestaurantAdmin = () => {
                       <input type="text" value={deal.items} onChange={(e) => updateDeal(i, "items", e.target.value)} placeholder={t.admin.includedItemsPlaceholder} className={inputSmClass} />
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
 
-          <motion.button onClick={handleSave} whileTap={{ scale: 0.97 }}
-            className={`w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-300 ${saved ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground hover:opacity-90"}`}>
+          <button onClick={handleSave}
+            className={`w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-300 active:scale-95 ${saved ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/20"}`}>
             <Lock className="w-5 h-5" />
             {saved ? t.admin.saved : t.admin.save}
-          </motion.button>
+          </button>
           <p className="text-center text-xs text-muted-foreground">{isRTL ? "רק מנהלי מערכת יכולים לשמור שינויים." : "Only admins can save changes."}</p>
         </div>
       </div>
