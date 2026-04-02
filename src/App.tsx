@@ -24,6 +24,7 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 import Privacy from "./pages/Privacy.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import GardenDetails from "./pages/GardenDetails.tsx";
+import AdminImport from "./pages/AdminImport.tsx";
 
 // Components
 import FeaturesGrid from "./components/FeaturesGrid";
@@ -35,25 +36,24 @@ import BottomNav from "./components/layout/BottomNav";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
 
-  // בדיקה רחבה יותר למובייל/Capacitor
-  // אם הנתיב הוא ריק, רק סלאש, או מכיל index.html - זה דף הבית
   const isHomePage =
     location.pathname === "/" ||
     location.pathname === "" ||
     location.pathname.includes("index.html") ||
     location.pathname.length <= 1;
 
+  const isMapPage = location.pathname === "/map";
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* לא נרנדר את הנבבר כאן אם זה דף הבית, כי הוא מרונדר בתוך Index.tsx מתחת להאדר */}
+    <div className={`min-h-screen w-full bg-background flex flex-col ${isMapPage ? "h-screen overflow-hidden" : ""}`}>
       {!isHomePage && <Navbar />}
 
-      <main className={`flex-grow ${isHomePage ? "" : "pt-20 pb-20 md:pb-0"}`}>
+      <main className={`flex-grow relative ${isHomePage ? "" : isMapPage ? "pt-16 pb-16 md:pb-0" : "pt-20 pb-20 md:pb-0"} ${isMapPage ? "overflow-hidden" : "overflow-y-auto"}`}>
         {children}
       </main>
 
       <BottomNav />
-      <Footer className="hidden md:block" />
+      {!isMapPage && <Footer className="hidden md:block" />}
     </div>
   );
 };
@@ -108,14 +108,10 @@ const AppContent = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy" element={<Privacy />} />
-
-          {/* Garden Routes */}
           <Route path="/garden/:id" element={<GardenDetails />} />
-
-          {/* Feature Routes */}
+          <Route path="/admin/import" element={<AdminImport />} />
           <Route path="/features" element={<FeaturesGrid />} />
           <Route path="/add-garden" element={<AddGarden />} />
-
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>

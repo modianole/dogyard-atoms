@@ -3,17 +3,16 @@ import { useEffect, useState, useCallback } from "react";
 import {
   APIProvider,
   Map,
-  AdvancedMarker,
+  Marker,
 } from "@vis.gl/react-google-maps";
-import { MapPin, Star, Search, Dog, Navigation } from "lucide-react";
+import { AlertTriangle, RefreshCcw, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-const DEFAULT_CENTER = { lat: 32.0853, lng: 34.7818 }; // Tel Aviv Center
+const DEFAULT_CENTER = { lat: 32.0853, lng: 34.7818 };
 
 interface GardenWithStats {
   id: string;
@@ -30,183 +29,114 @@ const MapPageContent = () => {
   const [gardens, setGardens] = useState<GardenWithStats[]>([]);
   const [selectedGarden, setSelectedGarden] = useState<GardenWithStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const { isRTL } = useLanguage();
 
   const fetchGardens = useCallback(async () => {
     setLoading(true);
+    setErrorDetails(null);
+    console.log("🚀 Refreshing gardens data...");
+
     try {
-      const { data: gardensData, error: gardensError } = await supabase
+      const { data, error } = await supabase
         .from("gardens")
-        .select("*");
+        .select("*")
+        .order('created_at', { ascending: false });
 
-      if (gardensError) throw gardensError;
+      if (error) throw error;
 
-      const { data: checkinsData, error: checkinsError } = await supabase
-        .from("active_garden_visitors")
-        .select("garden_id");
+      console.log(`✅ Fetched ${data?.length || 0} gardens from Supabase`);
 
-      if (checkinsError) throw checkinsError;
-
-      const formatted: GardenWithStats[] = gardensData.map(g => ({
+      const formatted: GardenWithStats[] = (data || []).map(g => ({
         id: g.id,
         name: g.name,
-        lat: g.lat,
-        lng: g.lng,
+        lat: parseFloat(g.lat.toString()),
+        lng: parseFloat(g.lng.toString()),
         rating: g.rating,
         image_url: g.image_url,
-        active_visitors: checkinsData?.filter(c => c.garden_id === g.id).length || 0
+        active_visitors: 0
       }));
 
       setGardens(formatted);
-    } catch (error) {
-      console.error("Error fetching map data:", error);
-      toast.error(isRTL ? "שגיאה בטעינת נתוני המפה" : "Error loading map data");
+
+      if (formatted.length > 0 && gardens.length === 0) {
+        setMapCenter({ lat: formatted[0].lat, lng: formatted[0].lng });
+      }
+
+      toast.success(isRTL ? `נטענו ${formatted.length} גינות` : `Loaded ${formatted.length} gardens`);
+    } catch (error: any) {
+      console.error("❌ Map Fetch Error:", error);
+      setErrorDetails(error.message);
+      toast.error(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
   }, [isRTL]);
 
-  useEffect(() => {
-    fetchGardens();
-  }, [fetchGardens]);
+  useEffect(() => { fetchGardens(); }, [fetchGardens]);
 
-  const handleGetUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setMapCenter(pos);
-        },
-        () => toast.error(isRTL ? "לא ניתן לגשת למיקום שלך" : "Could not access location")
-      );
-    }
-  };
+  if (!GOOGLE_MAPS_API_KEY) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <AlertTriangle className="w-16 h-16 text-yellow-500" />
+        <h2 className="text-2xl font-black">מפתח API חסר!</h2>
+        <Button onClick={() => window.location.reload()}>רענן דף</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col bg-background">
       <main className="flex-grow flex flex-col md:flex-row overflow-hidden relative">
-        {/* Sidebar for Mobile & Desktop */}
         <aside className="w-full md:w-80 lg:w-96 bg-card border-t md:border-t-0 md:border-l border-border flex flex-col h-[35vh] md:h-full z-10 overflow-hidden order-2 md:order-1 shadow-2xl">
-          <div className="p-4 border-b border-border bg-muted/30">
-            <h1 className="text-xl font-bold">{isRTL ? "גינות בסביבה" : "Gardens Nearby"}</h1>
-            <p className="text-xs text-muted-foreground">
-              {loading
-                ? (isRTL ? "טוען גינות..." : "Loading gardens...")
-                : (isRTL ? `נמצאו ${gardens.length} גינות פעילות` : `Found ${gardens.length} active gardens`)}
-            </p>
+          <div className="p-4 border-b border-border bg-muted/30 flex justify-between items-center">
+            <div>
+              <h1 className="text-xl font-bold">{isRTL ? "גינות בסביבה" : "Gardens Nearby"}</h1>
+              <p className="text-xs text-muted-foreground">{loading ? "מרענן..." : `נמצאו ${gardens.length} גינות`}</p>
+            </div>
+            <Button variant="ghost" size="icon" onClick={fetchGardens} disabled={loading}>
+              <RefreshCcw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
           </div>
 
-          <div className="flex-1 overflow-y-auto divide-y divide-border custom-scrollbar pb-24 md:pb-0">
+          <div className="flex-1 overflow-y-auto divide-y divide-border">
+            {gardens.length === 0 && !loading && (
+              <div className="p-12 text-center text-muted-foreground">
+                <MapPin className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                לא נמצאו גינות.
+              </div>
+            )}
             {gardens.map((garden) => (
-              <div
-                key={garden.id}
-                onClick={() => {
-                  setMapCenter({ lat: garden.lat, lng: garden.lng });
-                  setSelectedGarden(garden);
-                }}
-                className={`p-4 hover:bg-muted/50 transition-all cursor-pointer group ${selectedGarden?.id === garden.id ? 'bg-primary/10 border-r-4 border-primary' : ''}`}
-              >
-                <div className={`flex gap-4 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? "rtl" : "ltr"}>
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                  <div className="flex flex-col flex-1 min-w-0 justify-center">
-                    <h3 className="font-bold text-sm truncate group-hover:text-primary transition-colors">{garden.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex items-center gap-1 text-yellow-500">
-                        <Star className="w-3 h-3 fill-current" />
-                        <span className="text-[10px] font-bold text-foreground">{garden.rating || '---'}</span>
-                      </div>
-                      {garden.active_visitors > 0 && (
-                        <div className="flex items-center gap-1 text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
-                          <Dog className="w-3 h-3" />
-                          <span className="text-[10px] font-bold">{garden.active_visitors} {isRTL ? "כלבים" : "dogs"}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-xl hover:bg-primary/20"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/garden/${garden.id}`);
-                    }}
-                  >
-                    <Navigation className="w-5 h-5 text-primary" />
-                  </Button>
-                </div>
+              <div key={garden.id} onClick={() => { setMapCenter({ lat: garden.lat, lng: garden.lng }); setSelectedGarden(garden); }}
+                className={`p-4 hover:bg-muted/50 cursor-pointer ${selectedGarden?.id === garden.id ? 'bg-primary/10 border-l-4 border-primary' : ''}`}>
+                <h3 className="font-bold text-sm truncate">{garden.name}</h3>
+                <p className="text-[10px] text-muted-foreground">{garden.lat.toFixed(3)}, {garden.lng.toFixed(3)}</p>
               </div>
             ))}
           </div>
         </aside>
 
-        {/* Map Container */}
-        <div className="flex-1 overflow-hidden relative order-1 md:order-2 h-[65vh] md:h-full">
-          <Map
-            defaultCenter={DEFAULT_CENTER}
-            center={mapCenter}
-            onCameraChanged={(ev) => setMapCenter(ev.detail.center)}
-            defaultZoom={14}
-            mapId="DOGYARD_APP_MAP"
-            disableDefaultUI={true}
-            zoomControl={false}
-            style={{ width: '100%', height: '100%' }}
-          >
+        <div className="flex-1 relative order-1 md:order-2 h-[65vh] md:h-full bg-muted">
+          <Map defaultCenter={DEFAULT_CENTER} center={mapCenter} defaultZoom={13} onCameraChanged={(ev) => setMapCenter(ev.detail.center)} disableDefaultUI={true} style={{ width: '100%', height: '100%' }}>
             {gardens.map((garden) => (
-              <AdvancedMarker
-                key={garden.id}
-                position={{ lat: garden.lat, lng: garden.lng }}
-                onClick={() => setSelectedGarden(garden)}
-              >
-                <div className={`relative p-2 rounded-full shadow-lg border-2 transition-all duration-300 ${selectedGarden?.id === garden.id ? 'bg-primary border-white scale-125 z-50' : 'bg-white border-primary/20 hover:scale-110'}`}>
-                  <MapPin className={`w-5 h-5 ${selectedGarden?.id === garden.id ? 'text-white' : 'text-primary'}`} />
-                  {garden.active_visitors > 0 && (
-                    <div className="absolute -top-3 -right-3 bg-red-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-white shadow-xl">
-                      {garden.active_visitors}
-                    </div>
-                  )}
-                </div>
-              </AdvancedMarker>
+              <Marker key={garden.id} position={{ lat: garden.lat, lng: garden.lng }} onClick={() => setSelectedGarden(garden)} />
             ))}
           </Map>
-
-          {/* Map Controls */}
-          <div className="absolute bottom-6 left-6 right-6 flex flex-col gap-3 pointer-events-none items-end">
-             <Button
-              onClick={handleGetUserLocation}
-              className="bg-white text-primary border border-primary/20 rounded-2xl shadow-2xl w-14 h-14 p-0 flex items-center justify-center hover:bg-muted pointer-events-auto active:scale-90 transition-all"
-            >
-              <Navigation className="w-6 h-6" />
-            </Button>
-
-            <div className="flex w-full justify-between items-center gap-3">
-              <Button
-                onClick={fetchGardens}
-                className="bg-primary text-white font-black rounded-2xl shadow-2xl px-8 h-14 flex items-center gap-2 pointer-events-auto hover:bg-primary/90 active:scale-95 transition-all text-lg"
-              >
-                <Search className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-                {isRTL ? "חפש גינות" : "Search Gardens"}
-              </Button>
+          {loading && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
-          </div>
+          )}
         </div>
       </main>
     </div>
   );
 };
 
-const MapPage = () => {
-  return (
-    <APIProvider apiKey={GOOGLE_MAPS_API_KEY || ""}>
-      <MapPageContent />
-    </APIProvider>
-  );
-};
+const MapPage = () => (
+  <APIProvider apiKey={GOOGLE_MAPS_API_KEY || ""}>
+    <MapPageContent />
+  </APIProvider>
+);
 
 export default MapPage;

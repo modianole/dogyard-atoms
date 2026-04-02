@@ -4,9 +4,9 @@ import path from "path";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "0.0.0.0",
+    host: "0.0.0.0", // מאפשר גישה מכל הכתובות ברשת
     port: 8080,
-    strictPort: false,
+    strictPort: true,
   },
   plugins: [
     react(),

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, X, Menu, Map as MapIcon, ShieldCheck, PlusCircle, LayoutDashboard, User, Bell, Settings as SettingsIcon } from "lucide-react";
+import { Home, X, Menu, Map as MapIcon, ShieldCheck, PlusCircle, LayoutDashboard, User, Bell, Settings as SettingsIcon, Download } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -13,7 +13,6 @@ const Navbar = () => {
 
   const isMapPage = location.pathname === "/map";
 
-  // בדיקה רחבה וחסינה לכל סוגי הנתיבים בדף הבית (כולל index.html של Capacitor)
   const path = location.pathname.toLowerCase();
   const isHomePage =
     path === "/" ||
@@ -29,7 +28,7 @@ const Navbar = () => {
     { label: isRTL ? "התראות" : "Notifications", icon: Bell, path: "/notifications" },
     { label: isRTL ? "פרופיל" : "Profile", icon: User, path: "/profile" },
     { label: isRTL ? "הגדרות" : "Settings", icon: SettingsIcon, path: "/settings" },
-    { label: isRTL ? "ניהול" : "Admin", icon: LayoutDashboard, path: "/admin" },
+    { label: "ADMIN", icon: Download, path: "/admin/import" },
   ];
 
   const handleNavigate = (path: string) => {
@@ -37,7 +36,6 @@ const Navbar = () => {
     navigate(path);
   };
 
-  // בדף הבית נשתמש ב-relative כדי שיופיע מתחת להאדר. בשאר הדפים הוא יישאר fixed בראש המסך.
   const navClasses = `${
     isHomePage
       ? "relative"
@@ -52,7 +50,6 @@ const Navbar = () => {
     <>
       <nav className={navClasses}>
         <div className="container mx-auto h-full flex items-center justify-between px-6">
-          {/* Logo */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
             <img src="/logo.png" alt="Logo" className={isMapPage ? "h-8 w-auto" : "h-10 w-auto"} />
             <span className="text-white font-black text-xl hidden sm:block tracking-tighter">DOGYARD</span>
