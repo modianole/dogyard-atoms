@@ -20,22 +20,42 @@ export interface Garden {
   distance_meters?: number;
 }
 
+// Function to clean garden names
+export const formatGardenName = (name: string, location?: string | null): string => {
+  if (!name) return "";
+
+  let cleanName = name;
+
+  // 1. If generic name, use location street
+  if (name.includes("גינת כלבים") || name === "גינת" || name === "גינת הכלבים" || name.includes("גינת הכלבים")) {
+    if (location) {
+      const street = location.split(',')[0]
+        .replace('רח׳', '')
+        .replace('רחוב', '')
+        .replace('גן', '')
+        .trim();
+      cleanName = `גינת ${street}`;
+    }
+  }
+
+  // 2. ALWAYS remove numbers from the final name (e.g., "המלך ג'ורג' 35" -> "המלך ג'ורג'")
+  return cleanName.replace(/[0-9]/g, '').replace(/\s\s+/g, ' ').trim();
+};
+
 export const useGardens = () => {
   return useQuery({
     queryKey: ["gardens"],
     queryFn: async () => {
-      console.log("🔍 Fetching ALL gardens from Supabase...");
-      const { data, error, count } = await supabase
+      const { data, error } = await supabase
         .from("gardens")
-        .select("*", { count: 'exact' });
+        .select("*");
 
-      if (error) {
-        console.error("❌ Error fetching gardens:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log(`✅ Success! Found ${data?.length || 0} gardens total in DB. Total count: ${count}`);
-      return data as Garden[];
+      return (data as Garden[]).map(garden => ({
+        ...garden,
+        name: formatGardenName(garden.name, garden.location)
+      }));
     },
     staleTime: 0,
   });
@@ -54,7 +74,11 @@ export const useNearbyGardens = (lat?: number, lng?: number, radius = 5000) => {
       });
 
       if (error) throw error;
-      return data as Garden[];
+
+      return (data as Garden[]).map(garden => ({
+        ...garden,
+        name: formatGardenName(garden.name, garden.location)
+      }));
     },
     enabled: !!lat && !!lng,
   });

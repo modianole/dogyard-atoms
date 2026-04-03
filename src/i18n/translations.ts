@@ -1,6 +1,5 @@
 export const translations = {
   he: {
-    // Navbar
     nav: {
       home: "דף הבית",
       features: "מה אנחנו מציעים",
@@ -14,17 +13,49 @@ export const translations = {
       menu: "תפריט",
       login: "כניסה",
       myDog: "הכלב שלי",
+      gardensNearby: "גינות בסביבה",
     },
-    // Hero
+    gardenDetails: {
+      back: "חזרה",
+      navBtn: "ניווט",
+      checkIn: "צ'ק-אין",
+      whoIsHere: "מי בגינה עכשיו?",
+      noOneHere: "אין כלבים בגינה כרגע",
+      beFirst: "תהיו הראשונים לעדכן שאתם מגיעים!",
+      amenities: "מתקנים בגינה",
+      hazardTitle: "דיווח על מפגע",
+      peakHoursTitle: "שעות עומס",
+      loading: "טוען פרטי גינה...",
+      notFound: "הגינה לא נמצאה",
+      checkInTitle: "מי בגינה?",
+      statusHere: "כאן",
+      statusWay: "בדרך",
+      chooseDogs: "בחר כלבים להצטרפות:",
+      noDogs: "עדיין לא הוספת כלבים לפרופיל",
+      addDogCta: "הוסף כלב עכשיו",
+      confirmCheckIn: "אשר הגעה",
+      arrivedMsg: "תהנו בגינה!",
+      onWayMsg: "נחכה לכם בגינה!",
+      errorCheckIn: "שגיאה בביצוע צ'ק-אין",
+      fence: "גדר",
+      water: "ברזייה",
+      shade: "צל",
+      lighting: "תאורה",
+      parking: "חניה",
+      unknownAddress: "כתובת לא ידועה",
+      dogGarden: "גינת כלבים",
+      viewDetails: "צפה בפרטים",
+      refreshing: "מרענן...",
+      foundGardens: "נמצאו {{count}} גינות",
+    },
     hero: {
-      badge: "רשת חברתית לכלבים • LIVE RELOAD פעיל! 🚀",
+      badge: "הרשת החברתית לבעלי כלבים",
       title1: "מה קורה בגינה שלכם",
       titleHighlight: "עכשיו?",
       subtitle: "מעל 100 גינות כלבים בתל אביב-יפו. בדקו דירוגים, דווחו על פקחים ותיאמו מפגשים עם החבר׳ה מהגינה",
       mappedGardens: "100+ גינות כלבים ממופות בתל אביב",
       cta: "לגינה שלי",
     },
-    // Features
     features: {
       title: "🐾 מה תמצאו ב-DogYard?",
       subtitle: "כל מה שצריך כדי למצוא את הגינה הטובה ביותר ולהתחבר עם קהילת בעלי הכלבים",
@@ -41,7 +72,6 @@ export const translations = {
       groupChat: "צ׳אט קבוצתי",
       groupChatDesc: "תיאמו מפגשים עם החבר׳ה",
     },
-    // Top Gardens
     gardens: {
       title: "⭐ גינות מובילות",
       subtitle: "הגינות הכי מדורגות בתל אביב",
@@ -55,7 +85,6 @@ export const translations = {
         { name: "גינת דיזנגוב", area: "רחוב דיזנגוב, תל אביב", description: "גינה שקטה ונעימה ליד הבימה עם מתקני מים לכלבים" },
       ],
     },
-    // Peak Hours
     peakHours: {
       title: "שעות העומס בגינות",
       subtitle: "מתי כדאי להגיע? ממוצע כלבים לפי שעה",
@@ -65,14 +94,12 @@ export const translations = {
       peakLabel: "שעות שיא",
       normal: "רגיל",
     },
-    // Hazard
     hazard: {
       title: "ראיתם מפגע בגינה?",
       subtitle: "דווחו על מפגעים בגינות הכלבים ישירות לעירייה. ביחד נשמור על גינות בטוחות ונקיות לכלבים שלנו!",
       reportBtn: "דווחו על מפגע",
       callBtn: "מוקד 106 עיריית ת״א",
     },
-    // Restaurant menu
     restaurant: {
       badge: "הזמנה מהמסעדה",
       title: "רעבים? הזמינו ישר לגינה 🐕",
@@ -91,7 +118,6 @@ export const translations = {
         "קינוחים": "קינוחים",
       },
     },
-    // Add Garden
     addGarden: {
       title: "🌳 הוספת גינה חדשה",
       subtitle: "הכירו לנו גינת כלבים שאנחנו עדיין לא מכירים",
@@ -106,7 +132,6 @@ export const translations = {
       errorDesc: "יש למלא שם ומיקום",
       successTitle: "הגינה נוספה! 🌳",
     },
-    // Restaurant Admin
     admin: {
       badge: "לבעלי מסעדות",
       title: "ניהול תפריט המסעדה שלך 🍽️",
@@ -140,7 +165,6 @@ export const translations = {
       saved: "נשמר בהצלחה! ✓",
       comingSoon: "בקרוב — חיבור ל-Cloud לשמירה אמיתית וניהול מרחוק",
     },
-    // Community
     community: {
       title: "🐾 הצטרפו לקהילה שלנו",
       subtitle: "אלפי בעלי כלבים כבר משתמשים ב-DogYard כדי למצוא גינות, להכיר חברים חדשים ולשתף חוויות",
@@ -181,7 +205,6 @@ export const translations = {
       invalidResetLink: "קישור לא תקין. בקשו קישור איפוס חדש.",
       logout: "התנתקות",
     },
-    // Footer
     footer: {
       rights: "© DogYard 2026. כל הזכויות שמורות.",
     },
@@ -200,9 +223,43 @@ export const translations = {
       menu: "Menu",
       login: "Login",
       myDog: "My Dog",
+      gardensNearby: "Gardens Nearby",
+    },
+    gardenDetails: {
+      back: "Back",
+      navBtn: "Navigate",
+      checkIn: "Check-in",
+      whoIsHere: "Who's in the garden?",
+      noOneHere: "No dogs here right now",
+      beFirst: "Be the first to check in!",
+      amenities: "Amenities",
+      hazardTitle: "Report Hazard",
+      peakHoursTitle: "Peak Hours",
+      loading: "Loading garden details...",
+      notFound: "Garden not found",
+      checkInTitle: "Who's going?",
+      statusHere: "Here",
+      statusWay: "On the way",
+      chooseDogs: "Choose dogs to join:",
+      noDogs: "No dogs in your profile yet",
+      addDogCta: "Add a dog now",
+      confirmCheckIn: "Confirm Check-in",
+      arrivedMsg: "Enjoy the garden!",
+      onWayMsg: "We'll wait for you!",
+      errorCheckIn: "Error during check-in",
+      fence: "Fence",
+      water: "Water",
+      shade: "Shade",
+      lighting: "Lighting",
+      parking: "Parking",
+      unknownAddress: "Unknown address",
+      dogGarden: "Dog Garden",
+      viewDetails: "View Details",
+      refreshing: "Refreshing...",
+      foundGardens: "Found {{count}} gardens",
     },
     hero: {
-      badge: "The Social Network for Dog Owners • LIVE RELOAD ON! 🚀",
+      badge: "The Social Network for Dog Owners",
       title1: "What's happening in your garden",
       titleHighlight: "right now?",
       subtitle: "Over 100 dog gardens in Tel Aviv-Jaffa. Check ratings, report inspectors and schedule meetups with your garden crew",
@@ -364,7 +421,4 @@ export const translations = {
   },
 } as const;
 
-// Use a loose type so both languages are assignable
-export type Translations = {
-  [K in keyof typeof translations.he]: any;
-};
+export type Translations = typeof translations.he;

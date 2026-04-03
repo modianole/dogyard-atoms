@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, X, Menu, Map as MapIcon, ShieldCheck, PlusCircle, LayoutDashboard, User, Bell, Settings as SettingsIcon, Download } from "lucide-react";
+import { Home, X, Menu, Map as MapIcon, ShieldCheck, PlusCircle, LayoutDashboard, User, Bell, Settings as SettingsIcon, Download, Sun, Moon } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "next-themes";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { toggleLanguage, language, isRTL } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Wait for mounting to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isMapPage = location.pathname === "/map";
 
@@ -43,16 +51,22 @@ const Navbar = () => {
   } w-full h-20 z-[50] transition-all duration-300 ${
     isMapPage
       ? "bg-black/40 backdrop-blur-md border-b border-white/5 h-16"
-      : "bg-black/80 backdrop-blur-xl border-b border-white/10"
+      : "bg-background/80 backdrop-blur-xl border-b border-border/50"
   }`;
+
+  // Using the actual filename found on disk
+  const logoSrc = "/logo.png.png";
 
   return (
     <>
       <nav className={navClasses}>
         <div className="container mx-auto h-full flex items-center justify-between px-6">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-            <img src="/logo.png" alt="Logo" className={isMapPage ? "h-8 w-auto" : "h-10 w-auto"} />
-            <span className="text-white font-black text-xl hidden sm:block tracking-tighter">DOGYARD</span>
+          <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
+            <img
+              src={logoSrc}
+              alt="DogYard Logo"
+              className={`${isMapPage ? "h-24" : "h-40"} w-auto object-contain transition-opacity duration-300`}
+            />
           </div>
 
           <div className="flex items-center gap-4">
@@ -67,15 +81,23 @@ const Navbar = () => {
             )}
 
             <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2.5 bg-foreground/10 hover:bg-foreground/20 rounded-xl transition-all border border-border/50 text-foreground active:scale-90"
+              aria-label="Toggle theme"
+            >
+              {mounted && (theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
+            </button>
+
+            <button
               onClick={toggleLanguage}
-              className="text-white text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl transition-colors border border-white/10"
+              className="text-foreground text-xs font-bold bg-foreground/10 hover:bg-foreground/20 px-3 py-2 rounded-xl transition-colors border border-border/50"
             >
               {language === "he" ? "HE" : "EN"}
             </button>
 
             <button
               onClick={() => setOpen(!open)}
-              className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl border border-white/10 text-white transition-all active:scale-90"
+              className="p-3 bg-foreground/10 hover:bg-foreground/20 rounded-2xl border border-border/50 text-foreground transition-all active:scale-90"
               aria-label="Menu"
             >
               {open ? <X /> : <Menu />}
@@ -91,14 +113,13 @@ const Navbar = () => {
             onClick={() => setOpen(false)}
           />
           <div
-            className={`fixed top-0 ${isRTL ? "right-0 animate-in slide-in-from-right" : "left-0 animate-in slide-in-from-left"} h-full w-80 bg-card border-x border-white/10 z-[300] shadow-2xl flex flex-col duration-300`}
+            className={`fixed top-0 ${isRTL ? "right-0 animate-in slide-in-from-right" : "left-0 animate-in slide-in-from-left"} h-full w-80 bg-card border-x border-border z-[300] shadow-2xl flex flex-col duration-300`}
           >
-            <div className="p-8 border-b border-white/10 flex justify-between items-center bg-muted/30">
-              <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
-                <span className="text-white font-black text-lg">DOGYARD</span>
+            <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
+              <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigate("/")}>
+                <img src={logoSrc} alt="Logo" className="h-36 w-auto object-contain" />
               </div>
-              <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5">
+              <button onClick={() => setOpen(false)} className="text-foreground/70 hover:text-foreground transition-colors p-2 rounded-lg hover:bg-foreground/5">
                 <X />
               </button>
             </div>
@@ -108,7 +129,7 @@ const Navbar = () => {
                 <button
                   key={i}
                   onClick={() => handleNavigate(item.path)}
-                  className={`w-full flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all ${location.pathname === item.path ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-white/70 hover:bg-white/5 hover:text-white"}`}
+                  className={`w-full flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all ${location.pathname === item.path ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-foreground/70 hover:bg-foreground/5 hover:text-foreground"}`}
                 >
                   <item.icon className={`w-6 h-6 ${location.pathname === item.path ? "text-white" : "text-primary"}`} />
                   {item.label}
@@ -116,22 +137,22 @@ const Navbar = () => {
               ))}
             </div>
 
-            <div className="p-8 border-t border-white/10 bg-black/40 space-y-4">
+            <div className="p-8 border-t border-border bg-card/40 space-y-4">
               {user ? (
-                <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 mb-2">
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/5 border border-border mb-2">
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
                     {user.email?.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-white truncate">{user.email}</p>
-                    <p className="text-xs text-white/40">מחובר למערכת</p>
+                    <p className="text-sm font-bold text-foreground truncate">{user.email}</p>
+                    <p className="text-xs text-foreground/40">מחובר למערכת</p>
                   </div>
                 </div>
               ) : null}
 
               <button
                 onClick={async () => { if (user) await signOut(); else navigate("/auth"); setOpen(false); }}
-                className={`w-full py-4 rounded-2xl text-white font-black text-lg shadow-lg transition-all active:scale-95 ${user ? "bg-white/10 hover:bg-destructive hover:shadow-destructive/20" : "bg-primary hover:bg-primary/90 shadow-primary/20"}`}
+                className={`w-full py-4 rounded-2xl text-white font-black text-lg shadow-lg transition-all active:scale-95 ${user ? "bg-foreground/10 text-foreground hover:bg-destructive hover:text-white" : "bg-primary hover:bg-primary/90 shadow-primary/20"}`}
               >
                 {user ? (isRTL ? "התנתק" : "Logout") : (isRTL ? "התחברות" : "Login")}
               </button>

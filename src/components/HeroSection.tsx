@@ -57,9 +57,8 @@ const HeroSection = ({ onOpenMap }: HeroSectionProps) => {
 
       <div className={`relative container mx-auto min-h-[600px] md:min-h-[700px] flex items-center ${isRTL ? "justify-start" : "justify-end"} px-6 z-[10]`}>
         <div className={`max-w-[95%] md:max-w-2xl ${isRTL ? "text-right" : "text-left"}`}>
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full text-xs font-black bg-black/40 backdrop-blur-md text-primary border border-primary/20">
-            <div className="w-2 h-2 rounded-full bg-primary" />
-            <span className="uppercase tracking-widest">{t.hero.badge}</span>
+          <div className="inline-flex items-center mb-6 text-2xl md:text-4xl font-display font-black text-white drop-shadow-2xl">
+            <span className="uppercase tracking-[0.1em]">{t.hero.badge}</span>
           </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-black leading-[1.1] text-white mb-6 tracking-tighter drop-shadow-2xl text-balance">

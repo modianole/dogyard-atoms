@@ -1,5 +1,8 @@
-// Top-level build file for the hybrid project root
+// Top-level build file
 buildscript {
+    // טעינת המשתנים מתיקיית android
+    apply from: "android/variables.gradle"
+    
     repositories {
         google()
         mavenCentral()
@@ -7,7 +10,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.0'
         classpath 'com.google.gms:google-services:4.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24" // גרסה יציבה יותר
     }
 }
 
@@ -15,5 +18,10 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+    }
+    
+    // הפיכת המשתנים לזמינים לכל תתי-הפרויקטים
+    if (file("android/variables.gradle").exists()) {
+        apply from: "${rootProject.projectDir}/android/variables.gradle"
     }
 }

@@ -27,3 +27,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build and Gradle
+.gradle/
+build/
+gradle/
+gradlew
+gradlew.bat
+local.properties

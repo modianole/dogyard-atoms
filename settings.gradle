@@ -1,4 +1,27 @@
-include ':capacitor-cordova-android-plugins'
+// Root settings file for DogYard hybrid project
+rootProject.name = 'dogyard-atoms'
+
+// Include the Android app module
 include ':app'
-project(':capacitor-cordova-android-plugins').projectDir = new File(rootDir, 'android/capacitor-cordova-android-plugins/')
-project(':app').projectDir = new File(rootDir, 'android/app/')
+project(':app').projectDir = new File(settingsDir, 'android/app')
+
+// Include capacitor-cordova-android-plugins
+include ':capacitor-cordova-android-plugins'
+project(':capacitor-cordova-android-plugins').projectDir = new File(settingsDir, 'android/capacitor-cordova-android-plugins')
+
+// Apply capacitor settings if they exist
+File capSettings = new File(settingsDir, 'android/capacitor.settings.gradle')
+if (capSettings.exists()) {
+    apply from: capSettings
+    
+    // Fix paths for modules included by capacitor.settings.gradle.
+    // The generated script uses '../node_modules' which points outside the project when run from root.
+    rootProject.children.findAll { it.name.startsWith('capacitor-') }.each { p ->
+        def pathStr = p.projectDir.absolutePath
+        if (pathStr.contains('node_modules')) {
+            // Re-resolve the path relative to the actual project root
+            def suffix = pathStr.substring(pathStr.indexOf('node_modules') + 'node_modules'.length())
+            p.projectDir = new File(settingsDir, "node_modules${suffix}")
+        }
+    }
+}

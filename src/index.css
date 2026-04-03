@@ -6,6 +6,41 @@
 
 @layer base {
   :root {
+    --background: 0 0% 100%;
+    --foreground: 220 20% 4%;
+
+    --card: 0 0% 98%;
+    --card-foreground: 220 20% 4%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 4%;
+
+    --primary: 142 45% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 90%;
+    --secondary-foreground: 220 15% 10%;
+
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 142 45% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 85%;
+    --input: 220 15% 85%;
+    --ring: 142 45% 40%;
+
+    --radius: 1.25rem;
+
+    /* Gold color for stars */
+    --warning: 45 100% 50%;
+  }
+
+  .dark {
     --background: 220 20% 4%;
     --foreground: 220 15% 94%;
 
@@ -15,7 +50,7 @@
     --popover: 220 20% 8%;
     --popover-foreground: 220 15% 94%;
 
-    --primary: 142 45% 40%; /* Subdued Grass Green */
+    --primary: 142 45% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 15% 14%;
@@ -24,7 +59,7 @@
     --muted: 220 15% 12%;
     --muted-foreground: 220 10% 55%;
 
-    --accent: 142 45% 40%; /* Subdued Grass Green */
+    --accent: 142 45% 40%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -34,7 +69,7 @@
     --input: 220 15% 16%;
     --ring: 142 45% 40%;
 
-    --radius: 1.25rem;
+    --warning: 45 100% 50%;
 
     --glow-primary: 0 0 15px hsla(142, 45%, 40%, 0.3), 0 0 40px hsla(142, 45%, 40%, 0.1);
   }
@@ -48,7 +83,7 @@
 
   html {
     scroll-behavior: smooth;
-    overscroll-behavior-y: none; /* Prevent pull-to-refresh feel on main container */
+    overscroll-behavior-y: none;
   }
 
   body {
@@ -59,7 +94,6 @@
     overflow-x: hidden;
   }
 
-  /* Custom Scrollbar for a cleaner mobile look */
   ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
@@ -74,7 +108,7 @@
 
 @layer utilities {
   .glass {
-    @apply bg-card/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-card/40 backdrop-blur-xl border border-border/50 shadow-2xl;
   }
 
   .glass-strong {
@@ -98,7 +132,7 @@
   }
 
   .btn-futuristic {
-    @apply relative overflow-hidden transition-all duration-300 active:scale-95;
+    @apply relative overflow-hidden transition-all duration-300 active:scale-95 text-white;
     background: linear-gradient(135deg, #15803d, #16a34a);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
