@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- הגדרה גלובלית המאפשרת תעבורה חופשית בזמן פיתוח -->
-    <base-config cleartextTrafficPermitted="true">
+    <!-- הגדרה גלובלית - HTTPS enforced בפרודקשן -->
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
-            <certificates src="user" />
         </trust-anchors>
     </base-config>
 
-    <!-- הוספת תמיכה מפורשת לכל השרתים הנדרשים -->
+    <!-- הוספת תמיכה מפורשת לשרתי פיתוח בלבד -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">10.0.0.7</domain>

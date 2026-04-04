@@ -19,3 +19,37 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# ============ Capacitor Rules ============
+-keep class com.capacitorjs.** { *; }
+-keep class android.webkit.** { *; }
+
+# ============ Kotlin Rules ============
+-keep class kotlin.** { *; }
+-keepclassmembers class kotlin.** { *; }
+
+# ============ DogYard App Rules ============
+-keep class com.dogyard.** { *; }
+-keepclassmembers class com.dogyard.** { *; }
+
+# ============ Firebase Rules ============
+-keep class com.google.firebase.** { *; }
+-keepclassmembers class com.google.firebase.** { *; }
+
+# ============ Jetpack Compose Rules ============
+-keep class androidx.compose.** { *; }
+-keepclassmembers class androidx.compose.** { *; }
+
+# ============ Native Methods ============
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# ============ Serialize Classes ============
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}

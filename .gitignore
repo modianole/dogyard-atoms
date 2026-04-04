@@ -35,3 +35,26 @@ gradle/
 gradlew
 gradlew.bat
 local.properties
+
+# 🔐 SECURITY - Never commit these!
+*.keystore
+*.jks
+google-services.json
+GoogleService-Info.plist
+
+# Release outputs
+*.apk
+*.aab
+
+# Office temp files
+~$*
+
+# Error logs
+hs_err_pid*.log
+replay_pid*.log
+
+# Test files
+test_file.txt
+build_output.log
+release_build.log
+

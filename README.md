@@ -1,8 +1,13 @@
-# דוג פארק - DogYard 🐾
+# 🐾 דוג יארד - DogYard
 
-אפליקציה חברתית לבעלי כלבים בישראל. מציאת גינות כלבים, דיווח על מפגעים והזמנת אוכל ישירות לגינה.
+אפליקציה חברתית לבעלי כלבים בישראל.  
+מציאת גינות כלבים, דיווח על מפגעים והזמנת אוכל ישירות לגינה.
 
-## פיתוח מקומי
+**Tech Stack**: React + TypeScript + Capacitor + Supabase + Firebase
+
+---
+
+## 🚀 פיתוח מקומי
 
 ```sh
 # התקנת תלויות
@@ -12,31 +17,74 @@ npm install --legacy-peer-deps
 npm run dev
 ```
 
-## בנייה לאנדרואיד (Production)
+---
 
-כדי לייצר גרסת אנדרואיד native, יש להריץ את הפקודות הבאות בטרמינל:
+## 📱 בנייה לאנדרואיד
 
+### Debug Build
 ```sh
-# 1. בניית קבצי ה-Web
+# 1. בניית קבצי Web
 npm run build
 
-# 2. סנכרון הקוד לתוך פרויקט האנדרואיד
+# 2. סנכרון ל-Android
 npx cap sync
 
-# 3. פתיחת הפרויקט באנדרואיד סטודיו
+# 3. פתיחה ב-Android Studio
 npx cap open android
 ```
 
-### דגשים להפצה בחנות (Google Play):
-- **הרשאות מיקום**: וודאו שקובץ ה-`AndroidManifest.xml` כולל הרשאות GPS.
-- **מדיניות פרטיות**: הדף זמין בכתובת `/privacy` בתוך האפליקציה.
-- **חתימה**: יש לייצר Signed Bundle דרך Android Studio.
+### Release Build (לחנות Google Play)
+```sh
+npm run build
+npx cap sync
+cd android
+.\gradlew assembleRelease
+# APK: android/app/build/outputs/apk/release/app-release.apk
+```
 
-## טכנולוגיות
-- **Frontend**: React + TypeScript + Vite
-- **UI**: Tailwind CSS + Shadcn UI
-- **Backend**: Supabase
-7
 ---
-נבנה באהבה לכלבים. 🐕
-        
+
+## 🔑 Keystore & Signing
+
+הקובץ `dogyard.keystore` נמצא בשורש הפרויקט.  
+הגדרות החתימה נמצאות ב-`android/app/build.gradle`.
+
+> ⚠️ **אל תעלה את ה-keystore ל-Git!**
+
+---
+
+## 🔥 Firebase
+
+- **Crashlytics**: דיווח קריסות אוטומטי  
+- **Analytics**: מעקב אחר שימוש  
+- קובץ `google-services.json` נמצא ב-`android/app/`
+
+---
+
+## 🌐 Backend - Supabase
+
+- הגדרות ב-`.env`
+- Migrations ב-`supabase/migrations/`
+
+---
+
+## 📋 Scripts
+
+| פקודה | תיאור |
+|-------|--------|
+| `npm run dev` | שרת פיתוח |
+| `npm run build` | Build לייצור |
+| `npm test` | הרצת טסטים |
+| `npx cap sync` | סנכרון ל-Native |
+
+---
+
+## 📄 מסמכים
+
+- [PROFESSIONAL_REVIEW.md](./PROFESSIONAL_REVIEW.md) - סקירה מקצועית
+- [MVP_ACTION_PLAN.md](./MVP_ACTION_PLAN.md) - תוכנית פעולה
+- [TASKS_CHECKLIST.md](./TASKS_CHECKLIST.md) - רשימת משימות
+
+---
+
+נבנה באהבה לכלבים 🐕

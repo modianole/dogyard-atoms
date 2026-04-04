@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     namespace = "com.dogyard.app"
@@ -17,10 +18,34 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    buildTypes {
+
+    signingConfigs {
+        debug {
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storeFile file("${System.env.USERPROFILE}/.android/debug.keystore")
+            storePassword "android"
+        }
         release {
-            minifyEnabled false
+            storeFile file("C:\\Users\\user\\StudioProjects\\dogyard-atoms\\dogyard.keystore")
+            storePassword "dogyard123"
+            keyAlias "dogyard-release-key"
+            keyPassword "dogyard123"
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable = true
+            versionNameSuffix "-dev"
+            signingConfig signingConfigs.debug
+        }
+        release {
+            debuggable = false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -68,6 +93,11 @@ dependencies {
     
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:33.1.0')
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
 }
 
 apply from: 'capacitor.build.gradle'
