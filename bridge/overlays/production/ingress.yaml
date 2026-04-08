@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app
+  namespace: dogyard-atoms
+  annotations:
+    # cert-manager issues a Let's Encrypt certificate automatically.
+    # Requires cert-manager + a ClusterIssuer named "letsencrypt-prod" in the cluster.
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # Redirect HTTP → HTTPS.
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        # TODO: replace with your actual domain before deploying.
+        - dogyard.app
+      secretName: dogyard-app-tls
+  rules:
+    - host: dogyard.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app
+                port:
+                  name: http

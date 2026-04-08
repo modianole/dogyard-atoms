@@ -1,0 +1,203 @@
+name: CI/CD — Build · Scan · Push · Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ──────────────────────────────────────────────────────────
+  # 1. Build the Docker image and export it as a tarball so
+  #    the scan job can inspect it without a registry push.
+  # ──────────────────────────────────────────────────────────
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build image (no push yet)
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: final
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # Inject public build-time env vars from GitHub Actions secrets.
+          # These end up baked into the static JS bundle — do NOT put private keys here.
+          build-args: |
+            PUBLIC_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+            PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+            PUBLIC_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+            PUBLIC_ADMIN_USER_ID=${{ secrets.VITE_ADMIN_USER_ID }}
+            PUBLIC_ADMIN_EMAIL=${{ secrets.VITE_ADMIN_EMAIL }}
+          outputs: type=docker,dest=/tmp/dogyard-image.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Upload image tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: dogyard-image
+          path: /tmp/dogyard-image.tar
+          retention-days: 1
+
+  # ──────────────────────────────────────────────────────────
+  # 2. Vulnerability scan with Trivy.
+  #    Fails the pipeline on CRITICAL findings so a bad image
+  #    never reaches the registry.
+  # ──────────────────────────────────────────────────────────
+  scan:
+    name: Security scan
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      security-events: write  # to upload SARIF to GitHub Security tab
+    steps:
+      - name: Download image tarball
+        uses: actions/download-artifact@v4
+        with:
+          name: dogyard-image
+          path: /tmp
+
+      - name: Load image into Docker
+        run: docker load -i /tmp/dogyard-image.tar
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          input: /tmp/dogyard-image.tar
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+          ignore-unfixed: true
+
+      - name: Upload Trivy SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
+
+  # ──────────────────────────────────────────────────────────
+  # 3. Push to GitHub Container Registry.
+  #    Only runs on pushes to main (not on PRs).
+  # ──────────────────────────────────────────────────────────
+  push:
+    name: Push image
+    runs-on: ubuntu-latest
+    needs: [build, scan]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: final
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PUBLIC_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+            PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+            PUBLIC_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+            PUBLIC_ADMIN_USER_ID=${{ secrets.VITE_ADMIN_USER_ID }}
+            PUBLIC_ADMIN_EMAIL=${{ secrets.VITE_ADMIN_EMAIL }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ──────────────────────────────────────────────────────────
+  # 4. Deploy to Kubernetes (production overlay).
+  #    Requires KUBECONFIG secret (base64-encoded kubeconfig).
+  # ──────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    needs: push
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Set up kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update image tag in production overlay
+        run: |
+          cd bridge/overlays/production
+          kustomize edit set image \
+            dogyard-atoms:local=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+
+      - name: Apply production manifests
+        run: |
+          kustomize build bridge/overlays/production | kubectl apply -f -
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/app \
+            -n dogyard-atoms \
+            --timeout=120s

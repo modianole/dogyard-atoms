@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - ingress.yaml
+
+# Override image to the registry image built by CI.
+# CI/CD patches this at deploy time with the exact digest:
+#   kustomize edit set image dogyard-atoms=ghcr.io/ORG/dogyard-atoms:SHA
+images:
+  - name: dogyard-atoms:local
+    newName: ghcr.io/REPLACE_ME/dogyard-atoms
+    newTag: latest
+
+patches:
+  # Expose the app on port 443 via Ingress; remove the NodePort/LoadBalancer
+  # service that was used for local desktop access.
+  - path: app-service-patch.yaml

@@ -1,11 +1,7 @@
-# check if there is at least one published port
-
-#! app-service.yaml
-# Generated code, do not edit
 apiVersion: v1
 kind: Service
 metadata:
-    name: app-published
-    namespace: dogyard-atoms
+  name: app-published
+  namespace: dogyard-atoms
 spec:
-    type: LoadBalancer
+  type: LoadBalancer

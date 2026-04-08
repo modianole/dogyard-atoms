@@ -75,7 +75,7 @@ $health = $status[0].State.Health.Status
 Write-Host "DONE: Container is $health"
 Write-Host "Container: $containerId"
 Write-Host "Image: $image"
-Write-Host "URL: http://localhost:8090"
+Write-Host "URL: http://localhost:8080"
 
 
 

@@ -1,21 +1,17 @@
-# check if there is at least one published port
-
-#! app-service.yaml
-# Generated code, do not edit
 apiVersion: v1
 kind: Service
 metadata:
-    name: app-published
-    namespace: dogyard-atoms
-    labels:
-        com.docker.compose.project: dogyard-atoms
-        com.docker.compose.service: app
+  name: app-published
+  namespace: dogyard-atoms
+  labels:
+    app.kubernetes.io/name: dogyard-atoms
+    app.kubernetes.io/component: frontend
 spec:
-    selector:
-        com.docker.compose.project: dogyard-atoms
-        com.docker.compose.service: app
-    ports:
-        - name: app-8080
-          port: 8080
-          protocol: TCP
-          targetPort: app-80
+  selector:
+    app.kubernetes.io/name: dogyard-atoms
+    app.kubernetes.io/component: frontend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP

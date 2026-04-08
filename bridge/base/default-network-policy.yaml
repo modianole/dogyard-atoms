@@ -1,24 +1,24 @@
-#! default-network-policy.yaml
-# Generated code, do not edit
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-    name: default-network-policy
-    namespace: dogyard-atoms
+  name: default-network-policy
+  namespace: dogyard-atoms
 spec:
-    podSelector:
-        matchLabels:
-            com.docker.compose.network.default: "true"
-    policyTypes:
-        - Ingress
-        - Egress
-    ingress:
-        - from:
-            - podSelector:
-                matchLabels:
-                    com.docker.compose.network.default: "true"
-    egress:
-        - to:
-            - podSelector:
-                matchLabels:
-                    com.docker.compose.network.default: "true"
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: dogyard-atoms
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow HTTP traffic from anywhere (public web application).
+    - ports:
+        - port: 80
+          protocol: TCP
+  egress:
+    # Allow DNS resolution (required by the container runtime / glibc).
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP

@@ -1,0 +1,15 @@
+# In production, traffic arrives via the Ingress controller — the
+# app-published NodePort/LoadBalancer service is not needed.
+# Downgrade it to ClusterIP so no external port is opened.
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-published
+  namespace: dogyard-atoms
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
