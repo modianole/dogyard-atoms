@@ -8,7 +8,6 @@ import {
   AlertTriangle, Share2, ChevronLeft
 } from "lucide-react";
 import PeakHoursChart from "@/components/PeakHoursChart";
-import HazardReport from "@/components/HazardReport";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -141,6 +140,20 @@ const GardenDetails = () => {
   const gardenName = !isRTL && garden.name_en ? garden.name_en : garden.name;
   const gardenLocation = !isRTL && garden.location_en ? garden.location_en : garden.location;
 
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: gardenName, url: window.location.href });
+        return;
+      }
+
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success(isRTL ? "הקישור הועתק" : "Link copied");
+    } catch {
+      toast.error(isRTL ? "שיתוף נכשל" : "Share failed");
+    }
+  };
+
   return (
     <div className="container max-w-4xl mx-auto px-4 pb-12" dir={isRTL ? "rtl" : "ltr"}>
       {/* Header Actions */}
@@ -149,7 +162,7 @@ const GardenDetails = () => {
           {isRTL ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
           <span className="font-bold">{t.gardenDetails.back}</span>
         </button>
-        <Button variant="ghost" size="icon" onClick={() => navigator.share?.({ title: gardenName, url: window.location.href })} className="rounded-full bg-muted/50">
+        <Button variant="ghost" size="icon" onClick={handleShare} className="rounded-full bg-muted/50">
           <Share2 className="w-5 h-5" />
         </Button>
       </div>
@@ -261,11 +274,6 @@ const GardenDetails = () => {
             </div>
           </section>
 
-          {/* Hazards */}
-          <section className="bg-destructive/5 p-8 rounded-[2.5rem] border-2 border-destructive/10">
-            <h2 className="text-2xl font-black text-destructive mb-4 flex items-center gap-3"><AlertTriangle className="w-7 h-7"/> {t.gardenDetails.hazardTitle}</h2>
-            <HazardReport gardenId={id!} />
-          </section>
         </div>
 
         {/* Sidebar */}

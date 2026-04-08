@@ -1,13 +1,12 @@
-
 import { useState, useCallback } from "react";
 import { useMapsLibrary, APIProvider } from "@vis.gl/react-google-maps";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useLanguage } from "@/context/LanguageContext";
 import { Search, Save, Loader2, CheckCircle2, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useDeveloperAccess } from "@/hooks/useDeveloperAccess";
 import { useNavigate } from "react-router-dom";
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -35,6 +34,7 @@ const SEARCH_QUERIES = ["גינת כלבים", "מתחם כלבים"];
 
 const AdminImportContent = () => {
   const { user } = useAuth();
+  const { isDeveloper, loading: developerAccessLoading } = useDeveloperAccess();
   const navigate = useNavigate();
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -83,6 +83,10 @@ const AdminImportContent = () => {
 
   const handleBulkImport = async () => {
     if (!user) { navigate("/auth"); return; }
+    if (!isDeveloper) {
+      toast.error("אין הרשאה לביצוע פעולת אדמין זו.");
+      return;
+    }
     setImporting(true);
 
     const gardens = results.map(r => ({
@@ -110,6 +114,26 @@ const AdminImportContent = () => {
       setImporting(false);
     }
   };
+
+  if (developerAccessLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-10 w-10 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isDeveloper) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="max-w-md text-center space-y-4">
+          <h1 className="text-2xl font-black">גישה חסומה</h1>
+          <p className="text-muted-foreground">עמוד האדמין פתוח רק לחשבון הבעלים שהוגדר.</p>
+          <Button onClick={() => navigate("/")}>חזרה לעמוד הבית</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6 pt-24 min-h-screen text-right" dir="rtl">

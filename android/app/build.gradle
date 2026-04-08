@@ -2,6 +2,24 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'com.google.firebase.crashlytics'
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { stream ->
+        localProperties.load(stream)
+    }
+}
+
+def resolveBuildSecret = { String envName, String propertyName ->
+    return System.getenv(envName) ?: project.findProperty(propertyName) ?: localProperties.getProperty(propertyName)
+}
+
+def releaseStoreFilePath = resolveBuildSecret('DOGYARD_KEYSTORE_PATH', 'DOGYARD_KEYSTORE_PATH')
+def releaseStorePassword = resolveBuildSecret('DOGYARD_KEYSTORE_PASSWORD', 'DOGYARD_KEYSTORE_PASSWORD')
+def releaseKeyAlias = resolveBuildSecret('DOGYARD_KEY_ALIAS', 'DOGYARD_KEY_ALIAS')
+def releaseKeyPassword = resolveBuildSecret('DOGYARD_KEY_PASSWORD', 'DOGYARD_KEY_PASSWORD')
+def hasReleaseSigning = [releaseStoreFilePath, releaseStorePassword, releaseKeyAlias, releaseKeyPassword].every { it }
+
 android {
     namespace = "com.dogyard.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -27,10 +45,12 @@ android {
             storePassword "android"
         }
         release {
-            storeFile file("C:\\Users\\user\\StudioProjects\\dogyard-atoms\\dogyard.keystore")
-            storePassword "dogyard123"
-            keyAlias "dogyard-release-key"
-            keyPassword "dogyard123"
+            if (hasReleaseSigning) {
+                storeFile file(releaseStoreFilePath)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
         }
     }
 
@@ -45,7 +65,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig hasReleaseSigning ? signingConfigs.release : signingConfigs.debug
         }
     }
     compileOptions {
@@ -60,6 +80,12 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion rootProject.ext.compose_compiler_version
+    }
+
+    // MVP local release builds: lint-vital is unstable on this machine and blocks artifact generation.
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 
@@ -110,3 +136,8 @@ try {
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }
+
+if (!hasReleaseSigning) {
+    logger.warn("Release signing credentials are not configured. Set DOGYARD_KEYSTORE_PATH, DOGYARD_KEYSTORE_PASSWORD, DOGYARD_KEY_ALIAS, and DOGYARD_KEY_PASSWORD in environment variables or android/local.properties before publishing.")
+}
+

@@ -84,7 +84,8 @@
 ```xml
 ✅ Network Security Config מוגדר
 ⚠️ Cleartext Traffic מאופשר (רק בדיוג!)
-   - מותאם לשרתי פיתוח: 10.0.2.2, 10.0.0.7, localhost
+   - allowlist לפיתוח בלבד: 10.0.2.2 (emulator), localhost
+   - כתובת LAN לפיתוח מנוהלת דרך Vite / משתני סביבה, לא כערך קשיח במניפסט
    - תמיכה ב-Supabase (supabase.co)
    - תמיכה ב-Google services
 ✅ FileProvider configured (URI sharing)
@@ -137,9 +138,9 @@
 ✅ appName: דוג פארק - Dog Park
 ✅ webDir: dist (pointing to built web assets)
 ✅ Server config:
-   - androidScheme: https
-   - Development URL: http://10.0.2.2:8080
-   - Cleartext enabled (for dev)
+   - בפרודקשן אין `server.url` לאחר `npx cap sync android`
+   - בפיתוח כתובת השרת נקבעת דרך `CAPACITOR_ANDROID_SERVER_URL`
+   - Vite dev host ניתן להגדרה דרך `VITE_DEV_HOST` (ברירת מחדל נוכחית: `192.168.10.1`)
 ✅ SplashScreen plugin:
    - Duration: 3000ms
    - Color: #f97316 (כתום)
@@ -230,6 +231,9 @@ Solution Required:
       <domain>10.0.2.2</domain> (emulator)
       <domain>localhost</domain> (local dev)
    </domain-config>
+
+   Note:
+   - LAN development IPs should stay outside this file and be handled by Vite / environment variables
 
 Impact: 🔴 Will be REJECTED by Google Play Store
        🔴 User data vulnerable to MITM attacks
@@ -409,16 +413,14 @@ Current: Gracefully fails, but unclear intent
 
 #### 12. **Development Server Hardcoded**
 ```
-⚠️ Issue:
-   server.url: "http://10.0.2.2:8080"
-   Hardcoded development server
+✅ RESOLVED:
+   - `server.url` no longer hardcoded in production
+   - Android dev server is now environment-based (`CAPACITOR_ANDROID_SERVER_URL`)
+   - Vite dev host is configurable (`VITE_DEV_HOST`, `VITE_DEV_PORT`)
+   - Synced `capacitor.config.json` is clean for production builds
 
-Needs:
-   - Remove or make configurable
-   - Use production endpoint
-   - Support multiple environments (dev, staging, prod)
-
-Impact: 🟡 App won't work on devices/users in production
+Remaining note:
+   - If local LAN IP changes, update only the environment variables / local dev settings
 ```
 
 #### 13. **No Version Code Management**

@@ -28,10 +28,12 @@ const MapPageContent = () => {
   const [gardens, setGardens] = useState<GardenWithStats[]>([]);
   const [selectedGarden, setSelectedGarden] = useState<GardenWithStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchGardens = useCallback(async () => {
     setLoading(true);
+    setErrorMessage(null);
     try {
       const { data, error } = await supabase
         .from("gardens")
@@ -52,6 +54,8 @@ const MapPageContent = () => {
       setGardens(formatted);
     } catch (error: any) {
       console.error("Map Fetch Error:", error);
+      setErrorMessage("לא הצלחנו לטעון גינות כרגע. נסו לרענן שוב.");
+      setGardens([]);
     } finally {
       setLoading(false);
     }
@@ -79,6 +83,18 @@ const MapPageContent = () => {
           </div>
 
           <div className="flex-1 overflow-y-auto divide-y divide-border bg-background">
+            {errorMessage && (
+              <div className="p-4 text-xs font-bold text-destructive bg-destructive/10 border-b border-destructive/20">
+                {errorMessage}
+              </div>
+            )}
+
+            {!loading && !errorMessage && gardens.length === 0 && (
+              <div className="p-6 text-center text-muted-foreground text-sm">
+                לא נמצאו גינות להצגה כרגע.
+              </div>
+            )}
+
             {gardens.map((garden) => (
               <div
                 key={garden.id}

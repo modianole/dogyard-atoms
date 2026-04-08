@@ -154,6 +154,122 @@ export type Database = {
         }
         Relationships: []
       }
+      dog_profile_members: {
+        Row: {
+          id: string
+          dog_id: string
+          user_id: string
+          role: Database["public"]["Enums"]["dog_share_role"]
+          status: string
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          dog_id: string
+          user_id: string
+          role?: Database["public"]["Enums"]["dog_share_role"]
+          status?: string
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          dog_id?: string
+          user_id?: string
+          role?: Database["public"]["Enums"]["dog_share_role"]
+          status?: string
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dog_profile_members_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "dog_profile_members_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dog_profile_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          }
+        ]
+      }
+      dog_share_invites: {
+        Row: {
+          id: string
+          dog_id: string
+          invited_by: string
+          role: Database["public"]["Enums"]["dog_share_role"]
+          token_hash: string
+          expires_at: string
+          accepted_by: string | null
+          accepted_at: string | null
+          revoked_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          dog_id: string
+          invited_by: string
+          role?: Database["public"]["Enums"]["dog_share_role"]
+          token_hash: string
+          expires_at: string
+          accepted_by?: string | null
+          accepted_at?: string | null
+          revoked_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          dog_id?: string
+          invited_by?: string
+          role?: Database["public"]["Enums"]["dog_share_role"]
+          token_hash?: string
+          expires_at?: string
+          accepted_by?: string | null
+          accepted_at?: string | null
+          revoked_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dog_share_invites_accepted_by_fkey"
+            columns: ["accepted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "dog_share_invites_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dog_share_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          }
+        ]
+      }
       gardens: {
         Row: {
           created_at: string
@@ -578,6 +694,20 @@ export type Database = {
       }
     }
     Functions: {
+      accept_dog_share_invite: {
+        Args: {
+          p_token: string
+        }
+        Returns: Json
+      }
+      create_dog_share_invite: {
+        Args: {
+          p_dog_id: string
+          p_role?: Database["public"]["Enums"]["dog_share_role"]
+          p_expires_in_hours?: number
+        }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -596,6 +726,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "restaurant_owner" | "user"
+      dog_share_role: "owner" | "editor" | "viewer"
       dog_size: "small" | "medium" | "large" | "giant"
       dog_gender: "male" | "female"
       hazard_status: "open" | "in_progress" | "resolved"

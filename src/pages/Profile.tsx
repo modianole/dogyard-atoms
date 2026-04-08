@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Plus, Settings, User, Trash2, Dog } from "lucide-react";
+import { LogOut, Plus, Settings, User, Trash2, Dog, Share2, Copy } from "lucide-react";
 import BottomNav from "@/components/layout/BottomNav";
 import Navbar from "@/components/Navbar";
 import { Tables, Enums } from "@/integrations/supabase/types";
@@ -31,8 +31,16 @@ import { toast } from "sonner";
 const Profile = () => {
   const [profile, setProfile] = useState<Tables<"profiles"> | null>(null);
   const [dogs, setDogs] = useState<Tables<"dogs">[]>([]);
+  const [sharedDogRoles, setSharedDogRoles] = useState<Record<string, Enums<"dog_share_role">>>({});
+  const [sharedMembersCount, setSharedMembersCount] = useState<Record<string, number>>({});
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAddingDog, setIsAddingDog] = useState(false);
+  const [isSharingDog, setIsSharingDog] = useState(false);
+  const [selectedDogForShare, setSelectedDogForShare] = useState<Tables<"dogs"> | null>(null);
+  const [shareRole, setShareRole] = useState<Enums<"dog_share_role">>("viewer");
+  const [shareLink, setShareLink] = useState("");
+  const [creatingInvite, setCreatingInvite] = useState(false);
   const [newDog, setNewDog] = useState({
     name: "",
     breed: "",
@@ -43,12 +51,16 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const fetchData = async () => {
+    setLoading(true);
+
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
       navigate("/auth");
       return;
     }
+
+    setCurrentUserId(user.id);
 
     // Fetch Profile
     const { data: profileData } = await supabase
@@ -60,13 +72,50 @@ const Profile = () => {
     if (profileData) setProfile(profileData);
 
     // Fetch Dogs
-    const { data: dogsData } = await supabase
+    const { data: ownedDogsData } = await supabase
       .from("dogs")
       .select("*")
       .eq("owner_id", user.id)
       .order("created_at", { ascending: false });
 
-    if (dogsData) setDogs(dogsData);
+    const ownedDogs = ownedDogsData || [];
+
+    const { data: membershipsData } = await supabase
+      .from("dog_profile_members")
+      .select("dog_id, role, status, dogs(*)")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .neq("role", "owner");
+
+    const sharedRolesMap: Record<string, Enums<"dog_share_role">> = {};
+    const sharedDogs = (membershipsData || [])
+      .map((membership: any) => {
+        if (!membership?.dogs) return null;
+        sharedRolesMap[membership.dog_id] = membership.role;
+        return membership.dogs as Tables<"dogs">;
+      })
+      .filter(Boolean) as Tables<"dogs">[];
+
+    const mergedDogs = [...ownedDogs, ...sharedDogs];
+    const uniqueDogs = Array.from(new Map(mergedDogs.map((dog) => [dog.id, dog])).values());
+
+    const membersCountMap: Record<string, number> = {};
+    if (ownedDogs.length > 0) {
+      const { data: membersData } = await supabase
+        .from("dog_profile_members")
+        .select("dog_id")
+        .in("dog_id", ownedDogs.map((dog) => dog.id))
+        .eq("status", "active")
+        .neq("role", "owner");
+
+      (membersData || []).forEach((member) => {
+        membersCountMap[member.dog_id] = (membersCountMap[member.dog_id] || 0) + 1;
+      });
+    }
+
+    setDogs(uniqueDogs);
+    setSharedDogRoles(sharedRolesMap);
+    setSharedMembersCount(membersCountMap);
 
     setLoading(false);
   };
@@ -104,12 +153,59 @@ const Profile = () => {
   };
 
   const handleDeleteDog = async (id: string) => {
+    if (!currentUserId) return;
+    const dog = dogs.find((item) => item.id === id);
+    if (!dog || dog.owner_id !== currentUserId) {
+      toast.error("רק הבעלים יכול להסיר את הכלב");
+      return;
+    }
+
     const { error } = await supabase.from("dogs").delete().eq("id", id);
     if (error) {
       toast.error("שגיאה במחיקת הכלב");
     } else {
       toast.success("הכלב הוסר בהצלחה");
       fetchData();
+    }
+  };
+
+  const openShareDialog = (dog: Tables<"dogs">) => {
+    setSelectedDogForShare(dog);
+    setShareRole("viewer");
+    setShareLink("");
+    setIsSharingDog(true);
+  };
+
+  const handleCreateShareLink = async () => {
+    if (!selectedDogForShare) return;
+
+    setCreatingInvite(true);
+    const { data, error } = await supabase.rpc("create_dog_share_invite", {
+      p_dog_id: selectedDogForShare.id,
+      p_role: shareRole,
+      p_expires_in_hours: 48,
+    });
+
+    if (error || !data) {
+      toast.error("לא הצלחנו ליצור קישור שיתוף כרגע");
+      setCreatingInvite(false);
+      return;
+    }
+
+    const inviteUrl = `${window.location.origin}/dog-share/accept?token=${data}`;
+    setShareLink(inviteUrl);
+    toast.success("קישור השיתוף נוצר בהצלחה");
+    setCreatingInvite(false);
+  };
+
+  const copyShareLink = async () => {
+    if (!shareLink) return;
+
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      toast.success("הקישור הועתק");
+    } catch {
+      toast.error("לא הצלחנו להעתיק את הקישור");
     }
   };
 
@@ -148,7 +244,7 @@ const Profile = () => {
         {/* Dogs Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">הכלבים שלי ({dogs.length})</h2>
+            <h2 className="text-xl font-semibold">הכלבים שלי ומשותפים ({dogs.length})</h2>
             <Dialog open={isAddingDog} onOpenChange={setIsAddingDog}>
               <DialogTrigger asChild>
                 <Button size="sm" variant="outline" className="gap-1">
@@ -233,7 +329,14 @@ const Profile = () => {
                       )}
                     </div>
                     <div className="flex-grow">
-                      <h3 className="font-bold text-lg">{dog.name}</h3>
+                      <h3 className="font-bold text-lg flex items-center gap-2">
+                        {dog.name}
+                        {sharedDogRoles[dog.id] && (
+                          <span className="text-[10px] bg-blue-500/10 text-blue-700 px-2 py-0.5 rounded-full">
+                            משותף איתך ({sharedDogRoles[dog.id] === "viewer" ? "צפייה" : "עריכה"})
+                          </span>
+                        )}
+                      </h3>
                       <p className="text-sm text-muted-foreground">{dog.breed || "גזע לא צוין"}</p>
                       <div className="flex gap-2 mt-1">
                         <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full">
@@ -242,16 +345,36 @@ const Profile = () => {
                         <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full">
                           {dog.size === "small" ? "קטן" : dog.size === "medium" ? "בינוני" : dog.size === "large" ? "גדול" : "ענק"}
                         </span>
+                        {dog.owner_id === currentUserId && (
+                          <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                            {sharedMembersCount[dog.id] || 0} שותפים
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => handleDeleteDog(dog.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+
+                    {dog.owner_id === currentUserId && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-primary"
+                        onClick={() => openShareDialog(dog)}
+                        title="שתף פרופיל"
+                      >
+                        <Share2 className="w-4 h-4" />
+                      </Button>
+                    )}
+
+                    {dog.owner_id === currentUserId && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => handleDeleteDog(dog.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               ))
@@ -264,6 +387,56 @@ const Profile = () => {
             )}
           </div>
         </div>
+
+        <Dialog open={isSharingDog} onOpenChange={setIsSharingDog}>
+          <DialogContent className="sm:max-w-[520px]" dir="rtl">
+            <DialogHeader>
+              <DialogTitle>
+                שיתוף פרופיל כלב{selectedDogForShare ? `: ${selectedDogForShare.name}` : ""}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="grid gap-4 py-2">
+              <div className="grid gap-2">
+                <Label>הרשאת גישה</Label>
+                <Select
+                  value={shareRole}
+                  onValueChange={(value: Enums<"dog_share_role">) => setShareRole(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="viewer">צפייה בלבד</SelectItem>
+                    <SelectItem value="editor">עריכה ועדכון</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <p className="text-xs text-muted-foreground">
+                הקישור תקף ל-48 שעות. מי שמקבל את הקישור יוכל להצטרף לפרופיל הכלב לפי ההרשאה שבחרת.
+              </p>
+
+              {shareLink && (
+                <div className="grid gap-2">
+                  <Label>קישור שיתוף</Label>
+                  <div className="flex gap-2">
+                    <Input value={shareLink} readOnly dir="ltr" />
+                    <Button type="button" variant="secondary" onClick={copyShareLink}>
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button onClick={handleCreateShareLink} disabled={creatingInvite} className="w-full">
+                {creatingInvite ? "יוצר קישור..." : "צור קישור שיתוף"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Actions */}
         <Button variant="destructive" className="w-full gap-2" onClick={handleSignOut}>

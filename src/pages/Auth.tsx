@@ -3,11 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/context/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock, User, ArrowRight, Dog } from "lucide-react";
+import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import BrandLogo from "@/components/BrandLogo";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
+import { useSearchParams } from "react-router-dom";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,12 +20,14 @@ const Auth = () => {
   const [forgotPassword, setForgotPassword] = useState(false);
   const { t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
+  const [searchParams] = useSearchParams();
+  const nextPath = searchParams.get("next") || "/";
 
   useEffect(() => {
     if (!authLoading && user) {
-      window.location.assign("/");
+      window.location.assign(nextPath);
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, nextPath]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +44,7 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success(t.auth.loginSuccess);
-        window.location.assign("/");
+        window.location.assign(nextPath);
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -68,7 +72,6 @@ const Auth = () => {
         ? "com.dogyard.app://auth-callback"
         : window.location.origin;
 
-      console.log("Starting Google Login with redirect:", redirectUri);
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -81,19 +84,17 @@ const Auth = () => {
       if (error) throw error;
 
       if (isApp && data?.url) {
-        console.log("Opening auth URL in browser:", data.url);
         await Browser.open({ url: data.url });
       }
     } catch (error: any) {
       toast.error(error.message || "שגיאה בהתחברות עם גוגל");
-      console.error("Google login error:", error);
     }
   };
 
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Dog className="w-12 h-12 text-primary animate-pulse" />
+        <BrandLogo className="w-20 h-20 animate-pulse" />
       </div>
     );
   }
@@ -103,7 +104,7 @@ const Auth = () => {
       <div className="min-h-screen bg-background flex items-center justify-center p-4" dir="rtl">
         <div className="w-full max-w-md space-y-6">
           <div className="text-center space-y-2">
-            <Dog className="w-12 h-12 text-primary mx-auto" />
+            <BrandLogo className="w-20 h-20 mx-auto" />
             <h1 className="text-2xl font-bold text-foreground">{t.auth.forgotTitle}</h1>
             <p className="text-muted-foreground text-sm">{t.auth.forgotSubtitle}</p>
           </div>
@@ -128,7 +129,7 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4" dir="rtl">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <Dog className="w-12 h-12 text-primary mx-auto" />
+          <BrandLogo className="w-20 h-20 mx-auto" />
           <h1 className="text-2xl font-bold text-foreground">
             {isLogin ? t.auth.loginTitle : t.auth.signupTitle}
           </h1>

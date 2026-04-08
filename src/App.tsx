@@ -17,22 +17,21 @@ import Index from "./pages/Index.tsx";
 import Map from "./pages/Map.tsx";
 import Profile from "./pages/Profile.tsx";
 import Settings from "./pages/Settings.tsx";
-import Notifications from "./pages/Notifications.tsx";
-import Install from "./pages/Install.tsx";
-import Download from "./pages/Download.tsx";
 import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import Privacy from "./pages/Privacy.tsx";
+import Terms from "./pages/Terms.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import GardenDetails from "./pages/GardenDetails.tsx";
-import AdminImport from "./pages/AdminImport.tsx";
+import DogShareAccept from "./pages/DogShareAccept.tsx";
+import AuthCallback from "./pages/AuthCallback.tsx";
+// Note: Notifications.tsx is a placeholder and removed from MVP launch
 
 // Components
-import FeaturesGrid from "./components/FeaturesGrid";
-import AddGarden from "./components/AddGarden";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import BottomNav from "./components/layout/BottomNav";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -80,7 +79,9 @@ const AppContent = () => {
             });
             if (!error && data.session) {
               toast.success("התחברת בהצלחה!");
-              window.location.assign("/");
+              const nextPath = sessionStorage.getItem("auth:next") || "/";
+              sessionStorage.removeItem("auth:next");
+              window.location.assign(nextPath);
             } else if (error) {
               toast.error("שגיאה בתהליך ההתחברות");
             }
@@ -101,18 +102,16 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/map" element={<Map />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/install" element={<Install />} />
-          <Route path="/download" element={<Download />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/dog-share/accept" element={<DogShareAccept />} />
           <Route path="/garden/:id" element={<GardenDetails />} />
-          <Route path="/admin/import" element={<AdminImport />} />
-          <Route path="/features" element={<FeaturesGrid />} />
-          <Route path="/add-garden" element={<AddGarden />} />
+          <Route path="/admin/import" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>

@@ -16,7 +16,8 @@ ext {
     cordovaAndroidVersion = '13.0.0'
 
     // Jetpack Compose Versions
-    kotlin_version = '1.9.20'
+    // For Kotlin 1.9.24, we need Compose Compiler 1.5.14
+    kotlin_version = '1.9.24'
     compose_ui_version = '1.7.0'
-    compose_compiler_version = '1.5.4'
+    compose_compiler_version = '1.5.14'
 }

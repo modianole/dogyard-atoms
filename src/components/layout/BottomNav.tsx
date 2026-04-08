@@ -1,5 +1,5 @@
 
-import { Home, Map, User, Bell } from "lucide-react";
+import { Home, Map, User, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
@@ -11,7 +11,7 @@ const BottomNav = () => {
   const navItems = [
     { label: isRTL ? "בית" : "Home", icon: Home, path: "/" },
     { label: isRTL ? "מפה" : "Map", icon: Map, path: "/map" },
-    { label: isRTL ? "התראות" : "Alerts", icon: Bell, path: "/notifications" },
+    { label: isRTL ? "הגדרות" : "Settings", icon: Settings, path: "/settings" },
     { label: isRTL ? "פרופיל" : "Profile", icon: User, path: "/profile" },
   ];
 

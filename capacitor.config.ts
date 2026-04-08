@@ -1,14 +1,21 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
+const androidServerUrl = process.env.CAPACITOR_ANDROID_SERVER_URL?.trim();
+const isCleartextServer = !!androidServerUrl && androidServerUrl.startsWith("http://");
+
 const config: CapacitorConfig = {
   appId: "com.dogyard.app",
-  appName: "דוג פארק - Dog Park",
+  appName: "דוג יארד - DogYard",
   webDir: "dist",
-  server: {
-    androidScheme: "https",
-    url: "http://10.0.2.2:8080",
-    cleartext: true
-  },
+  ...(androidServerUrl
+    ? {
+        server: {
+          androidScheme: isCleartextServer ? "http" : "https",
+          url: androidServerUrl,
+          cleartext: isCleartextServer,
+        },
+      }
+    : {}),
   android: {
     buildOptions: {
       keystorePath: undefined,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, X, Menu, Map as MapIcon, ShieldCheck, PlusCircle, LayoutDashboard, User, Bell, Settings as SettingsIcon, Download, Sun, Moon } from "lucide-react";
+import { Home, X, Menu, Map as MapIcon, User, Settings as SettingsIcon, Sun, Moon } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "next-themes";
@@ -31,12 +31,8 @@ const Navbar = () => {
   const menuItems = [
     { label: isRTL ? "דף הבית" : "Home", icon: Home, path: "/" },
     { label: isRTL ? "מפת גינות" : "Gardens Map", icon: MapIcon, path: "/map" },
-    { label: isRTL ? "דיווח מפגע" : "Report Hazard", icon: ShieldCheck, path: "/hazard" },
-    { label: isRTL ? "הוספת גינה" : "Add Garden", icon: PlusCircle, path: "/add-garden" },
-    { label: isRTL ? "התראות" : "Notifications", icon: Bell, path: "/notifications" },
     { label: isRTL ? "פרופיל" : "Profile", icon: User, path: "/profile" },
     { label: isRTL ? "הגדרות" : "Settings", icon: SettingsIcon, path: "/settings" },
-    { label: "ADMIN", icon: Download, path: "/admin/import" },
   ];
 
   const handleNavigate = (path: string) => {
@@ -54,8 +50,7 @@ const Navbar = () => {
       : "bg-background/80 backdrop-blur-xl border-b border-border/50"
   }`;
 
-  // Using the actual filename found on disk
-  const logoSrc = "/logo.png.png";
+  const logoSrc = "/logo.png";
 
   return (
     <>

@@ -1,4 +1,6 @@
-// Root settings file for DogYard hybrid project
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}// Root settings file for DogYard hybrid project
 rootProject.name = 'dogyard-atoms'
 
 // Include the Android app module

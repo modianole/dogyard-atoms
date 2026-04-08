@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/context/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Lock, Dog } from "lucide-react";
+import { Lock } from "lucide-react";
+import BrandLogo from "@/components/BrandLogo";
 import { toast } from "sonner";
 
 const ResetPassword = () => {
@@ -52,7 +53,7 @@ const ResetPassword = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4" dir="rtl">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <Dog className="w-12 h-12 text-primary mx-auto" />
+          <BrandLogo className="w-20 h-20 mx-auto" />
           <h1 className="text-2xl font-bold text-foreground">{t.auth.newPasswordTitle}</h1>
         </div>
         <form onSubmit={handleReset} className="space-y-4">

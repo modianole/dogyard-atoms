@@ -1,5 +1,9 @@
 # 📋 DogYard MVP - 30 Tasks Checklist
 
+> **Historical Log / Not the active checklist**  
+> מסמך זה נשמר כהיסטוריית התקדמות, proof of work ו־artifacts שבוצעו.  
+> את רשימת המשימות הפעילה יש לנהל ב־`copilot/MVP_EXECUTION_CHECKLIST.md`.
+
 **Created**: April 4, 2026  
 **Status**: In Progress  
 **Current Completion**: 17/30 (57%)
@@ -22,6 +26,35 @@
 ```
 
 **סיכום**: התקדמנו מ-6.5/30 (21%) → **17/30 (57%)** בסשן אחד 🚀
+
+### עדכון נוסף - היום (4 אפריל 2026, המשך)
+
+```
+✅ תוקן `src/pages/Terms.tsx` לאחר שורת patch שבורה
+✅ נוסף Route ל-`/terms` בתוך האפליקציה
+✅ נוספו קישורים ל-Privacy / Terms ב-`Footer`
+✅ הוקשחה חתימת Release - סודות הוצאו מ-`android/app/build.gradle`
+✅ `capacitor.config.ts` הפך לתלוי סביבה - אין יותר URL קשיח של dev בפרודקשן
+✅ `npx cap sync android` הורץ מהשורש ואימת שקובץ `android/app/src/main/assets/capacitor.config.json` נקי מ-server dev
+✅ Web tests עברו: 3/3
+✅ `npm run build` עבר בהצלחה
+✅ `assembleDebug` עבר בהצלחה
+✅ `assembleRelease` עבר בהצלחה
+ℹ️ ספירת המשימות נשארת 17/30 כי לא סומנו משימות ידניות/עיצוב כאילו הושלמו
+```
+
+### עדכון נוסף - היום (4 אפריל 2026, לילה)
+
+```
+✅ בוצעה בדיקת עקביות IP/URL בכל הפרויקט
+✅ אומת ש-`vite.config.ts` משתמש בברירת מחדל `192.168.10.1` רק לפיתוח
+✅ אומת ש-`CAPACITOR_ANDROID_SERVER_URL` נשאר משתנה סביבה ולא ערך קשיח
+✅ אומת ש-`android/app/src/main/assets/capacitor.config.json` לאחר sync אינו מכיל `server.url`
+✅ נבנה `app-release.aab` בהצלחה עבור העלאה לחנות
+   📍 נמצא ב: `android/app/build/outputs/bundle/release/app-release.aab`
+ℹ️ ההפניות ל-`10.0.2.2` נשארו רק ב-dev allowlist (`network_security_config.xml`) ובמסמכי Copilot כהקשר היסטורי/דוגמאות
+ℹ️ ספירת המשימות נשארת 17/30 — זו ולידציה והקשחת תיעוד, לא השלמה של טסטים ידניים/עיצוב
+```
 
 ---
 
@@ -262,7 +295,7 @@ Pending:    8/30 tasks (43%)
 5. ✅ Task 5: Capacitor Config
 6. ✅ Task 6-7: Privacy Policies
 7. ✅ Task 8-9: Terms of Service
-8. 🔄 Task 11: Test Release Build (IN PROGRESS)
+8. ✅ Task 11: Test Release Build
 9. ⏳ Task 21-23: Testing
 10. ⏳ Task 30: Build Release APK
 ```

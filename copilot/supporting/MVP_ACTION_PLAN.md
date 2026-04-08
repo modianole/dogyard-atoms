@@ -1,5 +1,9 @@
 # 🛠️ DogYard MVP - Action Plan & Implementation Guide
 
+> **Reference Only / Not the active checklist**  
+> מסמך זה נשמר כרקע, הנחיות ודוגמאות implementation.  
+> את רשימת המשימות הפעילה יש לנהל ב־`copilot/MVP_EXECUTION_CHECKLIST.md`.
+
 **Created**: April 4, 2026  
 **Status**: Ready for Implementation  
 **Estimated Duration**: 4-6 weeks
@@ -37,6 +41,10 @@ KEEP ONLY FOR DEV:
     <domain includeSubdomains="true">10.0.2.2</domain>
     <domain includeSubdomains="true">localhost</domain>
 </domain-config>
+
+Note:
+- LAN IPs for physical-device development should be handled outside this file
+- Keep `network_security_config.xml` limited to emulator/local debug exceptions only
 ```
 
 #### Verification:
@@ -334,11 +342,6 @@ Questions? Email: legal@dogyard.app
     "appId": "com.dogyard.app",
     "appName": "דוג פארק - Dog Park",
     "webDir": "dist",
-    "server": {
-        "androidScheme": "https",
-        "url": "https://api.dogyard.app",  // CHANGE FROM http://10.0.2.2:8080
-        "cleartext": false                   // CHANGE FROM true
-    },
     "android": {},
     "plugins": {
         "SplashScreen": {
@@ -354,11 +357,19 @@ Questions? Email: legal@dogyard.app
 ```
 
 #### For Development:
-Create separate config file:
-```json
-// capacitor.config.development.json
-// Use this during dev with 10.0.2.2:8080
+Use environment variables instead of a separate committed config file:
+```powershell
+$env:VITE_DEV_HOST="192.168.10.1"
+$env:VITE_DEV_PORT="8080"
+$env:CAPACITOR_ANDROID_SERVER_URL="http://192.168.10.1:8080"
+
+npm run dev
+npx cap sync android
 ```
+
+Production expectation:
+- `capacitor.config.json` generated inside Android should not include `server.url`
+- Android release should load from bundled assets in `dist`
 
 ---
 
