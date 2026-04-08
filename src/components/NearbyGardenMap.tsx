@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useGardens } from "@/hooks/useGardens";
+import { useLanguage } from "@/context/LanguageContext";
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 const TEL_AVIV_CENTER = { lat: 32.0735, lng: 34.7745 };
@@ -22,6 +23,8 @@ const NearbyGardenMapContent = ({ onClose }: { onClose: () => void }) => {
   const [selectedGarden, setSelectedGarden] = useState<any | null>(null);
   const [locating, setLocating] = useState(false);
   const navigate = useNavigate();
+  const { language, isRTL } = useLanguage();
+  const isEnglish = language === "en";
 
   const { data: dbGardens, isLoading: loadingDb } = useGardens();
   const apiIsLoaded = useApiIsLoaded();
@@ -40,7 +43,7 @@ const NearbyGardenMapContent = ({ onClose }: { onClose: () => void }) => {
           setLocating(false);
         },
         () => {
-          toast.info("משתמש במיקום ברירת מחדל (GPS כבוי)");
+          toast.info(isEnglish ? "Using default location (GPS disabled)" : "משתמש במיקום ברירת מחדל (GPS כבוי)");
           setLocating(false);
         },
         { enableHighAccuracy: true }
@@ -99,7 +102,7 @@ const NearbyGardenMapContent = ({ onClose }: { onClose: () => void }) => {
 
   const handleGardenClick = (garden: any) => {
     if (garden.isGoogleOnly) {
-      toast.info("גינה זו טרם נוספה למערכת המלאה. מציג מידע בסיסי.");
+      toast.info(isEnglish ? "This park is not yet in the full database. Showing basic info." : "גינה זו טרם נוספה למערכת המלאה. מציג מידע בסיסי.");
       // In the future, we could trigger an "Add this garden" flow
     }
     onClose();
@@ -112,8 +115,8 @@ const NearbyGardenMapContent = ({ onClose }: { onClose: () => void }) => {
         <div className="absolute inset-0 bg-background/95 backdrop-blur-md" onClick={onClose} />
         <div className="relative bg-card p-8 rounded-3xl border border-destructive/20 shadow-2xl max-w-sm text-center">
           <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-4" />
-          <h2 className="text-xl font-black mb-2">חסר API Key של גוגל</h2>
-          <Button onClick={onClose} variant="outline" className="w-full">סגור</Button>
+          <h2 className="text-xl font-black mb-2">{isEnglish ? "Google API key is missing" : "חסר API Key של גוגל"}</h2>
+          <Button onClick={onClose} variant="outline" className="w-full">{isEnglish ? "Close" : "סגור"}</Button>
         </div>
       </div>
     );
@@ -123,10 +126,10 @@ const NearbyGardenMapContent = ({ onClose }: { onClose: () => void }) => {
     <div className="fixed inset-0 z-[10000] flex items-center justify-center p-0 md:p-4">
       <div className="absolute inset-0 bg-background/95 backdrop-blur-md" onClick={onClose} />
       <div className="relative w-full h-full md:h-auto md:max-w-4xl md:max-h-[90vh] bg-card md:rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between p-4 md:p-6 border-b border-border bg-card shrink-0" dir="rtl">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-border bg-card shrink-0" dir={isRTL ? "rtl" : "ltr"}>
           <div>
-            <h2 className="text-xl md:text-2xl font-display font-black text-card-foreground text-right">מפת גינות הכלבים</h2>
-            <p className="text-xs text-muted-foreground text-right">מצא את הגינה הקרובה אליך</p>
+            <h2 className={`text-xl md:text-2xl font-display font-black text-card-foreground ${isRTL ? "text-right" : "text-left"}`}>{isEnglish ? "Dog parks map" : "מפת גינות הכלבים"}</h2>
+            <p className={`text-xs text-muted-foreground ${isRTL ? "text-right" : "text-left"}`}>{isEnglish ? "Find the park closest to you" : "מצא את הגינה הקרובה אליך"}</p>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" size="icon" onClick={handleLocate} disabled={locating} className="h-10 w-10 rounded-full border-primary/20">
@@ -181,10 +184,10 @@ const NearbyGardenMapContent = ({ onClose }: { onClose: () => void }) => {
                 position={{ lat: selectedGarden.lat, lng: selectedGarden.lng }}
                 onCloseClick={() => setSelectedGarden(null)}
               >
-                <div className="text-right p-2 min-w-[180px] space-y-3" dir="rtl">
+                <div className={`${isRTL ? "text-right" : "text-left"} p-2 min-w-[180px] space-y-3`} dir={isRTL ? "rtl" : "ltr"}>
                   <div>
-                    <strong className="text-lg font-black block text-primary leading-tight">{selectedGarden.name}</strong>
-                    <span className="text-[10px] text-muted-foreground block mt-0.5">{selectedGarden.address || selectedGarden.location}</span>
+                    <strong className="text-lg font-black block text-primary leading-tight">{isEnglish ? (selectedGarden.name_en || selectedGarden.name) : selectedGarden.name}</strong>
+                    <span className="text-[10px] text-muted-foreground block mt-0.5">{isEnglish ? (selectedGarden.location_en || selectedGarden.address || selectedGarden.location) : (selectedGarden.address || selectedGarden.location)}</span>
                   </div>
 
                   <div className="flex items-center justify-between gap-2">
@@ -195,7 +198,7 @@ const NearbyGardenMapContent = ({ onClose }: { onClose: () => void }) => {
                     {!selectedGarden.isGoogleOnly && (
                       <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-lg text-[10px] font-bold">
                         <Info className="w-3 h-3" />
-                        מידע מלא
+                        {isEnglish ? "Full profile" : "מידע מלא"}
                       </div>
                     )}
                   </div>
@@ -204,7 +207,7 @@ const NearbyGardenMapContent = ({ onClose }: { onClose: () => void }) => {
                     className="w-full h-10 font-bold bg-primary hover:bg-primary/90 text-white rounded-xl text-sm shadow-md"
                     onClick={() => handleGardenClick(selectedGarden)}
                   >
-                    לפרופיל הגינה
+                    {isEnglish ? "Open park profile" : "לפרופיל הגינה"}
                   </Button>
                 </div>
               </InfoWindow>

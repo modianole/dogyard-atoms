@@ -20,11 +20,23 @@ export interface Garden {
   distance_meters?: number;
 }
 
-// Function to clean garden names
-export const formatGardenName = (name: string, location?: string | null): string => {
+// Function to clean garden names in both Hebrew and English
+export const formatGardenName = (name: string, location?: string | null, locale: "he" | "en" = "he"): string => {
   if (!name) return "";
 
-  let cleanName = name;
+  let cleanName = name.trim();
+
+  if (locale === "en") {
+    const normalized = cleanName.toLowerCase();
+    if ((normalized.includes("dog park") || normalized.includes("dog garden")) && location) {
+      const street = location.split(",")[0].replace(/\d+/g, "").trim();
+      if (street) {
+        cleanName = `Dog Park ${street}`;
+      }
+    }
+
+    return cleanName.replace(/\s\s+/g, " ").trim();
+  }
 
   // 1. If generic name, use location street
   if (name.includes("גינת כלבים") || name === "גינת" || name === "גינת הכלבים" || name.includes("גינת הכלבים")) {
@@ -54,7 +66,8 @@ export const useGardens = () => {
 
       return (data as Garden[]).map(garden => ({
         ...garden,
-        name: formatGardenName(garden.name, garden.location)
+        name: formatGardenName(garden.name, garden.location),
+        name_en: garden.name_en ? formatGardenName(garden.name_en, garden.location_en ?? garden.location, "en") : garden.name_en,
       }));
     },
     staleTime: 0,
@@ -77,7 +90,8 @@ export const useNearbyGardens = (lat?: number, lng?: number, radius = 5000) => {
 
       return (data as Garden[]).map(garden => ({
         ...garden,
-        name: formatGardenName(garden.name, garden.location)
+        name: formatGardenName(garden.name, garden.location),
+        name_en: garden.name_en ? formatGardenName(garden.name_en, garden.location_en ?? garden.location, "en") : garden.name_en,
       }));
     },
     enabled: !!lat && !!lng,

@@ -274,6 +274,7 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string | null
+          google_place_id: string | null
           has_fence: boolean | null
           has_lighting: boolean | null
           has_parking: boolean | null
@@ -295,6 +296,7 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by?: string | null
+          google_place_id?: string | null
           has_fence?: boolean | null
           has_lighting?: boolean | null
           has_parking?: boolean | null
@@ -316,6 +318,7 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string | null
+          google_place_id?: string | null
           has_fence?: boolean | null
           has_lighting?: boolean | null
           has_parking?: boolean | null
@@ -332,6 +335,72 @@ export type Database = {
           rating?: number | null
           reviews_count?: number | null
           status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      protected_spaces: {
+        Row: {
+          capacity: number | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string | null
+          google_place_id: string | null
+          id: string
+          image_url: string | null
+          is_accessible: boolean | null
+          lat: number
+          lng: number
+          location: string
+          location_en: string | null
+          name: string
+          name_en: string | null
+          rating: number | null
+          reviews_count: number | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          google_place_id?: string | null
+          id?: string
+          image_url?: string | null
+          is_accessible?: boolean | null
+          lat: number
+          lng: number
+          location: string
+          location_en?: string | null
+          name: string
+          name_en?: string | null
+          rating?: number | null
+          reviews_count?: number | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          google_place_id?: string | null
+          id?: string
+          image_url?: string | null
+          is_accessible?: boolean | null
+          lat?: number
+          lng?: number
+          location?: string
+          location_en?: string | null
+          name?: string
+          name_en?: string | null
+          rating?: number | null
+          reviews_count?: number | null
+          type?: string | null
           updated_at?: string
         }
         Relationships: []

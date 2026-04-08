@@ -25,6 +25,8 @@ import NotFound from "./pages/NotFound.tsx";
 import GardenDetails from "./pages/GardenDetails.tsx";
 import DogShareAccept from "./pages/DogShareAccept.tsx";
 import AuthCallback from "./pages/AuthCallback.tsx";
+import AdminImport from "./pages/AdminImport.tsx";
+import AdminGardens from "./pages/AdminGardens.tsx";
 // Note: Notifications.tsx is a placeholder and removed from MVP launch
 
 // Components
@@ -111,7 +113,8 @@ const AppContent = () => {
           <Route path="/terms" element={<Terms />} />
           <Route path="/dog-share/accept" element={<DogShareAccept />} />
           <Route path="/garden/:id" element={<GardenDetails />} />
-          <Route path="/admin/import" element={<NotFound />} />
+          <Route path="/admin/import" element={<AdminImport />} />
+          <Route path="/admin/gardens" element={<AdminGardens />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>

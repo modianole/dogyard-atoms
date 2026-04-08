@@ -1,0 +1,90 @@
+# Include any files or directories that you don't want to be copied to your
+# container here (e.g., local build artifacts, temporary files, etc.).
+#
+# For more help, visit the .dockerignore file reference guide at
+# https://docs.docker.com/go/build-context-dockerignore/
+
+.git
+.gitignore
+node_modules
+dist
+build
+android/build
+android/app/build
+
+# Secrets / credentials / local env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.mobileprovision
+*.secret
+*.secrets
+*.credentials
+
+# Local machine / IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Logs / temp / reports
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage
+.tmp
+tmp
+build/reports
+android/hs_err_*.log
+android/replay_pid*.log
+
+# Tests / fixtures / QA
+src/test
+playwright.config.ts
+playwright-fixture.ts
+vitest.config.ts
+
+# Native / backend / dev-only project areas not required for web container
+android
+supabase
+copilot
+The Prompte
+.gradle
+gradle
+gradlew
+gradlew.bat
+build.gradle
+settings.gradle
+gradle.properties
+local.properties
+android/local.properties
+android/app/google-services.json
+dogyard.keystore
+
+# Docs / notes / exports not required in the container build context
+*.md
+DOCUMENTATION_INDEX.md
+FINAL_COMPLETION_REPORT.md
+HISTORY.md
+LAUNCH_READY.md
+MVP_COMPLETION_SUMMARY.md
+PROJECT_PROTOCOL.md
+Project_Log.md
+README.Docker.md
+README.md
+
+# Misc repo artifacts not needed for the image
+bun.lock
+bun.lockb
+capacitor.config.ts
+eslint.config.js
+play.bat

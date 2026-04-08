@@ -122,4 +122,41 @@ cd android
 
 ---
 
+## 🔐 דף ניהול אדמין
+
+דף האדמין זמין ב-`/admin/import` ודורש הרשאות מפתח. בדף זה ניתן לבצע שני סוגי סריקות:
+
+### מסוף 1: גינות כלבים (גוש דן)
+סורק את כל אזורי גוש דן (תל אביב, רמת גן, גבעתיים, חולון, בת ים, הרצליה) בחיפוש אחר:
+- "גינת כלבים"
+- "מתחם כלבים"
+- "dog park"
+- "dog garden"
+
+כל תוצאה שומרת:
+- `name` / `location` בעברית
+- `name_en` / `location_en` באנגלית, כאשר Google מחזיר אותם
+- `google_place_id` לצורך ייבוא חוזר בלי כפילויות
+
+### מסוף 2: מרחבים מוגנים (ממ"ד)
+סורק את האזורים תל אביב, רמת גן, גבעתיים והרצליה בחיפוש אחר:
+- "ממ"ד"
+- "מרחב מוגן"
+- "מקלט ציבורי"
+- "public shelter"
+- "bomb shelter"
+
+גם כאן נשמרים שדות עברית/אנגלית ו-`google_place_id` לצורך `upsert` בטוח.
+
+### דאטה בייס
+- **gardens**: טבלה לגינות כלבים עם `name_en`, `location_en`, `status`, `google_place_id`
+- **protected_spaces**: טבלה חדשה למרחבים מוגנים עם `name_en`, `location_en`, `type`, `google_place_id`
+
+### מיגרציות חדשות
+- `supabase/migrations/20260408100000_create_protected_spaces.sql`
+- `supabase/migrations/20260408100100_add_gardens_indexes_and_status.sql`
+- `supabase/migrations/20260408102000_add_google_place_ids.sql`
+
+---
+
 נבנה באהבה לכלבים 🐕

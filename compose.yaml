@@ -1,0 +1,25 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "app".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  app:
+    image: dogyard-atoms-app:latest
+    build:
+      context: .
+      target: final
+      args:
+        PUBLIC_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
+        PUBLIC_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        PUBLIC_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY}
+        PUBLIC_ADMIN_USER_ID: ${VITE_ADMIN_USER_ID}
+        PUBLIC_ADMIN_EMAIL: ${VITE_ADMIN_EMAIL}
+    ports:
+      - "8090:80"
+    restart: unless-stopped
