@@ -13,10 +13,10 @@ services:
     user: "10001:10001"
     read_only: true
     tmpfs:
-      - /tmp
-      - /var/cache/nginx
-      - /var/run
-      - /var/run/nginx
+      - /tmp:rw,uid=10001,gid=10001,mode=1777
+      - /var/cache/nginx:rw,uid=10001,gid=10001,mode=0755
+      - /var/run:rw,uid=10001,gid=10001,mode=0755
+      - /var/run/nginx:rw,uid=10001,gid=10001,mode=0755
     security_opt:
       - no-new-privileges:true
     cap_drop:

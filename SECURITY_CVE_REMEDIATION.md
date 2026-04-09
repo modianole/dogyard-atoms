@@ -3,7 +3,7 @@
 **Total Vulnerabilities Detected:** 64  
 **Severity Breakdown:** 3 CRITICAL | 18 HIGH | 34 MEDIUM | 9 LOW  
 **Status:** Dockerfile migrated from Alpine to Debian (nginx:1.27)  
-**Last Scan:** 2026-04-09
+**Last Scan:** 2026-04-10
 **Last Remediation Update:** 2026-04-10
 
 ---
@@ -124,9 +124,9 @@
 - [ ] Paste new Supabase anon key into `.env`
 
 ### Priority 2: Rebuild & Verify
-- [ ] Run `docker compose up --build` to apply all patches
-- [ ] Run `docker scout cves dogyard-atoms:local` to verify CVE reduction
-- [ ] Verify container starts and healthcheck passes
+- [x] Run `docker compose up --build` to apply all patches
+- [x] Run `docker scout cves dogyard-atoms:local` to verify CVE reduction
+- [x] Verify container starts and healthcheck passes
 - [x] Enforce non-root user (10001:10001) in both `Dockerfile` and `compose.yaml`
 
 ### Priority 3: Automation & Hardening
@@ -166,7 +166,14 @@
 - ✅ CVE workflow now supports weekly/monthly scheduled runs and manual dispatch.
 - ✅ MEDIUM/LOW findings are exported as an artifact to keep visibility without blocking delivery.
 - ✅ Added extra safe HTTP hardening headers in `nginx.conf` (`Permissions-Policy`, `CORP`, `COOP`).
-- ⏳ Still pending: execute rebuild + post-build CVE scan and replace rotated keys in `.env`.
+- ⏳ Still pending: replace rotated keys in `.env`.
+
+### Chunk 3 (Priority 2 verification) - 2026-04-10
+- ✅ Rebuild verification completed with `docker compose up --build -d`.
+- ✅ Runtime verification passed: container health is `healthy` and runtime user is `10001:10001`.
+- ✅ Header verification passed on `http://localhost:8082` for hardened nginx response headers.
+- ✅ Post-rebuild scan executed: Docker Scout reports `0C / 2H / 4M / 72L / 2?` (80 total).
+- ⚠️ Residual HIGH findings currently include `CVE-2026-33164` (`libde265`) and `CVE-2026-27135` (`nghttp2`) with "not fixed" in current Debian stream.
 
 ---
 
@@ -175,6 +182,11 @@
 **Before:** 64 vulnerabilities (3 CRITICAL, 18 HIGH, 34 MEDIUM, 9 LOW)  
 **After:** ~10-15 vulnerabilities (0 CRITICAL, 2-4 HIGH, 6-10 MEDIUM, 2-4 LOW)  
 **Impact:** ~80% reduction in risk surface
+
+### Actual observed after rebuild (Docker Scout, 2026-04-10)
+- **0 CRITICAL, 2 HIGH, 4 MEDIUM, 72 LOW, 2 UNSPECIFIED (80 total)**
+- Interpretation: criticals were eliminated, but scanner data source and historic low-CVE backlog keep LOW counts high.
+- Immediate focus: monitor Debian fixes for remaining HIGH CVEs and re-scan on weekly/monthly schedule.
 
 ---
 
