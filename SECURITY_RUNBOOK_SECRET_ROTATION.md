@@ -5,6 +5,11 @@ Use this runbook after accidental exposure of environment values in Git history 
 
 This project uses browser-side `VITE_*` variables (public at build time), but exposed values should still be rotated.
 
+Related security trackers:
+- `SECURITY_CVE_REMEDIATION.md`
+- `SECURITY_CVE_EXCEPTIONS.md`
+- `SECURITY_PATCH_OWNERSHIP.md`
+
 ## 1) Rotate Google Maps Key
 1. Open Google Cloud Console -> APIs & Services -> Credentials.
 2. Locate the exposed key used as `VITE_GOOGLE_MAPS_API_KEY`.

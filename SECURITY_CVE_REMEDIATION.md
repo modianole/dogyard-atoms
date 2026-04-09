@@ -133,8 +133,8 @@
 - [x] Set up GitHub Actions CVE scan (`.github/workflows/cve-scan.yml`) on pull requests and main pushes
 - [x] Add scheduled scans (weekly + monthly) and manual `workflow_dispatch` trigger
 - [x] Publish MEDIUM/LOW CVE report artifact on every run (non-blocking)
-- [ ] Consider Docker Hardened Images (DHI) for production
-- [ ] Schedule weekly `docker compose up --build` for patch updates
+- [ ] Consider Docker Hardened Images (DHI) for production (decision deferred, next review: 2026-05-10)
+- [x] Schedule weekly `docker compose up --build` for patch updates (documented in `SECURITY_PATCH_OWNERSHIP.md`)
 - [ ] Document rotated keys in secure vault (LastPass, 1Password, etc.)
 
 ---
@@ -160,7 +160,7 @@
 - ✅ Non-root execution enforced in-image (`USER 10001:10001`).
 - ✅ Runtime hardening enabled in Compose: `read_only`, `tmpfs`, `cap_drop: [ALL]`, `no-new-privileges`.
 - ✅ CI CVE gate added: Trivy blocks on `CRITICAL/HIGH`, plus non-blocking Docker Scout reporting.
-- ⏳ Runtime verification (`docker compose up --build`, healthcheck, post-remediation CVE scan) still pending.
+- ✅ Runtime verification completed in Chunk 3 (`docker compose up --build`, healthcheck, Docker Scout post-scan).
 
 ### Chunk 2 (MEDIUM/LOW tracking + hardening) - 2026-04-10
 - ✅ CVE workflow now supports weekly/monthly scheduled runs and manual dispatch.
@@ -175,6 +175,12 @@
 - ✅ Post-rebuild scan executed: Docker Scout reports `0C / 2H / 4M / 72L / 2?` (80 total).
 - ⚠️ Residual HIGH findings currently include `CVE-2026-33164` (`libde265`) and `CVE-2026-27135` (`nghttp2`) with "not fixed" in current Debian stream.
 
+### Chunk 4 (Residual HIGH governance) - 2026-04-10
+- ✅ Added exception register in `SECURITY_CVE_EXCEPTIONS.md` for unresolved HIGH CVEs.
+- ✅ Added patch ownership/cadence runbook in `SECURITY_PATCH_OWNERSHIP.md`.
+- ✅ Extended CI artifacts with non-blocking HIGH trend report in `.github/workflows/cve-scan.yml`.
+- ⏳ Remaining open item: rotate and document new keys in vault, then close Priority 1.
+
 ---
 
 ## 📊 Expected Results After Rebuild
@@ -187,6 +193,7 @@
 - **0 CRITICAL, 2 HIGH, 4 MEDIUM, 72 LOW, 2 UNSPECIFIED (80 total)**
 - Interpretation: criticals were eliminated, but scanner data source and historic low-CVE backlog keep LOW counts high.
 - Immediate focus: monitor Debian fixes for remaining HIGH CVEs and re-scan on weekly/monthly schedule.
+- Residual HIGH tracking location: `SECURITY_CVE_EXCEPTIONS.md`.
 
 ---
 
