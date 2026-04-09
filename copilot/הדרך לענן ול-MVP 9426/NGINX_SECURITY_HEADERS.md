@@ -27,7 +27,7 @@ server {
   
   # Content Security Policy
   # Restricts resource loading to prevent XSS
-  add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://maps.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://keccmcwkqguooifloxnt.supabase.co https://places.googleapis.com; frame-ancestors 'none';" always;
+  add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://maps.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://YOUR_PROJECT_ID.supabase.co https://places.googleapis.com; frame-ancestors 'none';" always;
   
   # Permissions Policy (formerly Feature Policy)
   # Disable dangerous APIs unless explicitly needed

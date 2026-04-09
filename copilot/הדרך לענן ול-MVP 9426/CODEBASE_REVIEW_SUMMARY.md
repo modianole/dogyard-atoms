@@ -141,9 +141,9 @@ args:
   PUBLIC_ADMIN_EMAIL: ""           # ❌ Empty
   PUBLIC_ADMIN_USER_ID: ""         # ❌ Empty
   PUBLIC_SUPABASE_ANON_KEY: ""     # ❌ Empty
-  PUBLIC_GOOGLE_MAPS_API_KEY: "AIzaSyCqDd43LprUsfSlILHOmMwz1jcR9kYJWZM"
-  PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_iUI-a0EBH_5f23CtcKVtXg_Sdk69TyD"
-  PUBLIC_SUPABASE_URL: "https://keccmcwkqguooifloxnt.supabase.co"
+  PUBLIC_GOOGLE_MAPS_API_KEY: "AIza..."
+  PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_..."
+  PUBLIC_SUPABASE_URL: "https://YOUR_PROJECT_ID.supabase.co"
 ```
 
 **Problem:**  

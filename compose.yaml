@@ -10,6 +10,8 @@
 services:
   app:
     image: dogyard-atoms:local
+    env_file:
+      - .env.local
     build:
       context: .
       target: final
@@ -21,5 +23,28 @@ services:
         PUBLIC_ADMIN_USER_ID: ${VITE_ADMIN_USER_ID}
         PUBLIC_ADMIN_EMAIL: ${VITE_ADMIN_EMAIL}
     ports:
-      - "8080:80"
+      - "8082:80"
+    develop:
+      watch:
+        # Sync built frontend assets into nginx for fast feedback.
+        - action: sync
+          path: ./dist
+          target: /usr/share/nginx/html
+          ignore:
+            - "**/*.map"
+        # Rebuild image when build/runtime inputs change.
+        - action: rebuild
+          path: ./Dockerfile
+        - action: rebuild
+          path: ./nginx.conf
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
+        - action: rebuild
+          path: ./vite.config.ts
+        - action: rebuild
+          path: ./tailwind.config.ts
+        - action: rebuild
+          path: ./postcss.config.js
     restart: unless-stopped
