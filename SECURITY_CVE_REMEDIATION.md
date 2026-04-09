@@ -4,6 +4,7 @@
 **Severity Breakdown:** 3 CRITICAL | 18 HIGH | 34 MEDIUM | 9 LOW  
 **Status:** Dockerfile migrated from Alpine to Debian (nginx:1.27)  
 **Last Scan:** 2026-04-09
+**Last Remediation Update:** 2026-04-10
 
 ---
 
@@ -126,10 +127,10 @@
 - [ ] Run `docker compose up --build` to apply all patches
 - [ ] Run `docker scout cves dogyard-atoms:local` to verify CVE reduction
 - [ ] Verify container starts and healthcheck passes
-- [ ] Confirm non-root user (10001:10001) runs container
+- [x] Enforce non-root user (10001:10001) in both `Dockerfile` and `compose.yaml`
 
 ### Priority 3: Automation & Hardening
-- [ ] Set up GitHub Actions to run `docker scout cves` on every build
+- [x] Set up GitHub Actions CVE scan (`.github/workflows/cve-scan.yml`) on pull requests and main pushes
 - [ ] Consider Docker Hardened Images (DHI) for production
 - [ ] Schedule weekly `docker compose up --build` for patch updates
 - [ ] Document rotated keys in secure vault (LastPass, 1Password, etc.)
@@ -142,10 +143,22 @@
 |--------|--------|----------|
 | Base Image Security | ✅ | Debian (CVE fixes automated) |
 | Non-Root Execution | ✅ | User 10001:10001 |
-| Read-Only Root FS | ⏳ | Recommended for production |
+| Read-Only Root FS | ✅ | Configured in `compose.yaml` with `tmpfs` for nginx writable paths |
 | Network Policy | ⏳ | Recommended for K8s |
 | Secret Scanning | ✅ | `.gitignore` + filter-branch cleanup |
 | API Key Rotation | ⏳ | Pending key replacement |
+
+---
+
+## 🧩 Chunk Progress
+
+### Chunk 1 (CRITICAL/HIGH first) - 2026-04-10
+- ✅ Build stage aligned to Debian (`node:20-bookworm-slim`) to reduce Alpine-related CVE drift.
+- ✅ Final image now runs `apt-get upgrade` during build for latest Debian security patches.
+- ✅ Non-root execution enforced in-image (`USER 10001:10001`).
+- ✅ Runtime hardening enabled in Compose: `read_only`, `tmpfs`, `cap_drop: [ALL]`, `no-new-privileges`.
+- ✅ CI CVE gate added: Trivy blocks on `CRITICAL/HIGH`, plus non-blocking Docker Scout reporting.
+- ⏳ Runtime verification (`docker compose up --build`, healthcheck, post-remediation CVE scan) still pending.
 
 ---
 

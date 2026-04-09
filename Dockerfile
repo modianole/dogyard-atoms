@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20-alpine AS build
+FROM node:20-bookworm-slim AS build
 WORKDIR /app
 
 # Install dependencies first for better layer caching.
 COPY package*.json ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # Build-time public browser variables only.
 # IMPORTANT: never pass secrets here. Anything under VITE_* can end up in the client bundle.
@@ -35,7 +35,12 @@ RUN VITE_SUPABASE_URL="$PUBLIC_SUPABASE_URL" \
     VITE_ADMIN_EMAIL="$PUBLIC_ADMIN_EMAIL" \
     npm run build
 
-FROM nginx:1.27-alpine AS final
+FROM nginx:1.27 AS final
+
+# Pull latest Debian security patches at build time.
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && rm -rf /var/lib/apt/lists/*
 
 # Fix permissions for nginx when running as non-root (10001:10001)
 RUN mkdir -p /var/cache/nginx/client_temp \
@@ -43,7 +48,9 @@ RUN mkdir -p /var/cache/nginx/client_temp \
     /var/cache/nginx/fastcgi_temp \
     /var/cache/nginx/uwsgi_temp \
     /var/cache/nginx/scgi_temp \
- && chown -R 10001:10001 /var/cache/nginx /var/run /var/log/nginx
+    /var/run/nginx \
+ && chown -R 10001:10001 /var/cache/nginx /var/run /var/log/nginx /var/run/nginx \
+ && sed -i 's|^pid .*|pid /var/run/nginx/nginx.pid;|' /etc/nginx/nginx.conf
 
 # SPA routing fallback + minimal hardening headers.
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -52,6 +59,8 @@ COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD wget -qO- http://127.0.0.1/ >/dev/null 2>&1 || exit 1
+  CMD wget -qO- http://localhost/ >/dev/null 2>&1 || exit 1
+
+USER 10001:10001
 
 CMD ["nginx", "-g", "daemon off;"]
