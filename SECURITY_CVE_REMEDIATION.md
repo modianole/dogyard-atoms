@@ -131,6 +131,8 @@
 
 ### Priority 3: Automation & Hardening
 - [x] Set up GitHub Actions CVE scan (`.github/workflows/cve-scan.yml`) on pull requests and main pushes
+- [x] Add scheduled scans (weekly + monthly) and manual `workflow_dispatch` trigger
+- [x] Publish MEDIUM/LOW CVE report artifact on every run (non-blocking)
 - [ ] Consider Docker Hardened Images (DHI) for production
 - [ ] Schedule weekly `docker compose up --build` for patch updates
 - [ ] Document rotated keys in secure vault (LastPass, 1Password, etc.)
@@ -159,6 +161,12 @@
 - ✅ Runtime hardening enabled in Compose: `read_only`, `tmpfs`, `cap_drop: [ALL]`, `no-new-privileges`.
 - ✅ CI CVE gate added: Trivy blocks on `CRITICAL/HIGH`, plus non-blocking Docker Scout reporting.
 - ⏳ Runtime verification (`docker compose up --build`, healthcheck, post-remediation CVE scan) still pending.
+
+### Chunk 2 (MEDIUM/LOW tracking + hardening) - 2026-04-10
+- ✅ CVE workflow now supports weekly/monthly scheduled runs and manual dispatch.
+- ✅ MEDIUM/LOW findings are exported as an artifact to keep visibility without blocking delivery.
+- ✅ Added extra safe HTTP hardening headers in `nginx.conf` (`Permissions-Policy`, `CORP`, `COOP`).
+- ⏳ Still pending: execute rebuild + post-build CVE scan and replace rotated keys in `.env`.
 
 ---
 
