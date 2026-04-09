@@ -16,7 +16,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\docker-reset-and-run.ps1
 docker compose up --build
 ```
 
-App URL: `http://localhost:8090`
+App URL: `http://localhost:8080`
 
 ### Build image manually
 
@@ -27,7 +27,7 @@ docker build -t dogyard-atoms-app:latest .
 ### Run image manually
 
 ```bash
-docker run --rm -p 8090:80 dogyard-atoms-app:latest
+docker run --rm -p 8080:80 dogyard-atoms-app:latest
 ```
 
 ### Build-time Vite variables

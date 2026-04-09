@@ -26,6 +26,7 @@ spec:
       # restartPolicy for Deployment pods must be Always (the default).
       # "unless-stopped" is a Docker Compose concept and is invalid here.
       restartPolicy: Always
+      serviceAccountName: dogyard-atoms
       securityContext:
         runAsNonRoot: false  # nginx needs root to bind port 80
         seccompProfile:
