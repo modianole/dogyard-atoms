@@ -119,9 +119,9 @@
 ## 📋 Remaining Actions (High to Low Priority)
 
 ### Priority 1: Key Rotation (SECURITY)
-- [ ] Paste new Supabase publishable key into `.env`
-- [ ] Paste new Google Maps API key into `.env`
-- [ ] Paste new Supabase anon key into `.env`
+- [x] Paste new Supabase publishable key into `.env`
+- [x] Paste new Google Maps API key into `.env`
+- [x] Paste new Supabase anon key into `.env`
 
 ### Priority 2: Rebuild & Verify
 - [x] Run `docker compose up --build` to apply all patches
@@ -180,6 +180,12 @@
 - ✅ Added patch ownership/cadence runbook in `SECURITY_PATCH_OWNERSHIP.md`.
 - ✅ Extended CI artifacts with non-blocking HIGH trend report in `.github/workflows/cve-scan.yml`.
 - ⏳ Remaining open item: rotate and document new keys in vault, then close Priority 1.
+
+### Chunk 5 (Post-rotation verification) - 2026-04-10
+- ✅ Rotated exposed client keys were replaced locally (`VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_ANON_KEY`, `VITE_GOOGLE_MAPS_API_KEY`).
+- ✅ Post-rotation validation passed: `npm run build` successful and container remains `healthy` under hardened runtime.
+- ✅ Secret-pattern grep in tracked files shows placeholders/examples only; no newly committed live key literals detected.
+- ⏳ Remaining open item: verify CI/CD secret store is updated and vault record is complete.
 
 ---
 
