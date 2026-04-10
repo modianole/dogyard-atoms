@@ -80,10 +80,27 @@ docker compose up -d app
 Then verify app endpoint and basic map/auth flows.
 
 ## 7) Post-Incident Checklist
-- [ ] Old Google key disabled/deleted
-- [ ] Supabase client values replaced
-- [ ] Local env files updated
-- [ ] CI secrets updated
-- [ ] Build/deploy validation passed
-- [ ] Team note added to avoid committing `.env*`
+- [ ] Old Google key disabled/deleted (requires Google Cloud Console confirmation)
+- [x] Supabase client values replaced (user-confirmed)
+- [x] Local env files updated (user-confirmed)
+- [ ] CI secrets updated (requires CI provider confirmation)
+- [x] Build/deploy validation passed (`npm run build` + `docker compose up --build -d` + healthy container)
+- [x] Team note added to avoid committing `.env*` (documented in runbooks and enforced by `.gitignore`)
+
+## 8) Completion Evidence (2026-04-10)
+
+| Item | Status | Evidence | Notes |
+|------|--------|----------|-------|
+| Local build after rotation | Done | `npm run build` completed successfully | Verified in local terminal session |
+| Container runtime after rotation | Done | `docker compose ps` reported `healthy` | Non-root runtime remains enabled (`10001:10001`) |
+| Tracked-file literal scan | Done | `git --no-pager grep -n "AIza"` and `git --no-pager grep -n "sb_publishable_"` | Matches are placeholders/examples only |
+| Google old key disabled | Pending external proof | Google Cloud Console | Add ticket/screenshot reference when completed |
+| CI secret store updated | Pending external proof | CI/CD secrets dashboard | Add ticket/screenshot reference when completed |
+
+## 9) Final Closure Gate
+
+Mark this incident as fully closed only when both external items below are complete:
+
+1. Old Google key is disabled/deleted in Google Cloud.
+2. CI/CD secrets are updated and verified in the next deployment pipeline run.
 
