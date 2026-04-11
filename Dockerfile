@@ -15,6 +15,8 @@ ARG PUBLIC_SUPABASE_ANON_KEY
 ARG PUBLIC_GOOGLE_MAPS_API_KEY
 ARG PUBLIC_ADMIN_USER_ID
 ARG PUBLIC_ADMIN_EMAIL
+ARG PUBLIC_DEVELOPER_EMAILS
+ARG PUBLIC_DEVELOPER_EMAIL
 
 COPY index.html ./
 COPY vite.config.ts ./
@@ -33,6 +35,8 @@ RUN VITE_SUPABASE_URL="$PUBLIC_SUPABASE_URL" \
     VITE_GOOGLE_MAPS_API_KEY="$PUBLIC_GOOGLE_MAPS_API_KEY" \
     VITE_ADMIN_USER_ID="$PUBLIC_ADMIN_USER_ID" \
     VITE_ADMIN_EMAIL="$PUBLIC_ADMIN_EMAIL" \
+    VITE_DEVELOPER_EMAILS="$PUBLIC_DEVELOPER_EMAILS" \
+    VITE_DEVELOPER_EMAIL="$PUBLIC_DEVELOPER_EMAIL" \
     npm run build
 
 FROM nginx:1.27 AS final
@@ -40,7 +44,6 @@ FROM nginx:1.27 AS final
 # Default runtime port for local/container runs; Cloud Run can override via PORT.
 ENV PORT=8082
 
-# Pull latest Debian security patches at build time.
 RUN apt-get update \
  && apt-get upgrade -y \
  && rm -rf /var/lib/apt/lists/*
@@ -55,11 +58,12 @@ RUN mkdir -p /var/cache/nginx/client_temp \
  && chown -R 10001:10001 /var/cache/nginx /var/run /var/log/nginx /var/run/nginx \
  && sed -i 's|^pid .*|pid /var/run/nginx/nginx.pid;|' /etc/nginx/nginx.conf
 
-# SPA routing fallback + minimal hardening headers.
 # Keep this as a template so nginx can bind to runtime $PORT on Cloud Run.
 RUN mkdir -p /etc/nginx/templates
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 RUN chown -R 10001:10001 /etc/nginx/conf.d /etc/nginx/templates
+
+# SPA routing fallback + minimal hardening headers.
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 8082

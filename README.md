@@ -113,6 +113,10 @@ cd android
 - [copilot/PROFESSIONAL_REVIEW.md](./copilot/PROFESSIONAL_REVIEW.md) - סקירה מקצועית
 - [copilot/MVP_ACTION_PLAN.md](./copilot/MVP_ACTION_PLAN.md) - תוכנית פעולה
 - [copilot/TASKS_CHECKLIST.md](./copilot/TASKS_CHECKLIST.md) - רשימת משימות
+- [copilot/GO_NO_GO.md](./copilot/GO_NO_GO.md) - קריטריוני Go/No-Go לשחרור
+- [copilot/ROLLBACK_RUNBOOK.md](./copilot/ROLLBACK_RUNBOOK.md) - נוהל Rollback
+- [copilot/POST_MORTEM_TEMPLATE.md](./copilot/POST_MORTEM_TEMPLATE.md) - תבנית Post-Mortem
+- [copilot/STORE_DESCRIPTION_HE_EN.md](./copilot/STORE_DESCRIPTION_HE_EN.md) - תיאור חנות בעברית/אנגלית
 
 ### Legal pages בתוך האפליקציה
 - `/#/privacy` או `/privacy` לפי סביבת הריצה
