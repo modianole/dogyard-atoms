@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, X, Menu, Map as MapIcon, User, Settings as SettingsIcon, Sun, Moon } from "lucide-react";
+import { Home, X, Menu, Map as MapIcon, User, Settings as SettingsIcon, Sun, Moon, ShieldAlert, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "next-themes";
+import { useNearestShalter } from "@/hooks/useNearestShalter";
+import ProtectedSpacePromptDialog from "@/components/ProtectedSpacePromptDialog";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -13,6 +15,15 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const {
+    goToNearestShalter,
+    navigateFromManualAddress,
+    navigateFromGarden,
+    loading: shalterLoading,
+    gpsPromptOpen,
+    setGpsPromptOpen,
+    openLocationSettingsAndRetry,
+  } = useNearestShalter();
 
   // Wait for mounting to avoid hydration mismatch
   useEffect(() => {
@@ -64,7 +75,23 @@ const Navbar = () => {
             />
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* 🛡️ Nearest Shelter button — always visible */}
+            <button
+              onClick={goToNearestShalter}
+              disabled={shalterLoading}
+              className="group flex items-center gap-2.5 px-3.5 py-2 rounded-full font-black text-sm bg-white/95 border border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 transition-all shadow-sm hover:shadow-md disabled:opacity-70 disabled:cursor-wait"
+              title={isRTL ? "למרחב המוגן" : "Protected Space"}
+            >
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-red-600 border border-red-100 transition-colors group-hover:bg-white">
+                {shalterLoading
+                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                  : <ShieldAlert className="w-4 h-4" />
+                }
+              </span>
+              <span className="hidden sm:inline text-xs tracking-tight">{isRTL ? "למרחב המוגן" : "Protected Space"}</span>
+            </button>
+
             {!isMapPage && (
               <button
                 onClick={() => navigate("/map")}
@@ -120,6 +147,24 @@ const Navbar = () => {
             </div>
 
             <div className="flex-1 py-6 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+              {/* 🛡️ Shelter CTA — top of drawer, full width */}
+              <button
+                onClick={() => { goToNearestShalter(); setOpen(false); }}
+                disabled={shalterLoading}
+                className="group w-full flex items-center gap-3.5 p-4 rounded-3xl text-lg font-black bg-white border border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 shadow-sm hover:shadow-md mb-4 transition-all active:scale-[0.99] disabled:opacity-70"
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-600 border border-red-100 transition-colors group-hover:bg-white">
+                  {shalterLoading
+                    ? <Loader2 className="w-5 h-5 animate-spin" />
+                    : <ShieldAlert className="w-5 h-5" />
+                  }
+                </span>
+                <span className="flex flex-col items-start text-right leading-tight">
+                  <span>{isRTL ? "למרחב המוגן" : "Protected Space"}</span>
+                  <span className="text-xs font-medium text-red-500/80">{isRTL ? "ניווט מהיר למיקום הקרוב" : "Quick navigation nearby"}</span>
+                </span>
+              </button>
+
               {menuItems.map((item, i) => (
                 <button
                   key={i}
@@ -155,6 +200,15 @@ const Navbar = () => {
           </div>
         </>
       )}
+
+      <ProtectedSpacePromptDialog
+        open={gpsPromptOpen}
+        onOpenChange={setGpsPromptOpen}
+        loading={shalterLoading}
+        onTurnOn={() => { void openLocationSettingsAndRetry(); }}
+        onManualAddress={navigateFromManualAddress}
+        onGarden={navigateFromGarden}
+      />
     </>
   );
 };

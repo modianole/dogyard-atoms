@@ -45,7 +45,8 @@ VITE_ADMIN_EMAIL=""
 ```
 
 Notes:
-- `.env.local` is loaded by `compose.yaml` via `env_file`.
+- `npm run build` / Vite can read `.env.local`, but Docker Compose variable substitution reads `.env` by default.
+- If you want Docker Compose to use `.env.local`, run it with `--env-file .env.local` or sync `.env.local` into `.env` locally.
 - `.env` and `.env.local` are ignored by `.gitignore`.
 
 ## 4) Update CI/CD Secrets

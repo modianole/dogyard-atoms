@@ -17,6 +17,7 @@ import com.getcapacitor.BridgeActivity
 
 class MainActivity : BridgeActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        registerPlugin(LocationAccuracyPlugin::class.java)
         super.onCreate(savedInstanceState)
 
         // Capacitor still runs in the background,

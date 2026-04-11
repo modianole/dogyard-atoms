@@ -39,9 +39,10 @@ android {
 
     signingConfigs {
         debug {
+            def debugHome = System.getenv('USERPROFILE') ?: System.getProperty('user.home')
             keyAlias "androiddebugkey"
             keyPassword "android"
-            storeFile file("${System.env.USERPROFILE}/.android/debug.keystore")
+            storeFile file("${debugHome}/.android/debug.keystore")
             storePassword "android"
         }
         release {
@@ -124,6 +125,9 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
+
+    // Google Location settings resolution dialog (Location Accuracy)
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
 }
 
 apply from: 'capacitor.build.gradle'

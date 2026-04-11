@@ -5,6 +5,7 @@
 #   VITE_GOOGLE_MAPS_API_KEY
 #   VITE_ADMIN_USER_ID, VITE_ADMIN_EMAIL   (optional; admin UI disabled if absent)
 #   KUBECONFIG                             (base64-encoded kubeconfig for the production cluster)
+#   GCP_SA_KEY                             (base64-encoded GCP service-account JSON for Cloud Run deploy)
 # GITHUB_TOKEN is auto-provided by Actions (used for GHCR push + SARIF upload).
 
 name: Build · Scan · Push · Deploy
@@ -126,3 +127,77 @@ jobs:
           kubectl rollout status deployment/app \
             -n dogyard-atoms \
             --timeout=180s
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 3. Deploy to Cloud Run (app-1 + app-2) — parallel to k8s
+  # ──────────────────────────────────────────────────────────────────────────
+  deploy-cloudrun:
+    needs: build-and-scan
+    runs-on: ubuntu-latest
+    env:
+      GCP_PROJECT: g050426
+      GCP_REGION: us-central1
+      GCP_REGISTRY: us-central1-docker.pkg.dev
+      GCP_REPO: dogyard-containers
+      GCP_IMAGE: dogyard-atoms
+
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker → Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGISTRY }} --quiet
+
+      - name: Tag & push GHCR image to Artifact Registry
+        env:
+          GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/dogyard-atoms@${{ needs.build-and-scan.outputs.digest }}
+          AR_IMAGE: us-central1-docker.pkg.dev/g050426/dogyard-containers/dogyard-atoms:${{ github.sha }}
+        run: |
+          docker pull $GHCR_IMAGE
+          docker tag  $GHCR_IMAGE $AR_IMAGE
+          docker push $AR_IMAGE
+
+      - name: Deploy app-1 to Cloud Run
+        run: |
+          gcloud run deploy app-1 \
+            --image "us-central1-docker.pkg.dev/${{ env.GCP_PROJECT }}/${{ env.GCP_REPO }}/${{ env.GCP_IMAGE }}:${{ github.sha }}" \
+            --region ${{ env.GCP_REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8082 \
+            --concurrency 80 \
+            --min-instances 1 \
+            --max-instances 10 \
+            --project ${{ env.GCP_PROJECT }} \
+            --quiet
+
+      - name: Deploy app-2 to Cloud Run
+        run: |
+          gcloud run deploy app-2 \
+            --image "us-central1-docker.pkg.dev/${{ env.GCP_PROJECT }}/${{ env.GCP_REPO }}/${{ env.GCP_IMAGE }}:${{ github.sha }}" \
+            --region ${{ env.GCP_REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8082 \
+            --concurrency 80 \
+            --min-instances 1 \
+            --max-instances 10 \
+            --project ${{ env.GCP_PROJECT }} \
+            --quiet
+
+      - name: Smoke test app-1 & app-2
+        run: |
+          for SVC in app-1 app-2; do
+            URL=$(gcloud run services describe $SVC \
+              --region ${{ env.GCP_REGION }} \
+              --project ${{ env.GCP_PROJECT }} \
+              --format='value(status.url)')
+            echo "Testing $SVC → $URL"
+            curl -fsS "$URL" > /dev/null && echo "✅ $SVC OK" || (echo "❌ $SVC FAILED" && exit 1)
+          done
+

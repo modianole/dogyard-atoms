@@ -32,5 +32,33 @@ services:
         PUBLIC_ADMIN_USER_ID: ${VITE_ADMIN_USER_ID}
         PUBLIC_ADMIN_EMAIL: ${VITE_ADMIN_EMAIL}
     ports:
-      - "8082:80"
+      - "8082:8082"
+    restart: unless-stopped
+
+  app-2:
+    container_name: app-2
+    image: dogyard-atoms:local
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,uid=10001,gid=10001,mode=1777
+      - /var/cache/nginx:rw,uid=10001,gid=10001,mode=0755
+      - /var/run:rw,uid=10001,gid=10001,mode=0755
+      - /var/run/nginx:rw,uid=10001,gid=10001,mode=0755
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    build:
+      context: .
+      target: final
+      args:
+        PUBLIC_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
+        PUBLIC_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        PUBLIC_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY}
+        PUBLIC_ADMIN_USER_ID: ${VITE_ADMIN_USER_ID}
+        PUBLIC_ADMIN_EMAIL: ${VITE_ADMIN_EMAIL}
+    ports:
+      - "8083:8082"
     restart: unless-stopped
