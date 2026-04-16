@@ -1,15 +1,23 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Link, Route, Routes, useLocation } from "react-router-dom";
+import { LogIn, MapPin, Menu, UserRound } from "lucide-react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import { App as CapacitorApp } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
+import BrandLogo from "@/components/BrandLogo";
+import GlassSidebar from "@/components/GlassSidebar";
+import LoadingScreen from "@/components/LoadingScreen";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 // Pages
@@ -29,14 +37,15 @@ import AdminImport from "./pages/AdminImport.tsx";
 import AdminGardens from "./pages/AdminGardens.tsx";
 // Note: Notifications.tsx is a placeholder and removed from MVP launch
 
-// Components
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import BottomNav from "./components/layout/BottomNav";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
+  const { language, toggleLanguage, t, isRTL } = useLanguage();
+  const { user } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
 
   const isHomePage =
     location.pathname === "/" ||
@@ -46,16 +55,90 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const isMapPage = location.pathname === "/map";
 
-  return (
-    <div className={`min-h-screen w-full bg-background flex flex-col ${isMapPage ? "h-screen overflow-hidden" : ""}`}>
-      {!isHomePage && <Navbar />}
+  useEffect(() => {
+    const splashKey = "glass-shell:splash-shown";
+    if (!sessionStorage.getItem(splashKey)) {
+      sessionStorage.setItem(splashKey, "1");
+      setShowLoading(true);
+    }
+  }, []);
 
-      <main className={`flex-grow relative ${isHomePage ? "" : isMapPage ? "pt-16 pb-16 md:pb-0" : "pt-20 pb-20 md:pb-0"} ${isMapPage ? "overflow-hidden" : "overflow-y-auto"}`}>
-        {children}
-      </main>
+  return (
+    <div className={cn("glass-app-shell relative min-h-screen w-full overflow-x-hidden", isMapPage && "h-screen overflow-hidden")}>
+      {showLoading && <LoadingScreen onComplete={() => setShowLoading(false)} />}
+      <GlassSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} />
+
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute left-[8%] top-[10%] h-64 w-64 rounded-full bg-emerald-400/14 blur-[120px]" />
+        <div className="absolute bottom-[12%] right-[10%] h-72 w-72 rounded-full bg-teal-400/10 blur-[140px]" />
+        <div className="absolute left-1/2 top-[28%] h-48 w-48 -translate-x-1/2 rounded-full bg-cyan-300/8 blur-[110px]" />
+      </div>
+
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <header className="px-3 pt-3 md:px-6 md:pt-5">
+          <GlassCard intensity="strong" className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 text-white">
+            <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                aria-label={t.shell.openMenu}
+                className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/8 text-white transition hover:bg-white/14"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+
+              <Link to="/" className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/15">
+                  <BrandLogo className="h-7 w-7" rounded />
+                </div>
+                <div className={cn("hidden sm:block", isRTL && "text-right")}>
+                  <p className="font-display text-lg font-black leading-none">{t.appName}</p>
+                  <p className="text-xs text-white/65">{t.shell.newExperience}</p>
+                </div>
+              </Link>
+            </div>
+
+            <div className={cn("flex items-center gap-2 sm:gap-3", isRTL && "flex-row-reverse")}>
+              <div className="hidden items-center gap-2 rounded-full bg-white/8 px-3 py-2 text-sm text-white/80 sm:flex">
+                <MapPin className="h-4 w-4 text-emerald-300" />
+                <span>{t.shell.city}</span>
+              </div>
+
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                className="rounded-full bg-white/8 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/14"
+              >
+                {language === "he" ? "EN" : "עב"}
+              </button>
+
+              <Link
+                to={user ? "/profile" : "/auth"}
+                className={cn(
+                  "flex items-center gap-2 rounded-full bg-white/8 px-3 py-2 text-sm text-white transition hover:bg-white/14",
+                  isRTL && "flex-row-reverse",
+                )}
+              >
+                {user ? <UserRound className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+                <span className="hidden sm:inline">{user ? t.shell.accountLabel : t.auth.loginBtn}</span>
+              </Link>
+            </div>
+          </GlassCard>
+        </header>
+
+        <main
+          className={cn(
+            "relative flex-grow px-3 pb-24 md:px-6 md:pb-8",
+            isMapPage ? "overflow-hidden pt-3" : isHomePage ? "pt-3" : "overflow-y-auto pt-4",
+          )}
+        >
+          <div className={cn(isHomePage || isMapPage ? "w-full" : "mx-auto max-w-6xl")}>
+            {children}
+          </div>
+        </main>
+      </div>
 
       <BottomNav />
-      {!isMapPage && <Footer className="hidden md:block" />}
     </div>
   );
 };

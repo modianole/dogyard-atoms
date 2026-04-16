@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/context/LanguageContext";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
@@ -18,7 +19,7 @@ const Auth = () => {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const nextPath = searchParams.get("next") || "/";
@@ -101,8 +102,10 @@ const Auth = () => {
 
   if (forgotPassword) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4" dir="rtl">
-        <div className="w-full max-w-md space-y-6">
+      <div className="relative flex min-h-[calc(100vh-9rem)] items-center justify-center p-4" dir={isRTL ? "rtl" : "ltr"}>
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.14),_transparent_30%),radial-gradient(circle_at_bottom,_rgba(45,212,191,0.12),_transparent_26%)]" />
+        <GlassCard intensity="strong" glow className="w-full max-w-md p-6 md:p-8">
+          <div className="space-y-6">
           <div className="text-center space-y-2">
             <BrandLogo className="w-20 h-20 mx-auto" />
             <h1 className="text-2xl font-bold text-foreground">{t.auth.forgotTitle}</h1>
@@ -120,14 +123,17 @@ const Auth = () => {
               {t.auth.backToLogin}
             </button>
           </form>
-        </div>
+          </div>
+        </GlassCard>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4" dir="rtl">
-      <div className="w-full max-w-md space-y-6">
+    <div className="relative flex min-h-[calc(100vh-9rem)] items-center justify-center p-4" dir={isRTL ? "rtl" : "ltr"}>
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.14),_transparent_30%),radial-gradient(circle_at_bottom,_rgba(45,212,191,0.12),_transparent_26%)]" />
+      <GlassCard intensity="strong" glow className="w-full max-w-md p-6 md:p-8">
+        <div className="w-full space-y-6">
         <div className="text-center space-y-2">
           <BrandLogo className="w-20 h-20 mx-auto" />
           <h1 className="text-2xl font-bold text-foreground">
@@ -183,7 +189,8 @@ const Auth = () => {
             {isLogin ? t.auth.signupLink : t.auth.loginLink}
           </button>
         </p>
-      </div>
+        </div>
+      </GlassCard>
     </div>
   );
 };

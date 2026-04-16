@@ -10,6 +10,7 @@ import {
 import PeakHoursChart from "@/components/PeakHoursChart";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { GlassCard } from "@/components/ui/GlassCard";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter
 } from "@/components/ui/dialog";
@@ -155,20 +156,20 @@ const GardenDetails = () => {
   };
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 pb-12" dir={isRTL ? "rtl" : "ltr"}>
+    <div className="container mx-auto max-w-5xl px-2 pb-12 md:px-4" dir={isRTL ? "rtl" : "ltr"}>
       {/* Header Actions */}
       <div className="flex justify-between items-center mb-6 pt-4">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1 rounded-xl bg-white/8 px-3 py-2 text-muted-foreground transition hover:bg-white/12 hover:text-foreground">
           {isRTL ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
           <span className="font-bold">{t.gardenDetails.back}</span>
         </button>
-        <Button variant="ghost" size="icon" onClick={handleShare} className="rounded-full bg-muted/50">
+        <Button variant="ghost" size="icon" onClick={handleShare} className="rounded-full bg-white/10 hover:bg-white/20">
           <Share2 className="w-5 h-5" />
         </Button>
       </div>
 
       {/* Hero */}
-      <div className="relative aspect-video w-full rounded-[2.5rem] overflow-hidden bg-muted mb-8 shadow-xl">
+      <GlassCard intensity="strong" glow className="relative mb-8 aspect-video w-full overflow-hidden rounded-[2rem] p-0">
         {garden.image_url ? (
           <img src={garden.image_url} alt={gardenName} className="w-full h-full object-cover" />
         ) : (
@@ -183,14 +184,14 @@ const GardenDetails = () => {
              <span className="text-sm font-medium">{gardenLocation || t.gardenDetails.unknownAddress}</span>
            </div>
         </div>
-      </div>
+      </GlassCard>
 
       {/* Actions */}
       <div className="grid grid-cols-2 gap-4 mb-10">
         <Button
           onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${garden.lat},${garden.lng}`)}
           variant="outline"
-          className="h-16 rounded-3xl border-2 border-primary/20 text-primary font-black text-lg"
+          className="h-16 rounded-3xl border border-white/20 bg-white/10 text-primary font-black text-lg backdrop-blur-xl"
         >
           <Navigation className={`w-6 h-6 ${isRTL ? 'ml-2' : 'mr-2'}`} />
           {t.gardenDetails.navBtn}
@@ -198,22 +199,22 @@ const GardenDetails = () => {
 
         <Dialog open={isCheckInOpen} onOpenChange={setIsCheckInOpen}>
           <DialogTrigger asChild>
-            <Button className="h-16 rounded-3xl bg-primary text-white font-black text-lg shadow-lg">
+            <Button className="h-16 rounded-3xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-lg shadow-[0_16px_40px_rgba(16,185,129,0.35)]">
               <CheckCircle2 className={`w-6 h-6 ${isRTL ? 'ml-2' : 'mr-2'}`} />
               {t.gardenDetails.checkIn}
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-[2rem]" dir={isRTL ? "rtl" : "ltr"}>
+          <DialogContent className="rounded-[2rem] border border-white/20 bg-background/85 backdrop-blur-2xl" dir={isRTL ? "rtl" : "ltr"}>
             <DialogHeader><DialogTitle className={`${isRTL ? 'text-right' : 'text-left'} text-2xl font-black`}>{t.gardenDetails.checkInTitle}</DialogTitle></DialogHeader>
             <div className="space-y-6 py-4">
-              <div className="flex gap-2 p-1 bg-muted rounded-2xl">
+              <div className="flex gap-2 rounded-2xl bg-white/8 p-1">
                 <Button variant={checkInStatus === 'arrived' ? 'default' : 'ghost'} className="flex-1 rounded-xl" onClick={() => setCheckInStatus('arrived')}>{t.gardenDetails.statusHere}</Button>
                 <Button variant={checkInStatus === 'on_way' ? 'default' : 'ghost'} className="flex-1 rounded-xl" onClick={() => setCheckInStatus('on_way')}>{t.gardenDetails.statusWay}</Button>
               </div>
               <div className="space-y-2">
                 <p className="text-sm font-bold opacity-70 mb-2">{t.gardenDetails.chooseDogs}</p>
                 {myDogs.length > 0 ? myDogs.map(dog => (
-                  <div key={dog.id} className="flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer" onClick={() => {
+                  <div key={dog.id} className="flex cursor-pointer items-center justify-between rounded-2xl border border-white/20 bg-white/6 p-4" onClick={() => {
                      if (selectedDogs.includes(dog.id)) setSelectedDogs(selectedDogs.filter(x => x !== dog.id));
                      else setSelectedDogs([...selectedDogs, dog.id]);
                   }}>
@@ -243,7 +244,7 @@ const GardenDetails = () => {
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3"><Users className="text-primary w-7 h-7"/> {t.gardenDetails.whoIsHere} ({activeVisitors.length})</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {activeVisitors.length > 0 ? activeVisitors.map(v => (
-                <Card key={v.id} className="border-none bg-muted/30 rounded-2xl">
+                <Card key={v.id} className="rounded-2xl border border-white/15 bg-white/8 backdrop-blur-xl">
                   <CardContent className="p-4 flex items-center gap-4">
                     <Avatar className="w-14 h-14 border-2 border-white"><AvatarImage src={v.dogs?.image_url || ""}/><AvatarFallback><Dog/></AvatarFallback></Avatar>
                     <div className="flex-grow">
@@ -253,7 +254,7 @@ const GardenDetails = () => {
                   </CardContent>
                 </Card>
               )) : (
-                <div className="col-span-full p-8 bg-muted/20 rounded-3xl border-2 border-dashed text-center">
+                <div className="col-span-full rounded-3xl border border-dashed border-white/25 bg-white/6 p-8 text-center backdrop-blur-xl">
                   <p className="font-bold text-muted-foreground mb-1">{t.gardenDetails.noOneHere}</p>
                   <p className="text-xs opacity-60">{t.gardenDetails.beFirst}</p>
                 </div>
@@ -266,7 +267,7 @@ const GardenDetails = () => {
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3"><Info className="text-primary w-7 h-7"/> {t.gardenDetails.amenities}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {amenities.map((a, i) => (
-                <div key={i} className={`p-6 rounded-3xl border-2 flex flex-col items-center transition-all ${a.value ? 'bg-white border-primary/20 shadow-sm' : 'opacity-30 grayscale border-transparent bg-muted'}`}>
+                <div key={i} className={`flex flex-col items-center rounded-3xl border p-6 transition-all ${a.value ? 'border-primary/25 bg-white/10 shadow-sm backdrop-blur-xl' : 'border-white/10 bg-white/5 opacity-45 grayscale'}`}>
                   <div className={`p-3 rounded-full mb-3 ${a.value ? 'bg-primary/10 text-primary' : ''}`}>{a.icon}</div>
                   <span className="text-sm font-black">{a.label}</span>
                 </div>
@@ -278,10 +279,10 @@ const GardenDetails = () => {
 
         {/* Sidebar */}
         <div className="space-y-8">
-          <Card className="rounded-[2.5rem] p-8 border-2 shadow-sm">
+          <GlassCard intensity="medium" className="rounded-[2rem] p-8">
             <h3 className="font-black text-xl mb-6 flex items-center gap-2"><Clock className="text-primary"/> {t.gardenDetails.peakHoursTitle}</h3>
             <PeakHoursChart />
-          </Card>
+          </GlassCard>
         </div>
       </div>
     </div>

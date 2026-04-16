@@ -17,6 +17,7 @@ services:
       - /var/cache/nginx:rw,uid=10001,gid=10001,mode=0755
       - /var/run:rw,uid=10001,gid=10001,mode=0755
       - /var/run/nginx:rw,uid=10001,gid=10001,mode=0755
+      - /etc/nginx/conf.d:rw,uid=10001,gid=10001,mode=0755
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -34,7 +35,7 @@ services:
         PUBLIC_DEVELOPER_EMAILS: ${VITE_DEVELOPER_EMAILS}
         PUBLIC_DEVELOPER_EMAIL: ${VITE_DEVELOPER_EMAIL}
     ports:
-      - "8082:8082"
+      - "8082:80"
     restart: unless-stopped
 
   app-2:
@@ -47,6 +48,7 @@ services:
       - /var/cache/nginx:rw,uid=10001,gid=10001,mode=0755
       - /var/run:rw,uid=10001,gid=10001,mode=0755
       - /var/run/nginx:rw,uid=10001,gid=10001,mode=0755
+      - /etc/nginx/conf.d:rw,uid=10001,gid=10001,mode=0755
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -64,5 +66,5 @@ services:
         PUBLIC_DEVELOPER_EMAILS: ${VITE_DEVELOPER_EMAILS}
         PUBLIC_DEVELOPER_EMAIL: ${VITE_DEVELOPER_EMAIL}
     ports:
-      - "8083:8082"
+      - "8083:80"
     restart: unless-stopped

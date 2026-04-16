@@ -9,7 +9,11 @@
     "play": "npx cap sync android && npx cap run android",
     "test": "vitest run",
     "test:watch": "vitest",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "figma:check": "powershell -ExecutionPolicy Bypass -File ./scripts/figma-mcp-check.ps1",
+    "figma:mcp": "npx ai-figma-mcp@latest",
+    "figma:mcp:local": "npm --prefix ./mcp-figma run start",
+    "figma:setup:local": "npm --prefix ./mcp-figma run setup"
   },
   "dependencies": {
     "@capacitor/android": "^6.0.0",

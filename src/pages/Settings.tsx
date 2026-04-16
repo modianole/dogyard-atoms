@@ -7,8 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronRight, User, Phone, Save, ArrowRight } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import BottomNav from "@/components/layout/BottomNav";
 import { toast } from "sonner";
 import { Tables } from "@/integrations/supabase/types";
 
@@ -75,9 +73,8 @@ const Settings = () => {
   if (loading) return <div className="min-h-screen flex items-center justify-center">טוען...</div>;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <Navbar />
-      <main className="max-w-2xl mx-auto px-4 pt-24 space-y-6">
+    <div className="min-h-full pb-6">
+      <main className="max-w-2xl mx-auto px-2 pt-2 space-y-6 md:px-0">
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-1 text-muted-foreground hover:text-foreground mb-4"
@@ -128,7 +125,6 @@ const Settings = () => {
           </CardContent>
         </Card>
       </main>
-      <BottomNav />
     </div>
   );
 };

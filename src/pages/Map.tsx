@@ -7,6 +7,7 @@ import {
 } from "@vis.gl/react-google-maps";
 import { AlertTriangle, RefreshCcw, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
@@ -77,10 +78,10 @@ const MapPageContent = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background" dir={isRTL ? "rtl" : "ltr"}>
-      <main className="flex-grow flex flex-col md:flex-row overflow-hidden relative">
-        <aside className="w-full md:w-80 lg:w-96 bg-card border-l border-border flex flex-col h-[40vh] md:h-full z-10 overflow-hidden shadow-2xl">
-          <div className="p-4 border-b border-border bg-muted/30 flex justify-between items-center shrink-0">
+    <div className="h-full flex flex-col" dir={isRTL ? "rtl" : "ltr"}>
+      <main className="relative flex flex-grow flex-col gap-4 overflow-hidden md:flex-row">
+        <GlassCard intensity="strong" className="z-10 flex h-[40vh] w-full flex-col overflow-hidden md:h-full md:w-80 lg:w-96">
+          <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-white/6 p-4">
             <div>
               <h1 className={`text-xl font-black ${isRTL ? "text-right" : "text-left"}`}>{isEnglish ? "Dog parks nearby" : "גינות בסביבה"}</h1>
               <p className={`text-[10px] text-muted-foreground font-bold ${isRTL ? "text-right" : "text-left"}`}>{loading ? (isEnglish ? "Refreshing..." : "מרענן...") : isEnglish ? `${gardens.length} parks found` : `נמצאו ${gardens.length} גינות`}</p>
@@ -90,7 +91,7 @@ const MapPageContent = () => {
             </Button>
           </div>
 
-          <div className="flex-1 overflow-y-auto divide-y divide-border bg-background">
+          <div className="flex-1 overflow-y-auto divide-y divide-white/10 bg-transparent">
             {errorMessage && (
               <div className="p-4 text-xs font-bold text-destructive bg-destructive/10 border-b border-destructive/20">
                 {errorMessage}
@@ -112,7 +113,7 @@ const MapPageContent = () => {
               <div
                 key={garden.id}
                 onClick={() => handleSelectGarden(garden)}
-                className={`p-4 hover:bg-muted/50 transition-all cursor-pointer flex items-center gap-4 ${selectedGarden?.id === garden.id ? 'bg-primary/5 border-r-4 border-primary' : ''}`}
+                className={`p-4 hover:bg-white/8 transition-all cursor-pointer flex items-center gap-4 ${selectedGarden?.id === garden.id ? 'bg-white/10 border-r-4 border-primary' : ''}`}
               >
                 <div className="w-12 h-12 rounded-full border border-primary/10 overflow-hidden bg-white flex-shrink-0 flex items-center justify-center p-2 shadow-sm">
                   <img
@@ -145,9 +146,9 @@ const MapPageContent = () => {
               })()
             ))}
           </div>
-        </aside>
+        </GlassCard>
 
-        <div className="flex-1 relative h-[60vh] md:h-full">
+        <GlassCard intensity="light" className="relative h-[60vh] flex-1 overflow-hidden p-0 md:h-full">
           <Map
             defaultCenter={DEFAULT_CENTER}
             defaultZoom={13}
@@ -167,7 +168,7 @@ const MapPageContent = () => {
               </AdvancedMarker>
             ))}
           </Map>
-        </div>
+        </GlassCard>
       </main>
     </div>
   );

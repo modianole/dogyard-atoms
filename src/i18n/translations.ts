@@ -1,5 +1,15 @@
 export const translations = {
   he: {
+    appName: "DogYard",
+    loadingScreen: "טוענים את חוויית ה-Glass החדשה...",
+    shell: {
+      newExperience: "מעטפת Glass חדשה",
+      switchLanguage: "החלפת שפה",
+      guestLabel: "אורח",
+      accountLabel: "החשבון שלי",
+      city: "תל אביב",
+      openMenu: "פתח תפריט",
+    },
     nav: {
       home: "דף הבית",
       features: "מה אנחנו מציעים",
@@ -210,6 +220,16 @@ export const translations = {
     },
   },
   en: {
+    appName: "DogYard",
+    loadingScreen: "Loading the new glass experience...",
+    shell: {
+      newExperience: "New glass shell",
+      switchLanguage: "Switch language",
+      guestLabel: "Guest",
+      accountLabel: "My account",
+      city: "Tel Aviv",
+      openMenu: "Open menu",
+    },
     nav: {
       home: "Home",
       features: "Features",

@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Heebo", "sans-serif"],
-        body: ["Heebo", "sans-serif"],
+        display: ["Syne", "Heebo", "sans-serif"],
+        body: ["DM Sans", "Heebo", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

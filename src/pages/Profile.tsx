@@ -5,9 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { LogOut, Plus, Settings, User, Trash2, Dog, Share2, Copy } from "lucide-react";
-import BottomNav from "@/components/layout/BottomNav";
-import Navbar from "@/components/Navbar";
 import { Tables, Enums } from "@/integrations/supabase/types";
 import {
   Dialog,
@@ -217,11 +216,11 @@ const Profile = () => {
   if (loading) return <div className="flex items-center justify-center min-h-screen">טוען...</div>;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <Navbar />
-      <main className="max-w-4xl mx-auto px-4 pt-24 space-y-6">
+    <div className="min-h-full pb-6">
+      <main className="mx-auto max-w-4xl space-y-6 px-1 pt-2 md:px-0">
         {/* Profile Header */}
-        <Card className="border-none shadow-none bg-accent/50">
+        <GlassCard intensity="strong" glow>
+        <Card className="border-none shadow-none bg-transparent">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <Avatar className="w-20 h-20 border-2 border-primary">
@@ -240,9 +239,10 @@ const Profile = () => {
             </div>
           </CardContent>
         </Card>
+        </GlassCard>
 
         {/* Dogs Section */}
-        <div className="space-y-4">
+        <GlassCard intensity="medium" className="space-y-4 p-4 md:p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">הכלבים שלי ומשותפים ({dogs.length})</h2>
             <Dialog open={isAddingDog} onOpenChange={setIsAddingDog}>
@@ -386,7 +386,7 @@ const Profile = () => {
               </Card>
             )}
           </div>
-        </div>
+        </GlassCard>
 
         <Dialog open={isSharingDog} onOpenChange={setIsSharingDog}>
           <DialogContent className="sm:max-w-[520px]" dir="rtl">
@@ -443,7 +443,6 @@ const Profile = () => {
           <LogOut className="w-4 h-4" /> התנתק מהמערכת
         </Button>
       </main>
-      <BottomNav />
     </div>
   );
 };
