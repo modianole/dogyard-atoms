@@ -1,6 +1,7 @@
 import { MapPin, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useGardens } from "@/hooks/useGardens";
+import { GlassCard } from "@/components/ui/GlassCard";
 
 const StarRating = ({ rating }: { rating: number }) => {
   const full = Math.floor(rating);
@@ -35,7 +36,7 @@ const TopGardens = () => {
   }
 
   return (
-    <section id="gardens" className="py-24 bg-background relative overflow-hidden">
+    <section id="gardens" className="relative overflow-hidden py-16 md:py-20">
       <div className="absolute w-[300px] h-[300px] rounded-full opacity-[0.05] blur-[100px] top-20 right-0" style={{ background: 'hsl(142, 70%, 45%)' }} />
 
       <div className="container mx-auto px-4 relative">
@@ -46,8 +47,8 @@ const TopGardens = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {(gardens ?? []).slice(0, 6).map((garden, i) => (
-            <div key={garden.id}
-              className="glass rounded-2xl p-5 flex flex-col gap-3 cursor-pointer transition-all duration-300 group border-gradient hover:glow-accent hover:-translate-y-1.5 hover:scale-[1.02] animate-in fade-in zoom-in-95"
+            <GlassCard key={garden.id}
+              className="flex cursor-pointer flex-col gap-3 rounded-2xl p-5 transition-all duration-300 group hover:-translate-y-1 hover:scale-[1.01] animate-in fade-in zoom-in-95"
               style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'both' }}>
               <div className="flex items-start justify-between">
                 <span className="text-sm font-black text-primary tabular-nums px-2.5 py-1 rounded-lg bg-primary/15">{Number(garden.rating ?? 0).toFixed(1)}</span>
@@ -69,12 +70,12 @@ const TopGardens = () => {
                 <StarRating rating={Number(garden.rating ?? 0)} />
                 <span className="text-xs text-muted-foreground">({garden.reviews_count ?? 0})</span>
               </div>
-            </div>
+            </GlassCard>
           ))}
         </div>
 
         <div className="text-center mt-10">
-          <button className="px-8 py-3.5 rounded-2xl glass text-base font-bold text-foreground hover:bg-card/80 transition-all duration-300 btn-futuristic border-gradient md:px-6 md:py-2.5 md:text-sm active:scale-95">
+          <button className="rounded-2xl bg-white/10 px-8 py-3.5 text-base font-bold text-foreground backdrop-blur-xl transition-all duration-300 hover:bg-white/20 md:px-6 md:py-2.5 md:text-sm active:scale-95">
             {t.gardens.allGardens}
           </button>
         </div>

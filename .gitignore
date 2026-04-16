@@ -1,4 +1,4 @@
-# Logs
+ # Logs
 logs
 *.log
 npm-debug.log*
@@ -66,3 +66,6 @@ test_file.txt
 build_output.log
 release_build.log
 
+את העיצוב החדש?# Local-only workspaces and generated reports
+/coverage/
+/mcp-figma/

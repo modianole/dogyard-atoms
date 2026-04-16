@@ -3,6 +3,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { usePeakHours } from "@/hooks/usePeakHours";
 import { useGardens } from "@/hooks/useGardens";
 import { useMemo } from "react";
+import { GlassCard } from "@/components/ui/GlassCard";
 
 const fallbackHours = [
   { hour: "06", visitor_count: 2 }, { hour: "07", visitor_count: 5 },
@@ -34,7 +35,7 @@ const PeakHoursChart = () => {
   const maxCount = useMemo(() => Math.max(...hours.map(h => h.count), 1), [hours]);
 
   return (
-    <section id="peak-hours" className="py-24 bg-background relative overflow-hidden">
+    <section id="peak-hours" className="relative overflow-hidden py-16 md:py-20">
       <div className="absolute w-[350px] h-[350px] rounded-full opacity-[0.05] blur-[120px] bottom-0 left-0" style={{ background: 'hsl(210, 80%, 55%)' }} />
 
       <div className="container mx-auto px-4 relative">
@@ -52,7 +53,7 @@ const PeakHoursChart = () => {
             </div>
           </div>
 
-          <div className="glass rounded-2xl p-6 border-gradient animate-in fade-in zoom-in-95 duration-700">
+          <GlassCard intensity="medium" className="rounded-2xl p-6 animate-in fade-in zoom-in-95 duration-700">
             {/* Custom Bar Chart using Tailwind */}
             <div className="h-64 flex items-end justify-between gap-1 md:gap-2 px-2 border-b border-border/50">
               {hours.map((h, i) => {
@@ -69,7 +70,7 @@ const PeakHoursChart = () => {
                     {/* The Bar */}
                     <div
                       className={`w-full rounded-t-sm md:rounded-t-md transition-all duration-500 delay-[${i * 30}ms]
-                        ${isCurrent ? "bg-accent animate-glow-pulse" : (h.count > 7 ? "bg-primary" : "bg-info/60")}
+                        ${isCurrent ? "bg-accent animate-pulse" : (h.count > 7 ? "bg-primary" : "bg-info/60")}
                         group-hover:brightness-110 shadow-sm`}
                       style={{ height: `${height}%` }}
                     />
@@ -85,7 +86,7 @@ const PeakHoursChart = () => {
 
             <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-accent animate-glow-pulse" />
+                <div className="w-3 h-3 rounded-full bg-accent animate-pulse" />
                 <span className="text-xs text-muted-foreground">{t.peakHours.now}</span>
               </div>
               <div className={isRTL ? "flex-row-reverse flex items-center gap-2" : "flex items-center gap-2"}>
@@ -97,7 +98,7 @@ const PeakHoursChart = () => {
                 <span className="text-xs text-muted-foreground">{t.peakHours.normal}</span>
               </div>
             </div>
-          </div>
+          </GlassCard>
         </div>
       </div>
     </section>

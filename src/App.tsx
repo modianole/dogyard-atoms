@@ -75,8 +75,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       <div className="relative z-10 flex min-h-screen flex-col">
-        <header className="px-3 pt-3 md:px-6 md:pt-5">
-          <GlassCard intensity="strong" className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 text-white">
+        <header className={cn("px-3 pt-3 md:px-6 md:pt-5", isHomePage && "pointer-events-none absolute left-0 right-0 top-0 z-20 bg-transparent")}>
+          <GlassCard intensity="strong" className={cn("mx-auto flex max-w-6xl items-center justify-between px-4 py-3 text-white", isHomePage && "pointer-events-auto")}>
             <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
               <button
                 type="button"
@@ -104,10 +104,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <span>{t.shell.city}</span>
               </div>
 
+              {/* Language & user moved to bottom nav — keep only user avatar here for desktop */}
               <button
                 type="button"
                 onClick={toggleLanguage}
-                className="rounded-full bg-white/8 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/14"
+                className="hidden md:block rounded-full bg-white/8 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/14"
               >
                 {language === "he" ? "EN" : "עב"}
               </button>
@@ -128,8 +129,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
         <main
           className={cn(
-            "relative flex-grow px-3 pb-24 md:px-6 md:pb-8",
-            isMapPage ? "overflow-hidden pt-3" : isHomePage ? "pt-3" : "overflow-y-auto pt-4",
+            "relative flex-grow pb-24 md:pb-8",
+            isMapPage ? "overflow-hidden px-3 pt-3 md:px-6" : isHomePage ? "pt-0" : "overflow-y-auto px-3 pt-4 md:px-6",
           )}
         >
           <div className={cn(isHomePage || isMapPage ? "w-full" : "mx-auto max-w-6xl")}>
