@@ -1,4 +1,4 @@
-import { Home, Map, User, Settings, ShieldAlert, Loader2 } from "lucide-react";
+ import { Home, Map, User, Settings, ShieldAlert, Loader2 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";

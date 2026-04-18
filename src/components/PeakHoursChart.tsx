@@ -28,7 +28,7 @@ const PeakHoursChart = () => {
     const data = (!peakData || peakData.length === 0) ? fallbackHours : peakData;
     return data.map(ph => ({
       hour: String(ph.hour).padStart(2, "0"),
-      count: ph.visitor_count,
+      count: Number(ph.visitor_count || 0),
     }));
   }, [peakData]);
 

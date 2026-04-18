@@ -12,6 +12,7 @@ import { Tables } from "@/integrations/supabase/types";
 
 const Settings = () => {
   const [profile, setProfile] = useState<Tables<"profiles"> | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -29,11 +30,17 @@ const Settings = () => {
         return;
       }
 
-      const { data } = await supabase
+      setUserId(user.id);
+
+      const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
+
+      if (error) {
+        toast.error("שגיאה בטעינת פרופיל");
+      }
 
       if (data) {
         setProfile(data);
@@ -49,22 +56,28 @@ const Settings = () => {
   }, [navigate]);
 
   const handleSave = async () => {
-    if (!profile) return;
+    if (!userId) return;
     setSaving(true);
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("profiles")
-      .update({
+      .upsert({
+        id: profile?.id,
+        user_id: userId,
         display_name: formData.display_name,
         phone: formData.phone,
         updated_at: new Date().toISOString()
-      })
-      .eq("id", profile.id);
+      }, { onConflict: "user_id" })
+      .select("*")
+      .maybeSingle();
 
     setSaving(false);
     if (error) {
       toast.error("שגיאה בעדכון הפרופיל");
     } else {
+      if (data) {
+        setProfile(data);
+      }
       toast.success("הפרופיל עודכן בהצלחה");
       navigate("/profile");
     }

@@ -18,7 +18,13 @@ def releaseStoreFilePath = resolveBuildSecret('DOGYARD_KEYSTORE_PATH', 'DOGYARD_
 def releaseStorePassword = resolveBuildSecret('DOGYARD_KEYSTORE_PASSWORD', 'DOGYARD_KEYSTORE_PASSWORD')
 def releaseKeyAlias = resolveBuildSecret('DOGYARD_KEY_ALIAS', 'DOGYARD_KEY_ALIAS')
 def releaseKeyPassword = resolveBuildSecret('DOGYARD_KEY_PASSWORD', 'DOGYARD_KEY_PASSWORD')
-def hasReleaseSigning = [releaseStoreFilePath, releaseStorePassword, releaseKeyAlias, releaseKeyPassword].every { it }
+def disableReleaseSigningRaw = resolveBuildSecret('DOGYARD_DISABLE_RELEASE_SIGNING', 'DOGYARD_DISABLE_RELEASE_SIGNING')
+def disableReleaseSigning = disableReleaseSigningRaw?.toString()?.trim()?.toLowerCase() == 'true'
+def hasReleaseSigning = !disableReleaseSigning && [releaseStoreFilePath, releaseStorePassword, releaseKeyAlias, releaseKeyPassword].every { it }
+
+if (!hasReleaseSigning) {
+    logger.warn("Release signing credentials are not configured. Set DOGYARD_KEYSTORE_PATH, DOGYARD_KEYSTORE_PASSWORD, DOGYARD_KEY_ALIAS, and DOGYARD_KEY_PASSWORD in environment variables or android/local.properties before publishing. For local pipeline validation only, use DOGYARD_DISABLE_RELEASE_SIGNING=true.")
+}
 
 android {
     namespace = "com.dogyard.app"
@@ -140,8 +146,3 @@ try {
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }
-
-if (!hasReleaseSigning) {
-    logger.warn("Release signing credentials are not configured. Set DOGYARD_KEYSTORE_PATH, DOGYARD_KEYSTORE_PASSWORD, DOGYARD_KEY_ALIAS, and DOGYARD_KEY_PASSWORD in environment variables or android/local.properties before publishing.")
-}
-

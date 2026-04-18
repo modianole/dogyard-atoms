@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
 import { useSearchParams } from "react-router-dom";
+import { resolveSafeNextPath } from "@/lib/authRedirect";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,10 +23,11 @@ const Auth = () => {
   const { t, isRTL } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
-  const nextPath = searchParams.get("next") || "/";
+  const nextPath = resolveSafeNextPath(searchParams.get("next") || sessionStorage.getItem("auth:next") || "/");
 
   useEffect(() => {
     if (!authLoading && user) {
+      sessionStorage.removeItem("auth:next");
       window.location.assign(nextPath);
     }
   }, [user, authLoading, nextPath]);
@@ -45,6 +47,7 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success(t.auth.loginSuccess);
+        sessionStorage.removeItem("auth:next");
         window.location.assign(nextPath);
       } else {
         const { error } = await supabase.auth.signUp({

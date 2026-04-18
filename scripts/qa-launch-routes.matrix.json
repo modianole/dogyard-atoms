@@ -1,0 +1,26 @@
+{
+  "requiredPublicRoutes": [
+    "/",
+    "/map",
+    "/garden/:id",
+    "/auth",
+    "/reset-password",
+    "/privacy",
+    "/terms"
+  ],
+  "requiredProtectedRoutes": [
+    "/profile",
+    "/settings"
+  ],
+  "flaggedRoutes": {
+    "VITE_ENABLE_DOG_SHARE_ROUTE": [
+      "/dog-share/accept"
+    ],
+    "VITE_ENABLE_ADMIN_ROUTES": [
+      "/admin/import",
+      "/admin/gardens"
+    ]
+  },
+  "requiredFallbackRoute": "*"
+}
+

@@ -5,7 +5,7 @@ import path from "path";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
-  const devHost = (env.VITE_DEV_HOST || process.env.VITE_DEV_HOST || "0.0.0.0").trim();
+  const devHost = (env.VITE_DEV_HOST || process.env.VITE_DEV_HOST || "127.0.0.1").trim();
   const devPortRaw = (env.VITE_DEV_PORT || process.env.VITE_DEV_PORT || "8080").trim();
   const parsedPort = Number.parseInt(devPortRaw, 10);
   const devPort = Number.isFinite(parsedPort) ? parsedPort : 8080;
@@ -17,6 +17,9 @@ export default defineConfig(({ mode }) => {
       host: devHost,
       port: devPort,
       strictPort: true,
+      fs: {
+        strict: true,
+      },
     },
     plugins: [
       react(),

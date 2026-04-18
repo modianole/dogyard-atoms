@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
+const ENABLE_DOG_SHARE_ROUTE = import.meta.env.VITE_ENABLE_DOG_SHARE_ROUTE === "true";
+
 const Profile = () => {
   const [profile, setProfile] = useState<Tables<"profiles"> | null>(null);
   const [dogs, setDogs] = useState<Tables<"dogs">[]>([]);
@@ -40,6 +42,8 @@ const Profile = () => {
   const [shareRole, setShareRole] = useState<Enums<"dog_share_role">>("viewer");
   const [shareLink, setShareLink] = useState("");
   const [creatingInvite, setCreatingInvite] = useState(false);
+  const [addingDog, setAddingDog] = useState(false);
+  const [deletingDogId, setDeletingDogId] = useState<string | null>(null);
   const [newDog, setNewDog] = useState({
     name: "",
     breed: "",
@@ -52,71 +56,82 @@ const Profile = () => {
   const fetchData = async () => {
     setLoading(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
+      if (userError || !user) {
+        navigate("/auth");
+        return;
+      }
 
-    setCurrentUserId(user.id);
+      setCurrentUserId(user.id);
 
-    // Fetch Profile
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", user.id)
-      .single();
+      // `maybeSingle` allows first-login users without a profile row yet.
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-    if (profileData) setProfile(profileData);
+      if (profileError) {
+        toast.error("שגיאה בטעינת הפרופיל");
+      }
+      setProfile(profileData || null);
 
-    // Fetch Dogs
-    const { data: ownedDogsData } = await supabase
-      .from("dogs")
-      .select("*")
-      .eq("owner_id", user.id)
-      .order("created_at", { ascending: false });
+      const { data: ownedDogsData, error: ownedDogsError } = await supabase
+        .from("dogs")
+        .select("*")
+        .eq("owner_id", user.id)
+        .order("created_at", { ascending: false });
 
-    const ownedDogs = ownedDogsData || [];
+      if (ownedDogsError) {
+        toast.error("שגיאה בטעינת הכלבים");
+      }
 
-    const { data: membershipsData } = await supabase
-      .from("dog_profile_members")
-      .select("dog_id, role, status, dogs(*)")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .neq("role", "owner");
+      const ownedDogs = ownedDogsData || [];
 
-    const sharedRolesMap: Record<string, Enums<"dog_share_role">> = {};
-    const sharedDogs = (membershipsData || [])
-      .map((membership: any) => {
-        if (!membership?.dogs) return null;
-        sharedRolesMap[membership.dog_id] = membership.role;
-        return membership.dogs as Tables<"dogs">;
-      })
-      .filter(Boolean) as Tables<"dogs">[];
-
-    const mergedDogs = [...ownedDogs, ...sharedDogs];
-    const uniqueDogs = Array.from(new Map(mergedDogs.map((dog) => [dog.id, dog])).values());
-
-    const membersCountMap: Record<string, number> = {};
-    if (ownedDogs.length > 0) {
-      const { data: membersData } = await supabase
+      const { data: membershipsData } = await supabase
         .from("dog_profile_members")
-        .select("dog_id")
-        .in("dog_id", ownedDogs.map((dog) => dog.id))
+        .select("dog_id, role, status, dogs(*)")
+        .eq("user_id", user.id)
         .eq("status", "active")
         .neq("role", "owner");
 
-      (membersData || []).forEach((member) => {
-        membersCountMap[member.dog_id] = (membersCountMap[member.dog_id] || 0) + 1;
-      });
+      const sharedRolesMap: Record<string, Enums<"dog_share_role">> = {};
+      const sharedDogs = (membershipsData || [])
+        .map((membership: any) => {
+          if (!membership?.dogs) return null;
+          sharedRolesMap[membership.dog_id] = membership.role;
+          return membership.dogs as Tables<"dogs">;
+        })
+        .filter(Boolean) as Tables<"dogs">[];
+
+      const mergedDogs = [...ownedDogs, ...sharedDogs];
+      const uniqueDogs = Array.from(new Map(mergedDogs.map((dog) => [dog.id, dog])).values());
+
+      const membersCountMap: Record<string, number> = {};
+      if (ownedDogs.length > 0) {
+        const { data: membersData } = await supabase
+          .from("dog_profile_members")
+          .select("dog_id")
+          .in("dog_id", ownedDogs.map((dog) => dog.id))
+          .eq("status", "active")
+          .neq("role", "owner");
+
+        (membersData || []).forEach((member) => {
+          membersCountMap[member.dog_id] = (membersCountMap[member.dog_id] || 0) + 1;
+        });
+      }
+
+      setDogs(uniqueDogs);
+      setSharedDogRoles(sharedRolesMap);
+      setSharedMembersCount(membersCountMap);
+    } catch (error) {
+      console.error("Profile fetch failed", error);
+      toast.error("טעינת הפרופיל נכשלה");
+    } finally {
+      setLoading(false);
     }
-
-    setDogs(uniqueDogs);
-    setSharedDogRoles(sharedRolesMap);
-    setSharedMembersCount(membersCountMap);
-
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -124,17 +139,26 @@ const Profile = () => {
   }, [navigate]);
 
   const handleAddDog = async () => {
-    if (!newDog.name) {
+    const normalizedName = newDog.name.trim();
+    if (!normalizedName) {
       toast.error("נא להזין את שם הכלב");
       return;
     }
 
+    if (addingDog) return;
+
+    setAddingDog(true);
+
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setAddingDog(false);
+      navigate("/auth");
+      return;
+    }
 
     const { error } = await supabase.from("dogs").insert({
-      name: newDog.name,
-      breed: newDog.breed,
+      name: normalizedName,
+      breed: newDog.breed.trim() || null,
       gender: newDog.gender,
       size: newDog.size,
       owner_id: user.id
@@ -144,14 +168,17 @@ const Profile = () => {
       toast.error("שגיאה בהוספת הכלב");
       console.error(error);
     } else {
-      toast.success(`${newDog.name} נוסף ללהקה!`);
+      toast.success(`${normalizedName} נוסף ללהקה!`);
       setIsAddingDog(false);
       setNewDog({ name: "", breed: "", gender: "male", size: "medium" });
-      fetchData();
+      await fetchData();
     }
+
+    setAddingDog(false);
   };
 
   const handleDeleteDog = async (id: string) => {
+    if (deletingDogId) return;
     if (!currentUserId) return;
     const dog = dogs.find((item) => item.id === id);
     if (!dog || dog.owner_id !== currentUserId) {
@@ -159,13 +186,15 @@ const Profile = () => {
       return;
     }
 
+    setDeletingDogId(id);
     const { error } = await supabase.from("dogs").delete().eq("id", id);
     if (error) {
       toast.error("שגיאה במחיקת הכלב");
     } else {
       toast.success("הכלב הוסר בהצלחה");
-      fetchData();
+      await fetchData();
     }
+    setDeletingDogId(null);
   };
 
   const openShareDialog = (dog: Tables<"dogs">) => {
@@ -310,7 +339,7 @@ const Profile = () => {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleAddDog} className="w-full">שמור כלב</Button>
+                  <Button onClick={handleAddDog} className="w-full" disabled={addingDog}>{addingDog ? "שומר..." : "שמור כלב"}</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -353,7 +382,7 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    {dog.owner_id === currentUserId && (
+                    {ENABLE_DOG_SHARE_ROUTE && dog.owner_id === currentUserId && (
                       <Button
                         variant="ghost"
                         size="icon"
@@ -369,6 +398,7 @@ const Profile = () => {
                       <Button
                         variant="ghost"
                         size="icon"
+                        disabled={deletingDogId === dog.id}
                         className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => handleDeleteDog(dog.id)}
                       >
@@ -388,7 +418,7 @@ const Profile = () => {
           </div>
         </GlassCard>
 
-        <Dialog open={isSharingDog} onOpenChange={setIsSharingDog}>
+        {ENABLE_DOG_SHARE_ROUTE ? <Dialog open={isSharingDog} onOpenChange={setIsSharingDog}>
           <DialogContent className="sm:max-w-[520px]" dir="rtl">
             <DialogHeader>
               <DialogTitle>
@@ -436,7 +466,7 @@ const Profile = () => {
               </Button>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
+        </Dialog> : null}
 
         {/* Actions */}
         <Button variant="destructive" className="w-full gap-2" onClick={handleSignOut}>

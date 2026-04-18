@@ -30,10 +30,34 @@ services:
         PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
         PUBLIC_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
         PUBLIC_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY}
-        PUBLIC_ADMIN_USER_ID: ${VITE_ADMIN_USER_ID}
-        PUBLIC_ADMIN_EMAIL: ${VITE_ADMIN_EMAIL}
-        PUBLIC_DEVELOPER_EMAILS: ${VITE_DEVELOPER_EMAILS}
-        PUBLIC_DEVELOPER_EMAIL: ${VITE_DEVELOPER_EMAIL}
+        PUBLIC_ADMIN_USER_ID: ${VITE_ADMIN_USER_ID:-}
+        PUBLIC_ADMIN_EMAIL: ${VITE_ADMIN_EMAIL:-}
+        PUBLIC_DEVELOPER_EMAILS: ${VITE_DEVELOPER_EMAILS:-}
+        PUBLIC_DEVELOPER_EMAIL: ${VITE_DEVELOPER_EMAIL:-}
+        PUBLIC_ENABLE_ADMIN_ROUTES: ${VITE_ENABLE_ADMIN_ROUTES:-}
+        PUBLIC_ENABLE_DOG_SHARE_ROUTE: ${VITE_ENABLE_DOG_SHARE_ROUTE:-}
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src
+        - action: rebuild
+          path: ./public
+        - action: rebuild
+          path: ./index.html
+        - action: rebuild
+          path: ./Dockerfile
+        - action: rebuild
+          path: ./nginx.conf
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
+        - action: rebuild
+          path: ./vite.config.ts
+        - action: rebuild
+          path: ./tailwind.config.ts
+        - action: rebuild
+          path: ./postcss.config.js
     ports:
       - "8082:80"
     restart: unless-stopped
@@ -61,10 +85,34 @@ services:
         PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
         PUBLIC_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
         PUBLIC_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY}
-        PUBLIC_ADMIN_USER_ID: ${VITE_ADMIN_USER_ID}
-        PUBLIC_ADMIN_EMAIL: ${VITE_ADMIN_EMAIL}
-        PUBLIC_DEVELOPER_EMAILS: ${VITE_DEVELOPER_EMAILS}
-        PUBLIC_DEVELOPER_EMAIL: ${VITE_DEVELOPER_EMAIL}
+        PUBLIC_ADMIN_USER_ID: ${VITE_ADMIN_USER_ID:-}
+        PUBLIC_ADMIN_EMAIL: ${VITE_ADMIN_EMAIL:-}
+        PUBLIC_DEVELOPER_EMAILS: ${VITE_DEVELOPER_EMAILS:-}
+        PUBLIC_DEVELOPER_EMAIL: ${VITE_DEVELOPER_EMAIL:-}
+        PUBLIC_ENABLE_ADMIN_ROUTES: ${VITE_ENABLE_ADMIN_ROUTES:-}
+        PUBLIC_ENABLE_DOG_SHARE_ROUTE: ${VITE_ENABLE_DOG_SHARE_ROUTE:-}
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src
+        - action: rebuild
+          path: ./public
+        - action: rebuild
+          path: ./index.html
+        - action: rebuild
+          path: ./Dockerfile
+        - action: rebuild
+          path: ./nginx.conf
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
+        - action: rebuild
+          path: ./vite.config.ts
+        - action: rebuild
+          path: ./tailwind.config.ts
+        - action: rebuild
+          path: ./postcss.config.js
     ports:
       - "8083:80"
     restart: unless-stopped

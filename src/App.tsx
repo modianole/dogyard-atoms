@@ -146,6 +146,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
 const queryClient = new QueryClient();
 
+const isFeatureEnabled = (value: string | undefined) => value === "true";
+
+const ENABLE_ADMIN_ROUTES = isFeatureEnabled(import.meta.env.VITE_ENABLE_ADMIN_ROUTES);
+const ENABLE_DOG_SHARE_ROUTE = isFeatureEnabled(import.meta.env.VITE_ENABLE_DOG_SHARE_ROUTE);
+
 const AppContent = () => {
   useEffect(() => {
     const setupDeepLinks = async () => {
@@ -195,10 +200,10 @@ const AppContent = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
-          <Route path="/dog-share/accept" element={<DogShareAccept />} />
+          {ENABLE_DOG_SHARE_ROUTE ? <Route path="/dog-share/accept" element={<DogShareAccept />} /> : null}
           <Route path="/garden/:id" element={<GardenDetails />} />
-          <Route path="/admin/import" element={<AdminImport />} />
-          <Route path="/admin/gardens" element={<AdminGardens />} />
+          {ENABLE_ADMIN_ROUTES ? <Route path="/admin/import" element={<AdminImport />} /> : null}
+          {ENABLE_ADMIN_ROUTES ? <Route path="/admin/gardens" element={<AdminGardens />} /> : null}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>

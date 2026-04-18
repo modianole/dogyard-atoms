@@ -14,12 +14,33 @@ import { writeFileSync, readFileSync, existsSync } from "fs";
 const CACHE_FILE = new URL("./shalter-cache.json", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1");
 const IMPORT_ONLY = process.argv.includes("--import-only");
 
-// ── Config (matches .env) ─────────────────────────────────────────────────────
-const SUPABASE_URL        = "https://keccmcwkqguooifloxnt.supabase.co";
-const SUPABASE_ANON_KEY   = "sb_publishable_SIw07T3_yCfhT30kfwnLHg_UGfotr8c";
-const GOOGLE_MAPS_API_KEY = "AIzaSyCTQVFIJDjUTTFKJVGExsirzpYENJ4xGSk";
+// ── Config (from environment) ──────────────────────────────────────────────────
+const SUPABASE_URL =
+  process.env.SUPABASE_URL ||
+  process.env.VITE_SUPABASE_URL;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY =
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY;
+
+const GOOGLE_MAPS_API_KEY =
+  process.env.GOOGLE_MAPS_API_KEY ||
+  process.env.VITE_GOOGLE_MAPS_API_KEY;
+
+const assertConfig = (name, value) => {
+  if (value && value.trim()) return value.trim();
+  throw new Error(`Missing required environment variable: ${name}`);
+};
+
+const resolvedSupabaseUrl = assertConfig("SUPABASE_URL or VITE_SUPABASE_URL", SUPABASE_URL);
+const resolvedSupabaseAnonKey = assertConfig(
+  "SUPABASE_ANON_KEY or VITE_SUPABASE_PUBLISHABLE_KEY or VITE_SUPABASE_ANON_KEY",
+  SUPABASE_ANON_KEY,
+);
+const resolvedGoogleMapsApiKey = assertConfig("GOOGLE_MAPS_API_KEY or VITE_GOOGLE_MAPS_API_KEY", GOOGLE_MAPS_API_KEY);
+
+const supabase = createClient(resolvedSupabaseUrl, resolvedSupabaseAnonKey);
 
 // ── Sectors (identical to AdminImport.tsx) ────────────────────────────────────
 const SECTORS = [
@@ -62,7 +83,7 @@ async function textSearch(query, lat, lng) {
     `?query=${encodeURIComponent(query)}` +
     `&location=${lat},${lng}` +
     `&radius=1500` +
-    `&key=${GOOGLE_MAPS_API_KEY}`;
+    `&key=${resolvedGoogleMapsApiKey}`;
 
   const res  = await fetch(url);
   const data = await res.json();
@@ -83,7 +104,7 @@ async function fetchEnglish(placeId) {
       `https://places.googleapis.com/v1/places/${placeId}?languageCode=en`,
       {
         headers: {
-          "X-Goog-Api-Key":  GOOGLE_MAPS_API_KEY,
+          "X-Goog-Api-Key":  resolvedGoogleMapsApiKey,
           "X-Goog-FieldMask": "displayName,formattedAddress",
         },
       }
