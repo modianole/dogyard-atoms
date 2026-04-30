@@ -4,8 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "npm run dev",
     "dev": "vite",
     "build": "vite build",
+    "docker:build": "node -e \"require('dotenv').config(); const { spawnSync } = require('node:child_process'); const e = process.env; const buildArgs = ['build', '--build-arg', `VITE_SUPABASE_URL=${e.VITE_SUPABASE_URL || ''}`, '--build-arg', `VITE_SUPABASE_ANON_KEY=${e.VITE_SUPABASE_ANON_KEY || e.VITE_SUPABASE_PUBLISHABLE_KEY || ''}`, '-t', 'dogyard-atoms', '.']; const result = spawnSync('docker', buildArgs, { stdio: 'inherit', shell: false }); if (result.error) { throw result.error; } if (result.status !== 0) { process.exit(result.status || 1); }\"",
     "docker:reset": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/docker-reset-and-run.ps1 -Services app,app-2",
     "docker:watch": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/docker-reset-and-run.ps1 -Services app,app-2 -Watch",
     "play": "npx cap sync android && npx cap run android",
@@ -79,7 +81,7 @@
     "zod": "^3.25.7"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.0.0",
+    "@capacitor/cli": "^8.3.1",
     "@eslint/js": "^9.32.0",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/typography": "^0.5.16",
@@ -95,13 +97,13 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
-    "jsdom": "^20.0.3",
+    "jsdom": "^29.0.2",
     "patch-package": "^8.0.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
-    "vite": "^5.4.19",
+    "vite": "^8.0.9",
     "vitest": "^3.2.4"
   }
 }

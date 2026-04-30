@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, X, Menu, Map as MapIcon, User, Settings as SettingsIcon, Sun, Moon, ShieldAlert, Loader2 } from "lucide-react";
+import { Home, X, Menu, Map as MapIcon, Sun, Moon, ShieldAlert } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "next-themes";
 import { useNearestShalter } from "@/hooks/useNearestShalter";
 import ProtectedSpacePromptDialog from "@/components/ProtectedSpacePromptDialog";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { toggleLanguage, language, isRTL } = useLanguage();
+  const { toggleLanguage, isRTL } = useLanguage();
   const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -25,177 +26,68 @@ const Navbar = () => {
     openLocationSettingsAndRetry,
   } = useNearestShalter();
 
-  // Wait for mounting to avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const isMapPage = location.pathname === "/map";
-
-  const path = location.pathname.toLowerCase();
-  const isHomePage =
-    path === "/" ||
-    path === "" ||
-    path.includes("index.html") ||
-    path.length <= 1;
-
-  const menuItems = [
-    { label: isRTL ? "דף הבית" : "Home", icon: Home, path: "/" },
-    { label: isRTL ? "מפת גינות" : "Gardens Map", icon: MapIcon, path: "/map" },
-    { label: isRTL ? "פרופיל" : "Profile", icon: User, path: "/profile" },
-    { label: isRTL ? "הגדרות" : "Settings", icon: SettingsIcon, path: "/settings" },
-  ];
-
-  const handleNavigate = (path: string) => {
-    setOpen(false);
-    navigate(path);
-  };
-
-  const navClasses = `${
-    isHomePage
-      ? "relative"
-      : "fixed top-0 left-0 right-0"
-  } w-full h-20 z-[50] transition-all duration-300 ${
-    isMapPage
-      ? "bg-black/40 backdrop-blur-md border-b border-white/5 h-16"
-      : "bg-background/80 backdrop-blur-xl border-b border-border/50"
-  }`;
+  const isHomePage = location.pathname === "/" || location.pathname === "" || location.pathname.length <= 1;
 
   const logoSrc = "/logo.png";
 
   return (
     <>
-      <nav className={navClasses}>
+      <nav className={cn(
+        "w-full h-20 z-[50] transition-all duration-300 border-b border-white/10 shadow-lg",
+        isHomePage ? "relative" : "fixed top-0 left-0 right-0",
+        "bg-white/80 dark:bg-black/80 backdrop-blur-2xl"
+      )}>
         <div className="container mx-auto h-full flex items-center justify-between px-6">
           <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
-            <img
-              src={logoSrc}
-              alt="DogYard Logo"
-              className={`${isMapPage ? "h-24" : "h-40"} w-auto object-contain transition-opacity duration-300`}
-            />
+            <img src={logoSrc} alt="Logo" className={cn("w-auto object-contain", isMapPage ? "h-14" : "h-20 md:h-28")} />
           </div>
 
           <div className="flex items-center gap-3">
-            {/* 🛡️ Nearest Shelter button — always visible */}
             <button
               onClick={goToNearestShalter}
-              disabled={shalterLoading}
-              className="group flex items-center gap-2.5 px-3.5 py-2 rounded-full font-black text-sm bg-white/95 border border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 transition-all shadow-sm hover:shadow-md disabled:opacity-70 disabled:cursor-wait"
-              title={isRTL ? "למרחב המוגן" : "Protected Space"}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400"
             >
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-red-600 border border-red-100 transition-colors group-hover:bg-white">
-                {shalterLoading
-                  ? <Loader2 className="w-4 h-4 animate-spin" />
-                  : <ShieldAlert className="w-4 h-4" />
-                }
-              </span>
-              <span className="hidden sm:inline text-xs tracking-tight">{isRTL ? "למרחב המוגן" : "Protected Space"}</span>
+              <ShieldAlert className="w-4 h-4" />
+              <span className="hidden sm:inline text-xs font-bold">{isRTL ? "מרחב מוגן" : "Shelter"}</span>
             </button>
-
-            {!isMapPage && (
-              <button
-                onClick={() => navigate("/map")}
-                className="flex items-center gap-2 px-4 py-2 rounded-2xl font-bold text-sm bg-primary text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
-              >
-                <MapIcon className="w-4 h-4" />
-                <span className="hidden md:inline">{isRTL ? "מפה" : "Map"}</span>
-              </button>
-            )}
 
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2.5 bg-foreground/10 hover:bg-foreground/20 rounded-xl transition-all border border-border/50 text-foreground active:scale-90"
-              aria-label="Toggle theme"
+              className="p-2.5 rounded-xl bg-slate-500/10 dark:bg-white/10 text-foreground"
             >
               {mounted && (theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
             </button>
 
-            <button
-              onClick={toggleLanguage}
-              className="text-foreground text-xs font-bold bg-foreground/10 hover:bg-foreground/20 px-3 py-2 rounded-xl transition-colors border border-border/50"
-            >
-              {language === "he" ? "HE" : "EN"}
-            </button>
-
-            <button
-              onClick={() => setOpen(!open)}
-              className="p-3 bg-foreground/10 hover:bg-foreground/20 rounded-2xl border border-border/50 text-foreground transition-all active:scale-90"
-              aria-label="Menu"
-            >
+            <button onClick={() => setOpen(!open)} className="p-3 rounded-2xl bg-slate-500/10 dark:bg-white/10 text-foreground">
               {open ? <X /> : <Menu />}
             </button>
           </div>
         </div>
       </nav>
 
+      {/* Drawer */}
       {open && (
         <>
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] animate-in fade-in duration-200"
-            onClick={() => setOpen(false)}
-          />
-          <div
-            className={`fixed top-0 ${isRTL ? "right-0 animate-in slide-in-from-right" : "left-0 animate-in slide-in-from-left"} h-full w-80 bg-card border-x border-border z-[300] shadow-2xl flex flex-col duration-300`}
-          >
-            <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
-              <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigate("/")}>
-                <img src={logoSrc} alt="Logo" className="h-36 w-auto object-contain" />
-              </div>
-              <button onClick={() => setOpen(false)} className="text-foreground/70 hover:text-foreground transition-colors p-2 rounded-lg hover:bg-foreground/5">
-                <X />
-              </button>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]" onClick={() => setOpen(false)} />
+          <div className={cn(
+            "fixed top-0 h-full w-80 z-[300] shadow-2xl flex flex-col bg-white dark:bg-slate-950 border-white/10",
+            isRTL ? "right-0" : "left-0"
+          )}>
+            <div className="p-8 border-b border-white/10 flex justify-between items-center">
+              <img src={logoSrc} alt="Logo" className="h-20 w-auto object-contain" />
+              <button onClick={() => setOpen(false)} className="text-foreground/70"><X /></button>
             </div>
-
-            <div className="flex-1 py-6 px-4 space-y-1 overflow-y-auto custom-scrollbar">
-              {/* 🛡️ Shelter CTA — top of drawer, full width */}
-              <button
-                onClick={() => { goToNearestShalter(); setOpen(false); }}
-                disabled={shalterLoading}
-                className="group w-full flex items-center gap-3.5 p-4 rounded-3xl text-lg font-black bg-white border border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 shadow-sm hover:shadow-md mb-4 transition-all active:scale-[0.99] disabled:opacity-70"
-              >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-600 border border-red-100 transition-colors group-hover:bg-white">
-                  {shalterLoading
-                    ? <Loader2 className="w-5 h-5 animate-spin" />
-                    : <ShieldAlert className="w-5 h-5" />
-                  }
-                </span>
-                <span className="flex flex-col items-start text-right leading-tight">
-                  <span>{isRTL ? "למרחב המוגן" : "Protected Space"}</span>
-                  <span className="text-xs font-medium text-red-500/80">{isRTL ? "ניווט מהיר למיקום הקרוב" : "Quick navigation nearby"}</span>
-                </span>
-              </button>
-
-              {menuItems.map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleNavigate(item.path)}
-                  className={`w-full flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all ${location.pathname === item.path ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-foreground/70 hover:bg-foreground/5 hover:text-foreground"}`}
-                >
-                  <item.icon className={`w-6 h-6 ${location.pathname === item.path ? "text-white" : "text-primary"}`} />
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="p-8 border-t border-border bg-card/40 space-y-4">
-              {user ? (
-                <div className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/5 border border-border mb-2">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                    {user.email?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground truncate">{user.email}</p>
-                    <p className="text-xs text-foreground/40">מחובר למערכת</p>
-                  </div>
-                </div>
-              ) : null}
-
-              <button
-                onClick={async () => { if (user) await signOut(); else navigate("/auth"); setOpen(false); }}
-                className={`w-full py-4 rounded-2xl text-white font-black text-lg shadow-lg transition-all active:scale-95 ${user ? "bg-foreground/10 text-foreground hover:bg-destructive hover:text-white" : "bg-primary hover:bg-primary/90 shadow-primary/20"}`}
-              >
-                {user ? (isRTL ? "התנתק" : "Logout") : (isRTL ? "התחברות" : "Login")}
-              </button>
+            <div className="flex-1 p-4 space-y-4">
+               <button onClick={() => {navigate("/"); setOpen(false);}} className="w-full p-4 rounded-2xl bg-slate-500/5 dark:bg-white/5 text-right font-bold">{isRTL ? "דף הבית" : "Home"}</button>
+               <button onClick={() => {navigate("/map"); setOpen(false);}} className="w-full p-4 rounded-2xl bg-slate-500/5 dark:bg-white/5 text-right font-bold">{isRTL ? "מפת גינות" : "Map"}</button>
+               {user && (
+                 <button onClick={async () => {await signOut(); setOpen(false);}} className="w-full p-4 rounded-2xl bg-red-500/10 text-red-600 text-right font-bold">{isRTL ? "התנתק" : "Logout"}</button>
+               )}
             </div>
           </div>
         </>
@@ -214,4 +106,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

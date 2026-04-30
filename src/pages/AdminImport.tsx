@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { TablesInsert } from "@/integrations/supabase/types";
 import { toast } from "sonner";
-import { CheckCircle2, Loader2, MapPin, Shield } from "lucide-react";
+import { CheckCircle2, Loader2, MapPin, Shield, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useDeveloperAccess } from "@/hooks/useDeveloperAccess";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +31,7 @@ type ImportRecord = {
   lng: number;
   rating: number | null;
   reviewsCount: number | null;
+  imageUrl: string | null;
   matchedQuery: string;
   matchedSector: string;
   googleTypes: string[];
@@ -209,6 +210,11 @@ const AdminImportContent = () => {
                   const lng = place.geometry?.location?.lng() ?? 0;
                   const address = place.formatted_address || place.vicinity || sector.name;
 
+                  // Extract first photo URL if available
+                  const imageUrl = place.photos && place.photos.length > 0
+                    ? place.photos[0].getUrl({ maxWidth: 800, maxHeight: 600 })
+                    : null;
+
                   if (!collected.has(googlePlaceId)) {
                     collected.set(googlePlaceId, {
                       googlePlaceId,
@@ -220,6 +226,7 @@ const AdminImportContent = () => {
                       lng,
                       rating: place.rating ?? null,
                       reviewsCount: place.user_ratings_total ?? null,
+                      imageUrl,
                       matchedQuery: query,
                       matchedSector: sector.name,
                       googleTypes: place.types || [],
@@ -293,6 +300,7 @@ const AdminImportContent = () => {
           lng: record.lng,
           rating: record.rating ?? 0,
           reviews_count: record.reviewsCount ?? 0,
+          image_url: record.imageUrl,
           status: "approved",
           created_by: user.id,
         }));
@@ -313,6 +321,7 @@ const AdminImportContent = () => {
           lng: record.lng,
           rating: record.rating ?? 0,
           reviews_count: record.reviewsCount ?? 0,
+          image_url: record.imageUrl,
           type: inferProtectedSpaceType(record),
           created_by: user.id,
         }));
@@ -390,7 +399,7 @@ const AdminImportContent = () => {
                 <MapPin className="text-green-500 w-7 h-7" />
                 <div>
                   <h2 className="text-2xl font-black">גינות כלבים בגוש דן</h2>
-                  <p className="text-sm text-muted-foreground">כולל שליפת שם וכתובת באנגלית כאשר גוגל מחזיר אותם.</p>
+                  <p className="text-sm text-muted-foreground">כולל שליפת תמונות, שמות וכתובות באנגלית.</p>
                 </div>
               </div>
 
@@ -421,20 +430,26 @@ const AdminImportContent = () => {
             {dogGardenResults.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {dogGardenResults.map((record) => (
-                  <Card key={record.googlePlaceId} className="p-4 border-dashed">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-black truncate">{record.name}</p>
-                        {record.nameEn && record.nameEn !== record.name && (
-                          <p className="text-xs text-muted-foreground truncate" dir="ltr">{record.nameEn}</p>
-                        )}
-                        <p className="text-xs text-muted-foreground truncate mt-2">{record.location}</p>
-                        {record.locationEn && record.locationEn !== record.location && (
-                          <p className="text-xs text-muted-foreground truncate" dir="ltr">{record.locationEn}</p>
-                        )}
-                        <p className="text-[11px] text-muted-foreground mt-2">{record.matchedSector} • {record.matchedQuery}</p>
+                  <Card key={record.googlePlaceId} className="p-4 border-dashed flex gap-4 overflow-hidden">
+                    {record.imageUrl && (
+                      <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                        <img src={record.imageUrl} className="w-full h-full object-cover" alt="" />
                       </div>
-                      <CheckCircle2 className="text-green-500 w-4 h-4 flex-shrink-0" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-black truncate">{record.name}</p>
+                          {record.nameEn && record.nameEn !== record.name && (
+                            <p className="text-xs text-muted-foreground truncate" dir="ltr">{record.nameEn}</p>
+                          )}
+                        </div>
+                        <CheckCircle2 className="text-green-500 w-4 h-4 flex-shrink-0" />
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate mt-1">{record.location}</p>
+                      <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+                        <ImageIcon className="w-3 h-3" /> {record.imageUrl ? "יש תמונה" : "אין תמונה"} • {record.matchedSector}
+                      </p>
                     </div>
                   </Card>
                 ))}
@@ -480,20 +495,20 @@ const AdminImportContent = () => {
             {protectedSpaceResults.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {protectedSpaceResults.map((record) => (
-                  <Card key={record.googlePlaceId} className="p-4 border-dashed">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-black truncate">{record.name}</p>
-                        {record.nameEn && record.nameEn !== record.name && (
-                          <p className="text-xs text-muted-foreground truncate" dir="ltr">{record.nameEn}</p>
-                        )}
-                        <p className="text-xs text-muted-foreground truncate mt-2">{record.location}</p>
-                        {record.locationEn && record.locationEn !== record.location && (
-                          <p className="text-xs text-muted-foreground truncate" dir="ltr">{record.locationEn}</p>
-                        )}
-                        <p className="text-[11px] text-muted-foreground mt-2">{record.matchedSector} • {record.matchedQuery}</p>
+                  <Card key={record.googlePlaceId} className="p-4 border-dashed flex gap-4 overflow-hidden">
+                    {record.imageUrl && (
+                      <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                        <img src={record.imageUrl} className="w-full h-full object-cover" alt="" />
                       </div>
-                      <CheckCircle2 className="text-purple-500 w-4 h-4 flex-shrink-0" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-black truncate">{record.name}</p>
+                        </div>
+                        <CheckCircle2 className="text-purple-500 w-4 h-4 flex-shrink-0" />
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate mt-1">{record.location}</p>
                     </div>
                   </Card>
                 ))}

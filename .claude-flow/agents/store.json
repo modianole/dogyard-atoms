@@ -1,0 +1,84 @@
+{
+  "agents": {
+    "agent-1776791382384-beqiws": {
+      "agentId": "agent-1776791382384-beqiws",
+      "agentType": "coder",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic"
+      },
+      "createdAt": "2026-04-21T17:09:42.384Z",
+      "model": "sonnet",
+      "modelRoutedBy": "default"
+    },
+    "agent-1776796716461-r33e1l": {
+      "agentId": "agent-1776796716461-r33e1l",
+      "agentType": "security-architect",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic"
+      },
+      "createdAt": "2026-04-21T18:38:36.461Z",
+      "model": "opus",
+      "modelRoutedBy": "default"
+    },
+    "agent-1776796782911-b62kj7": {
+      "agentId": "agent-1776796782911-b62kj7",
+      "agentType": "optimizer",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic"
+      },
+      "createdAt": "2026-04-21T18:39:42.911Z",
+      "model": "sonnet",
+      "modelRoutedBy": "default"
+    },
+    "agent-1776796842732-lc1k8o": {
+      "agentId": "agent-1776796842732-lc1k8o",
+      "agentType": "memory-specialist",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic"
+      },
+      "createdAt": "2026-04-21T18:40:42.732Z",
+      "model": "sonnet",
+      "modelRoutedBy": "default"
+    },
+    "agent-1776796885337-gcxrhy": {
+      "agentId": "agent-1776796885337-gcxrhy",
+      "agentType": "performance-engineer",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic"
+      },
+      "createdAt": "2026-04-21T18:41:25.337Z",
+      "model": "sonnet",
+      "modelRoutedBy": "default"
+    },
+    "agent-1776798560060-rb4p5l": {
+      "agentId": "agent-1776798560060-rb4p5l",
+      "agentType": "coder",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "task": "Reply with PONG for health check"
+      },
+      "createdAt": "2026-04-21T19:09:20.070Z",
+      "model": "haiku",
+      "modelRoutedBy": "router"
+    }
+  },
+  "version": "3.0.0"
+}

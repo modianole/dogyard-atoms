@@ -107,8 +107,9 @@ export const translations = {
     hazard: {
       title: "ראיתם מפגע בגינה?",
       subtitle: "דווחו על מפגעים בגינות הכלבים ישירות לעירייה. ביחד נשמור על גינות בטוחות ונקיות לכלבים שלנו!",
-      reportBtn: "דווחו על מפגע",
+      reportBtn: "דיווח בוואטסאפ לעירייה",
       callBtn: "מוקד 106 עיריית ת״א",
+      hotlineBtn: "חיוג למוקד *9106",
     },
     restaurant: {
       badge: "הזמנה מהמסעדה",
@@ -327,8 +328,9 @@ export const translations = {
     hazard: {
       title: "Spotted a hazard at the garden?",
       subtitle: "Report hazards at dog gardens directly to the municipality. Together we'll keep gardens safe and clean for our dogs!",
-      reportBtn: "Report Hazard",
+      reportBtn: "Report via WhatsApp",
       callBtn: "Call 106 — Tel Aviv Municipality",
+      hotlineBtn: "Call *9106 Hotline",
     },
     restaurant: {
       badge: "Order from Restaurant",

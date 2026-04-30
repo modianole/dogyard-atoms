@@ -1,24 +1,19 @@
-
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Link, Route, Routes, useLocation } from "react-router-dom";
-import { LogIn, MapPin, Menu, UserRound } from "lucide-react";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { useLanguage } from "@/context/LanguageContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import { App as CapacitorApp } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
-import BrandLogo from "@/components/BrandLogo";
 import GlassSidebar from "@/components/GlassSidebar";
 import LoadingScreen from "@/components/LoadingScreen";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
 
 // Pages
 import Index from "./pages/Index.tsx";
@@ -35,24 +30,50 @@ import DogShareAccept from "./pages/DogShareAccept.tsx";
 import AuthCallback from "./pages/AuthCallback.tsx";
 import AdminImport from "./pages/AdminImport.tsx";
 import AdminGardens from "./pages/AdminGardens.tsx";
-// Note: Notifications.tsx is a placeholder and removed from MVP launch
+import HazardReport from "@/components/HazardReport";
 
 import BottomNav from "./components/layout/BottomNav";
 import ProtectedRoute from "./components/ProtectedRoute";
+import DeveloperRoute from "./components/DeveloperRoute";
+
+const GlobalBackground = () => {
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const activeTheme = mounted ? (resolvedTheme ?? theme ?? "dark") : (theme ?? "dark");
+  const isDark = activeTheme === "dark";
+
+  // החלפת תמונה לפי מצב העיצוב
+  const backgroundSrc = isDark
+    ? "/TLV VIEW background.jpg"
+    : "/TLV_VIEW_DAY.png";
+
+  return (
+    <div className="fixed inset-0 -z-20 h-full w-full overflow-hidden bg-background">
+      <img
+        src={backgroundSrc}
+        alt="Background"
+        className="h-full w-full object-cover object-center transition-all duration-1000"
+        style={{ opacity: isDark ? 0.6 : 0.8 }}
+      />
+      <div className={cn(
+        "absolute inset-0 transition-colors duration-1000",
+        isDark ? "bg-black/40" : "bg-white/10"
+      )} />
+    </div>
+  );
+};
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const { language, toggleLanguage, t, isRTL } = useLanguage();
-  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
 
-  const isHomePage =
-    location.pathname === "/" ||
-    location.pathname === "" ||
-    location.pathname.includes("index.html") ||
-    location.pathname.length <= 1;
-
+  const isHomePage = location.pathname === "/" || location.pathname === "";
   const isMapPage = location.pathname === "/map";
 
   useEffect(() => {
@@ -64,92 +85,32 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <div className={cn("glass-app-shell relative min-h-screen w-full overflow-x-hidden", isMapPage && "h-screen overflow-hidden")}>
+    <div className={cn(
+      "glass-app-shell relative min-h-screen w-full overflow-x-hidden",
+      isMapPage && "h-screen overflow-hidden"
+    )}>
       {showLoading && <LoadingScreen onComplete={() => setShowLoading(false)} />}
+      <GlobalBackground />
       <GlassSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} />
 
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-[8%] top-[10%] h-64 w-64 rounded-full bg-emerald-400/14 blur-[120px]" />
-        <div className="absolute bottom-[12%] right-[10%] h-72 w-72 rounded-full bg-teal-400/10 blur-[140px]" />
-        <div className="absolute left-1/2 top-[28%] h-48 w-48 -translate-x-1/2 rounded-full bg-cyan-300/8 blur-[110px]" />
-      </div>
-
-      <div className="relative z-10 flex min-h-screen flex-col">
-        <header className={cn("px-3 pt-3 md:px-6 md:pt-5", isHomePage && "pointer-events-none absolute left-0 right-0 top-0 z-20 bg-transparent")}>
-          <GlassCard intensity="strong" className={cn("mx-auto flex max-w-6xl items-center justify-between px-4 py-3 text-white", isHomePage && "pointer-events-auto")}>
-            <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
-              <button
-                type="button"
-                onClick={() => setSidebarOpen(true)}
-                aria-label={t.shell.openMenu}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/8 text-white transition hover:bg-white/14"
-              >
-                <Menu className="h-5 w-5" />
-              </button>
-
-              <Link to="/" className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/15">
-                  <BrandLogo className="h-7 w-7" rounded />
-                </div>
-                <div className={cn("hidden sm:block", isRTL && "text-right")}>
-                  <p className="font-display text-lg font-black leading-none">{t.appName}</p>
-                  <p className="text-xs text-white/65">{t.shell.newExperience}</p>
-                </div>
-              </Link>
-            </div>
-
-            <div className={cn("flex items-center gap-2 sm:gap-3", isRTL && "flex-row-reverse")}>
-              <div className="hidden items-center gap-2 rounded-full bg-white/8 px-3 py-2 text-sm text-white/80 sm:flex">
-                <MapPin className="h-4 w-4 text-emerald-300" />
-                <span>{t.shell.city}</span>
-              </div>
-
-              {/* Language & user moved to bottom nav — keep only user avatar here for desktop */}
-              <button
-                type="button"
-                onClick={toggleLanguage}
-                className="hidden md:block rounded-full bg-white/8 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/14"
-              >
-                {language === "he" ? "EN" : "עב"}
-              </button>
-
-              <Link
-                to={user ? "/profile" : "/auth"}
-                className={cn(
-                  "flex items-center gap-2 rounded-full bg-white/8 px-3 py-2 text-sm text-white transition hover:bg-white/14",
-                  isRTL && "flex-row-reverse",
-                )}
-              >
-                {user ? <UserRound className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
-                <span className="hidden sm:inline">{user ? t.shell.accountLabel : t.auth.loginBtn}</span>
-              </Link>
-            </div>
-          </GlassCard>
-        </header>
-
-        <main
-          className={cn(
-            "relative flex-grow pb-24 md:pb-8",
-            isMapPage ? "overflow-hidden px-3 pt-3 md:px-6" : isHomePage ? "pt-0" : "overflow-y-auto px-3 pt-4 md:px-6",
-          )}
-        >
-          <div className={cn(isHomePage || isMapPage ? "w-full" : "mx-auto max-w-6xl")}>
+      <div className={cn("relative z-10 flex flex-col", isMapPage ? "h-full" : "min-h-screen")}>
+        <main className={cn(
+          "relative flex-grow",
+          isMapPage ? "h-full overflow-hidden p-0" : "pb-24 md:pb-8 pt-4",
+          !isMapPage && !isHomePage && "overflow-y-auto px-3 md:px-6",
+        )}>
+          <div className={cn(isMapPage ? "h-full w-full" : "mx-auto max-w-6xl")}>
             {children}
           </div>
         </main>
       </div>
 
-      <BottomNav />
+      <BottomNav onOpenMenu={() => setSidebarOpen(true)} />
     </div>
   );
 };
 
 const queryClient = new QueryClient();
-
-const isFeatureEnabled = (value: string | undefined) => value === "true";
-
-const ENABLE_ADMIN_ROUTES = isFeatureEnabled(import.meta.env.VITE_ENABLE_ADMIN_ROUTES);
-const ENABLE_DOG_SHARE_ROUTE = isFeatureEnabled(import.meta.env.VITE_ENABLE_DOG_SHARE_ROUTE);
 
 const AppContent = () => {
   useEffect(() => {
@@ -164,27 +125,14 @@ const AppContent = () => {
           const refresh_token = params.get('refresh_token');
 
           if (access_token && refresh_token) {
-            const { data, error } = await supabase.auth.setSession({
-              access_token,
-              refresh_token,
-            });
-            if (!error && data.session) {
-              toast.success("התחברת בהצלחה!");
-              const nextPath = sessionStorage.getItem("auth:next") || "/";
-              sessionStorage.removeItem("auth:next");
-              window.location.assign(nextPath);
-            } else if (error) {
-              toast.error("שגיאה בתהליך ההתחברות");
-            }
+            await supabase.auth.setSession({ access_token, refresh_token });
+            window.location.assign("/");
           }
         }
       });
     };
-
     setupDeepLinks();
-    return () => {
-      CapacitorApp.removeAllListeners();
-    };
+    return () => { CapacitorApp.removeAllListeners(); };
   }, []);
 
   return (
@@ -198,12 +146,12 @@ const AppContent = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/hazard-report" element={<HazardReport />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
-          {ENABLE_DOG_SHARE_ROUTE ? <Route path="/dog-share/accept" element={<DogShareAccept />} /> : null}
           <Route path="/garden/:id" element={<GardenDetails />} />
-          {ENABLE_ADMIN_ROUTES ? <Route path="/admin/import" element={<AdminImport />} /> : null}
-          {ENABLE_ADMIN_ROUTES ? <Route path="/admin/gardens" element={<AdminGardens />} /> : null}
+          <Route path="/admin/import" element={<DeveloperRoute><AdminImport /></DeveloperRoute>} />
+          <Route path="/admin/gardens" element={<DeveloperRoute><AdminGardens /></DeveloperRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
@@ -213,7 +161,7 @@ const AppContent = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider attribute="class" defaultTheme="dark" storageKey="vite-ui-theme" enableSystem={false}>
       <LanguageProvider>
         <TooltipProvider>
           <Toaster />

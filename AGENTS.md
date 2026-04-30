@@ -8,7 +8,8 @@
 ## Architecture You Need First
 - App shell and providers are in `src/App.tsx`: React Query, theme, language/RTL, toasts, router, and guarded routes.
 - Routing is flat in `src/App.tsx`; protected pages use `src/components/ProtectedRoute.tsx` + `src/hooks/useAuth.ts`.
-- Admin routes are currently `/admin/import` (bulk scan/import) and `/admin/gardens` (approve pending gardens) in `src/App.tsx`.
+- Admin routes `/admin/import` (bulk scan/import) and `/admin/gardens` (approve pending gardens) are defined in `src/App.tsx` and only registered when `VITE_ENABLE_ADMIN_ROUTES=true`.
+- Optional route `/dog-share/accept` is also feature-flagged in `src/App.tsx` via `VITE_ENABLE_DOG_SHARE_ROUTE`.
 - Data access is direct from UI/hooks to Supabase (`src/integrations/supabase/client.ts`, `src/hooks/useGardens.ts`, `src/pages/Map.tsx`).
 - Mobile deep-link auth handling lives in `src/App.tsx` via Capacitor `appUrlOpen` and Supabase `setSession`.
 - Bilingual UX is centralized in `src/context/LanguageContext.tsx` + `src/i18n/translations.ts` (default Hebrew + RTL).
@@ -25,8 +26,10 @@
 - Install deps: `npm install --legacy-peer-deps` (documented in `README.md`).
 - Web dev: `npm run dev` (host/port from `VITE_DEV_HOST`/`VITE_DEV_PORT`, see `vite.config.ts`).
 - Tests: `npm test` (Vitest jsdom, setup in `vitest.config.ts` and `src/test/setup.ts`).
+- Route QA check: `npm run qa:routes` (validates route matrix/guards in `scripts/qa-launch-routes.mjs` + `scripts/qa-launch-routes.matrix.json`).
 - Build web: `npm run build`.
 - Android sync/run: `npx cap sync android`, `npx cap open android`, or `npm run play`.
+- Android Firebase wiring verification: `npm run verify:android:firebase`.
 - Docker local image/runtime: `compose.yaml`, `Dockerfile`, and reset helper `scripts/docker-reset-and-run.ps1`.
 
 ## Conventions Used In This Codebase
@@ -37,6 +40,7 @@
 
 ## Integrations and Config Surface
 - Required client envs typically include: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (or `VITE_SUPABASE_ANON_KEY`), `VITE_GOOGLE_MAPS_API_KEY`.
+- Route-level feature flags: `VITE_ENABLE_ADMIN_ROUTES` and `VITE_ENABLE_DOG_SHARE_ROUTE` (consumed in `src/App.tsx`).
 - Developer access still supports legacy env keys `VITE_DEVELOPER_EMAILS` / `VITE_DEVELOPER_EMAIL`, but `VITE_ADMIN_USER_ID` / `VITE_ADMIN_EMAIL` are the primary controls (`src/hooks/useDeveloperAccess.ts`).
 - Capacitor dev-server bridging uses `CAPACITOR_ANDROID_SERVER_URL` in `capacitor.config.ts`.
 - Android release signing values are resolved from env or `android/local.properties` in `android/app/build.gradle`.
@@ -46,6 +50,7 @@
 - When changing DB-facing features, inspect related SQL migration history before editing TS usage.
 - Preserve bilingual/RTL behavior when touching navigation, layout, or labels.
 - For auth/deep-link changes, test both browser callback route (`/auth/callback`) and Capacitor `appUrlOpen` flow.
+- For routing changes, preserve feature-flag gating patterns in `src/App.tsx` and update `scripts/qa-launch-routes.matrix.json`; run `npm run qa:routes`.
 - For map/admin import changes, verify `google_place_id` conflict handling is preserved to avoid duplicates.
 - For admin import changes, treat both tables (`gardens`, `protected_spaces`) as import targets and keep unique index expectations from `supabase/migrations/20260408102000_add_google_place_ids.sql` intact.
 

@@ -19,7 +19,7 @@ npm run dev
 
 ### הגדרות IP/URL לפיתוח
 
-- `VITE_DEV_HOST` — כתובת ה־LAN שעליה Vite מאזין בפיתוח. ברירת המחדל כרגע: `0.0.0.0` (כל הממשקים)
+- `VITE_DEV_HOST` — כתובת ה־LAN שעליה Vite מאזין בפיתוח. ברירת המחדל כרגע: `127.0.0.1`
 - `VITE_DEV_PORT` — פורט שרת הפיתוח. ברירת המחדל: `8080`
 - `CAPACITOR_ANDROID_SERVER_URL` — כתובת שרת dev מלאה עבור Android רק בזמן פיתוח
 
@@ -88,6 +88,8 @@ cd android
 - **Analytics**: מעקב אחר שימוש  
 - קובץ `google-services.json` נמצא ב-`android/app/`
 
+> ⚠️ `android/app/google-services.json`, `android/local.properties`, ו-`*.keystore` חייבים להישאר מקומיים בלבד (לא ב-Git).
+
 ---
 
 ## 🌐 Backend - Supabase
@@ -95,16 +97,60 @@ cd android
 - הגדרות ב-`.env`
 - Migrations ב-`supabase/migrations/`
 
+### 🔧 דוגמת `.env` (ללא סודות אמיתיים)
+
+העתיקו ל-`.env` מקומי והחליפו לערכים אמיתיים אצלכם בלבד:
+
+```env
+VITE_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
+VITE_GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
+
+# Dev server (optional)
+VITE_DEV_HOST=127.0.0.1
+VITE_DEV_PORT=8080
+CAPACITOR_ANDROID_SERVER_URL=http://192.168.1.10:8080
+
+# Feature flags (optional)
+VITE_ENABLE_ADMIN_ROUTES=false
+VITE_ENABLE_DOG_SHARE_ROUTE=false
+
+# Admin gating (set only for the intended admin account)
+VITE_ADMIN_USER_ID=YOUR_ADMIN_USER_ID
+VITE_ADMIN_EMAIL=admin@example.com
+```
+
+> ⚠️ אין להכניס ל-Repo מפתחות אמיתיים, סיסמאות, או tokens פרטיים.
+
 ---
 
 ## 📋 Scripts
 
 | פקודה | תיאור |
 |-------|--------|
-| `npm run dev` | שרת פיתוח |
+| `npm run dev` | שרת פיתוח (Vite) |
 | `npm run build` | Build לייצור |
-| `npm test` | הרצת טסטים |
-| `npx cap sync` | סנכרון ל-Native |
+| `npm test` | הרצת טסטים (Vitest) |
+| `npm run test:watch` | הרצת טסטים במצב watch |
+| `npm run qa:routes` | בדיקת מטריצת ראוטים מול `src/App.tsx` |
+| `npm run play` | סנכרון והרצה על Android דרך Capacitor |
+| `npm run verify:android:firebase` | בדיקת חיבור Firebase בקונפיג אנדרואיד |
+| `npm run docker:reset` | איפוס והרצת שירותי Docker לפי הסקריפט המקומי |
+| `npm run docker:watch` | כמו `docker:reset` עם watch |
+
+### QA לראוטים לפני השקה
+
+בדיקה מהירה לראוטים קריטיים:
+
+```sh
+npm run qa:routes
+```
+
+הבדיקה קוראת את:
+- `scripts/qa-launch-routes.mjs`
+- `scripts/qa-launch-routes.matrix.json`
+
+ומוודאת בין היתר ראוטים ציבוריים/מוגנים, gate לפי feature flags, ו-fallback ל-`NotFound`.
 
 ---
 
@@ -128,7 +174,13 @@ cd android
 
 ## 🔐 דף ניהול אדמין
 
-דף האדמין זמין ב-`/admin/import` ודורש הרשאות מפתח. בדף זה ניתן לבצע שני סוגי סריקות:
+נתיבי האדמין המוגדרים בקוד:
+- `/admin/import` — מסך ייבוא וסריקה מגוגל (גינות + מרחבים מוגנים)
+- `/admin/gardens` — מסך אישור גינות בהמתנה
+
+> ⚠️ הנתיבים עצמם מגודרים ב-feature flag `VITE_ENABLE_ADMIN_ROUTES`, והגישה בפועל נשלטת גם ע"י הרשאות משתמש (deny-by-default כאשר לא מוגדר חשבון אדמין).
+
+דף הייבוא כולל שני מסופים:
 
 ### מסוף 1: גינות כלבים (גוש דן)
 סורק את כל אזורי גוש דן (תל אביב, רמת גן, גבעתיים, חולון, בת ים, הרצליה) בחיפוש אחר:

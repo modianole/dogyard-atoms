@@ -5,6 +5,7 @@
     "/garden/:id",
     "/auth",
     "/reset-password",
+    "/hazard-report",
     "/privacy",
     "/terms"
   ],
