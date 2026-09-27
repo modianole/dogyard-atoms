@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/context/LanguageContext";
@@ -54,7 +55,7 @@ const Auth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
             data: { full_name: name },
           },
         });
@@ -71,10 +72,11 @@ const Auth = () => {
   const handleGoogleLogin = async () => {
     try {
       const isApp = Capacitor.isNativePlatform();
-      // Use the custom scheme for mobile, or the web origin for browser
+      // For web, we MUST go to /auth/callback to handle PKCE code exchange
+      // For app, we use the custom scheme which is handled in App.tsx
       const redirectUri = isApp
         ? "com.dogyard.app://auth-callback"
-        : window.location.origin;
+        : `${window.location.origin}/auth/callback`;
 
 
       const { data, error } = await supabase.auth.signInWithOAuth({

@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, X, Menu, Map as MapIcon, Sun, Moon, ShieldAlert } from "lucide-react";
+import { Home, X, Menu, Map as MapIcon, Sun, Moon } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "next-themes";
-import { useNearestShalter } from "@/hooks/useNearestShalter";
-import ProtectedSpacePromptDialog from "@/components/ProtectedSpacePromptDialog";
 import { cn } from "@/lib/utils";
 
 const Navbar = () => {
@@ -16,15 +14,6 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    goToNearestShalter,
-    navigateFromManualAddress,
-    navigateFromGarden,
-    loading: shalterLoading,
-    gpsPromptOpen,
-    setGpsPromptOpen,
-    openLocationSettingsAndRetry,
-  } = useNearestShalter();
 
   useEffect(() => {
     setMounted(true);
@@ -48,14 +37,6 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={goToNearestShalter}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400"
-            >
-              <ShieldAlert className="w-4 h-4" />
-              <span className="hidden sm:inline text-xs font-bold">{isRTL ? "מרחב מוגן" : "Shelter"}</span>
-            </button>
-
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="p-2.5 rounded-xl bg-slate-500/10 dark:bg-white/10 text-foreground"
@@ -92,15 +73,6 @@ const Navbar = () => {
           </div>
         </>
       )}
-
-      <ProtectedSpacePromptDialog
-        open={gpsPromptOpen}
-        onOpenChange={setGpsPromptOpen}
-        loading={shalterLoading}
-        onTurnOn={() => { void openLocationSettingsAndRetry(); }}
-        onManualAddress={navigateFromManualAddress}
-        onGarden={navigateFromGarden}
-      />
     </>
   );
 };

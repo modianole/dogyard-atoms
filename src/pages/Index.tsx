@@ -5,19 +5,28 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { useLanguage } from "@/context/LanguageContext";
 import { useGardens } from "@/hooks/useGardens";
 import { cn } from "@/lib/utils";
+import PeakHoursChart from "@/components/PeakHoursChart";
+
+const BubblyStar = ({ className, filled = true }: { className?: string; filled?: boolean }) => (
+  <Star
+    className={cn(className, "filter drop-shadow-[0_2px_3px_rgba(0,0,0,0.2)] transition-all duration-300")}
+    style={{
+      color: filled ? "#FFD700" : "#94a3b8",
+      fill: filled ? "#FFD700" : "transparent",
+      opacity: filled ? 1 : 0.4
+    }}
+    strokeWidth={filled ? 0.5 : 2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+);
 
 const GardenStars = ({ rating }: { rating: number }) => {
   const full = Math.floor(rating);
   return (
     <div className="flex items-center gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          className={cn(
-            "h-3.5 w-3.5",
-            i < full ? "fill-warning text-warning" : "fill-muted text-muted",
-          )}
-        />
+        <BubblyStar key={i} filled={i < full} className="h-4 w-4" />
       ))}
     </div>
   );
@@ -58,35 +67,41 @@ const Index = () => {
 
       <main className="space-y-8 px-3 md:space-y-10 md:px-6">
         <section>
-          <div className="mb-6 text-center">
-            <h2 className="font-display text-3xl font-black md:text-4xl text-foreground">{t.gardens.title}</h2>
-            <p className="mt-1 text-sm md:text-base text-muted-foreground">{t.gardens.subtitle}</p>
+          <div className="mb-8 text-center">
+            <h2 className="font-display text-3xl font-black md:text-5xl text-foreground mb-3">{t.gardens.title}</h2>
+            <p className="mt-1 text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto">{t.gardens.subtitle}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {(gardens ?? []).slice(0, 6).map((garden) => (
-              <GlassCard key={garden.id} intensity="medium" className="flex flex-col gap-3 p-5">
-                <div className="flex items-start justify-between gap-3">
+              <GlassCard key={garden.id} intensity="medium" className="flex flex-col gap-4 p-6 hover:scale-[1.02] transition-transform duration-300">
+                <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate font-display text-lg font-bold text-foreground">
+                    <h3 className="truncate font-display text-xl font-bold text-foreground">
                       {isEn ? (garden.name_en || garden.name) : garden.name}
                     </h3>
-                    <p className="truncate text-xs text-muted-foreground">
+                    <p className="truncate text-sm text-muted-foreground mt-1 opacity-70">
                       {isEn ? (garden.location_en || garden.location) : garden.location}
                     </p>
                   </div>
-                  <span className="rounded-lg bg-emerald-500/20 px-2 py-1 text-xs font-black text-emerald-600 dark:text-emerald-400">
-                    {(garden.rating ?? 0).toFixed(1)}
-                  </span>
+                  <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-br from-[#FFD700]/30 to-[#FFD700]/10 px-3 py-1 border border-[#FFD700]/40 shadow-[0_2px_10px_rgba(255,215,0,0.2)] backdrop-blur-sm">
+                    <BubblyStar className="w-4 h-4" />
+                    <span className="text-sm font-black text-slate-900 dark:text-[#FFD700]">
+                      {(garden.rating ?? 0).toFixed(1)}
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-auto flex items-center justify-between">
+                <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
                   <GardenStars rating={Number(garden.rating ?? 0)} />
-                  <span className="text-xs opacity-60 text-muted-foreground">({garden.reviews_count ?? 0})</span>
+                  <span className="text-xs font-bold opacity-40 text-muted-foreground">({garden.reviews_count ?? 0} reviews)</span>
                 </div>
               </GlassCard>
             ))}
           </div>
         </section>
+
+        {/* Peak Hours Section */}
+        <PeakHoursChart />
       </main>
     </div>
   );

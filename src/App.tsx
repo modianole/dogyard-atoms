@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -112,50 +112,67 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
 const queryClient = new QueryClient();
 
+// Feature flags
+const ENABLE_ADMIN_ROUTES = (import.meta.env.VITE_ENABLE_ADMIN_ROUTES === "true");
+const ENABLE_DOG_SHARE_ROUTE = (import.meta.env.VITE_ENABLE_DOG_SHARE_ROUTE === "true");
+
 const AppContent = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     const setupDeepLinks = async () => {
       CapacitorApp.addListener('appUrlOpen', async (event) => {
         const url = new URL(event.url);
-        if (url.host === 'auth-callback' || url.pathname.includes('reset-password')) {
+
+        // Handle auth-callback and reset-password
+        if (url.host === 'auth-callback' || url.pathname.includes('reset-password') || url.pathname.includes('auth/callback')) {
           await Browser.close();
+
           const hash = url.hash.substring(1);
           const params = new URLSearchParams(hash || url.search);
-          const access_token = params.get('access_token');
-          const refresh_token = params.get('refresh_token');
 
-          if (access_token && refresh_token) {
-            await supabase.auth.setSession({ access_token, refresh_token });
-            window.location.assign("/");
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+          const code = params.get('code');
+
+          if (accessToken && refreshToken) {
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken
+            });
+            if (!error) navigate("/", { replace: true });
+          } else if (code) {
+            // If we have a code, we can either navigate to /auth/callback inside the app
+            // or exchange it right here. Let's navigate to keep logic centralized.
+            navigate(`/auth/callback?code=${code}`, { replace: true });
           }
         }
       });
     };
     setupDeepLinks();
     return () => { CapacitorApp.removeAllListeners(); };
-  }, []);
+  }, [navigate]);
 
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/map" element={<Map />} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/hazard-report" element={<HazardReport />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/map" element={<Map />} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/hazard-report" element={<HazardReport />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
           <Route path="/garden/:id" element={<GardenDetails />} />
-          <Route path="/admin/import" element={<DeveloperRoute><AdminImport /></DeveloperRoute>} />
-          <Route path="/admin/gardens" element={<DeveloperRoute><AdminGardens /></DeveloperRoute>} />
+          {ENABLE_DOG_SHARE_ROUTE ? <Route path="/dog-share/accept" element={<DogShareAccept />} /> : null}
+          {ENABLE_ADMIN_ROUTES ? <Route path="/admin/import" element={<DeveloperRoute><AdminImport /></DeveloperRoute>} /> : null}
+          {ENABLE_ADMIN_ROUTES ? <Route path="/admin/gardens" element={<DeveloperRoute><AdminGardens /></DeveloperRoute>} /> : null}
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Layout>
-    </BrowserRouter>
+      </Routes>
+    </Layout>
   );
 };
 
@@ -166,7 +183,9 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <AppContent />
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
     </ThemeProvider>

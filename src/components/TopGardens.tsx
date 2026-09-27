@@ -2,6 +2,21 @@ import { MapPin, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useGardens } from "@/hooks/useGardens";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { cn } from "@/lib/utils";
+
+const BubblyStar = ({ className, filled = true }: { className?: string; filled?: boolean }) => (
+  <Star
+    className={cn(className, "filter drop-shadow-[0_1.5px_1.5px_rgba(0,0,0,0.2)]")}
+    style={{
+      color: filled ? "#FFD700" : "#94a3b8",
+      fill: filled ? "#FFD700" : "transparent",
+      opacity: filled ? 1 : 0.3
+    }}
+    strokeWidth={filled ? 0.5 : 2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+);
 
 const StarRating = ({ rating }: { rating: number }) => {
   const full = Math.floor(rating);
@@ -9,7 +24,7 @@ const StarRating = ({ rating }: { rating: number }) => {
   return (
     <div className="flex items-center gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} className={`w-3.5 h-3.5 ${i < full ? "fill-warning text-warning" : i === full && hasHalf ? "fill-warning/50 text-warning" : "text-muted fill-muted"}`} />
+        <BubblyStar key={i} filled={i < full} className="h-3.5 w-3.5" />
       ))}
     </div>
   );
@@ -51,7 +66,12 @@ const TopGardens = () => {
               className="flex cursor-pointer flex-col gap-3 rounded-2xl p-5 transition-all duration-300 group hover:-translate-y-1 hover:scale-[1.01] animate-in fade-in zoom-in-95"
               style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'both' }}>
               <div className="flex items-start justify-between">
-                <span className="text-sm font-black text-primary tabular-nums px-2.5 py-1 rounded-lg bg-primary/15">{Number(garden.rating ?? 0).toFixed(1)}</span>
+                <div className="flex items-center gap-1.5 rounded-xl bg-[#FFD700]/15 px-2.5 py-1 border border-[#FFD700]/30 shadow-[0_2px_8px_rgba(255,215,0,0.1)]">
+                  <BubblyStar className="w-3.5 h-3.5" />
+                  <span className="text-sm font-black text-[#E6B800] dark:text-[#FFD700] tabular-nums">
+                    {Number(garden.rating ?? 0).toFixed(1)}
+                  </span>
+                </div>
                 <div className="flex-1 ms-3">
                   <h3 className="font-display font-bold text-foreground text-sm">{isEn ? (garden.name_en || garden.name) : garden.name}</h3>
                   <div className="flex items-center gap-1 mt-0.5">
@@ -66,9 +86,9 @@ const TopGardens = () => {
                 {garden.has_shade && <span className="px-2.5 py-1 text-[10px] bg-accent/10 text-accent rounded-lg font-medium">🌳 {isEn ? "Shade" : "צל"}</span>}
                 {garden.has_lighting && <span className="px-2.5 py-1 text-[10px] bg-warning/10 text-warning rounded-lg font-medium">💡 {isEn ? "Lit" : "תאורה"}</span>}
               </div>
-              <div className="flex items-center justify-between mt-auto">
+              <div className="flex items-center justify-between mt-auto border-t border-white/5 pt-3">
                 <StarRating rating={Number(garden.rating ?? 0)} />
-                <span className="text-xs text-muted-foreground">({garden.reviews_count ?? 0})</span>
+                <span className="text-xs text-muted-foreground opacity-50">({garden.reviews_count ?? 0})</span>
               </div>
             </GlassCard>
           ))}
